@@ -1278,7 +1278,7 @@ Operational use still requires approved ship-specific stability information.
             <label class="flex items-center gap-1 text-slate-300"><input type="checkbox" checked class="accent-sky-500" onchange="window.AMCOL3D?.setHydroOption('references',this.checked)"> References</label>
             <label class="flex items-center gap-1 text-slate-300"><input type="checkbox" checked class="accent-violet-500" onchange="window.AMCOL3D?.setHydroOption('labels',this.checked)"> Labels</label>
             <label class="flex items-center gap-1 text-slate-300"><input id="hydroSectionPlaneToggle" type="checkbox" class="accent-cyan-500" onchange="window.AMCOL3D?.setHydroOption('sectionPlane',this.checked)"> Section plane</label>
-            <label class="flex items-center gap-1 text-slate-300"><input id="hydroXRayToggle" type="checkbox" checked class="accent-violet-500" onchange="window.AMCOL3D?.setHydroOption('xray',this.checked)"> X-ray hull</label>
+            <label class="flex items-center gap-1 text-slate-300"><input id="hydroXRayToggle" type="checkbox" class="accent-violet-500" onchange="window.AMCOL3D?.setHydroOption('xray',this.checked)"> X-ray hull</label>
           </div>
           <div class="grid grid-cols-3 gap-1 mt-2">
             <button onclick="window.AMCOL3D?.focusHydroPoint('G')" class="px-1.5 py-1 rounded bg-slate-900 border border-slate-700 text-rose-300 hover:bg-slate-800">Focus G</button>
@@ -1307,8 +1307,8 @@ Operational use still requires approved ship-specific stability information.
             <label class="flex items-center gap-1 text-slate-300"><input type="checkbox" checked class="accent-violet-500" onchange="window.AMCOL3D?.setOperationOption('crane',this.checked)"> Crane</label>
             <label class="flex items-center gap-1 text-slate-300"><input type="checkbox" checked class="accent-rose-500" onchange="window.AMCOL3D?.setOperationOption('damage',this.checked)"> Damage</label>
             <label class="flex items-center gap-1 text-slate-300"><input type="checkbox" checked class="accent-yellow-500" onchange="window.AMCOL3D?.setOperationOption('labels',this.checked)"> Labels</label>
-            <button id="internal3DViewBtn" onclick="window.AMCOL3D?.setInternalArrangementView(true)" class="px-1.5 py-1 rounded bg-violet-500/15 border border-violet-400/40 text-violet-200 hover:bg-violet-500/25"><i class="fa-solid fa-layer-group mr-1"></i>Internal View</button>
-            <button id="exterior3DViewBtn" onclick="window.AMCOL3D?.setInternalArrangementView(false)" class="px-1.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300 hover:bg-slate-800"><i class="fa-solid fa-ship mr-1"></i>Exterior</button>
+            <button id="internal3DViewBtn" onclick="window.AMCOL3D?.setInternalArrangementView(true)" class="px-1.5 py-1 rounded bg-slate-900 border border-slate-700 text-violet-200 hover:bg-violet-500/25"><i class="fa-solid fa-layer-group mr-1"></i>Internal View</button>
+            <button id="exterior3DViewBtn" onclick="window.AMCOL3D?.setInternalArrangementView(false)" class="px-1.5 py-1 rounded bg-cyan-500/15 border border-cyan-400/40 text-slate-200 hover:bg-cyan-500/25"><i class="fa-solid fa-ship mr-1"></i>Exterior</button>
           </div>
           <div id="threeDOperationsReadout" class="mt-2 rounded-lg bg-slate-950/75 border border-slate-800 p-2 font-mono text-[8px] text-slate-300 leading-relaxed">
             Operations data will appear when 3D mode is active.
@@ -1407,7 +1407,7 @@ Operational use still requires approved ship-specific stability information.
           </summary>
           <div class="px-3 pb-3 pt-2 border-t border-slate-700/70">
             <div class="flex flex-wrap items-center gap-2">
-              <button onclick="window.AMCOL3D?.syncBallastLabFromVessel({preserveSnapshot:false})" class="px-2.5 py-1.5 rounded bg-blue-500/10 border border-blue-400/35 text-blue-200 hover:bg-blue-500/20"><i class="fa-solid fa-arrows-rotate mr-1"></i>Sync Vessel Tanks</button>
+              <button onclick="window.AMCOL3D?.syncBallastLabFromVessel({preserveSnapshot:false})" class="px-2.5 py-1.5 rounded bg-blue-500/10 border border-blue-400/35 text-blue-200 hover:bg-blue-500/20"><i class="fa-solid fa-arrows-rotate mr-1"></i>Refresh Vessel Tanks</button>
               <button onclick="openBallastPlanManager()" class="px-2.5 py-1.5 rounded bg-cyan-500/10 border border-cyan-400/35 text-cyan-200 hover:bg-cyan-500/20"><i class="fa-solid fa-sliders mr-1"></i>Edit Tank Levels</button>
               <button onclick="window.AMCOL3D?.resetBallastLab()" class="px-2.5 py-1.5 rounded bg-slate-900 border border-slate-700 text-slate-300 hover:bg-slate-800"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Restore Start Condition</button>
               <button onclick="window.AMCOL3D?.applyPairedTrimAssist()" class="px-2.5 py-1.5 rounded bg-cyan-500/10 border border-cyan-400/35 text-cyan-200"><i class="fa-solid fa-arrows-left-right-to-line mr-1"></i>Correct Trim</button>
@@ -1899,6 +1899,9 @@ Operational use still requires approved ship-specific stability information.
 const G=9.80665;
 let canvas,ctx,gzChart=null,strengthChart=null,dragging=false,lastPointerX=0,lastPointerY=0,showVectors=true,showInternalArrangement=true;
 let displayMode='2d';
+// Rendering lifecycle: vessel/data changes are committed atomically. 3D is never allowed to break physics.
+let vesselVisualTransaction=false,pendingHard3DReload=true,renderLifecycleRevision=0,simulatorResizeObserver=null;
+let last3DVisualError='',last3DVisualErrorAt=0;
 let sidebarCollapsed=false,controlsMaximized=false,gzPanelExpanded=false,gzPanelCollapsed=false;
 let gzDragState=null;
 let cameraZoom=1,cameraPanX=0,cameraPanY=0,cameraPanMode=false,cameraPanning=false;
@@ -2023,18 +2026,22 @@ function greatFortuneConditionValidationHTML(){
  return `<div class="mt-2 rounded border border-emerald-900/40 bg-emerald-950/15 p-2"><div class="font-bold text-emerald-300 mb-1">Workbook-condition validation · simulator / source</div>${rows}<div class="mt-1 text-[8px] text-slate-500">Trim uses source LCB–LCG separation. GZ uses two-dimensional KN interpolation by displacement and heel; therefore it intentionally differs slightly from the workbook's lower-displacement VLOOKUP method.</div></div>`;
 }
 function loadGreatFortuneWorkbookCondition(){
- prepareReferenceVesselLoad();resetCore();cargoItems=[];
- state.companyName='Company not stated in workbook';state.vesselName='M.V. GREAT FORTUNE';state.hullType='bulk';
- state.length=177.0;state.beam=29.10;state.depth=14.50;state.waterDepth=30;state.density=1.025;
- state.lightshipMass=10138;state.lightshipKG=9.87;state.lightshipTCG=0;state.lightshipLCG=-14.50;state.krRatio=.35;
- state.hydroDataKey='great_fortune_workbook';state.sourceConditionKey='great_fortune_workbook';
- cargoItems=greatFortuneWorkbookCargoItems();
- ballastTanks=greatFortuneWorkbookBallastTanks();state.ballastPlanEnabled=true;state.ballastPlanSource='vessel';state.ballastPlanLabel='M.V. GREAT FORTUNE workbook ballast condition · source masses/VCG/FSM';
- state.fse=true;state.individualBallastFSE=false;state.grainEnabled=false;state.grainMoment=0;
- state.spaceLayoutFamily='bulk';state.spaceLayoutLabel='M.V. GREAT FORTUNE source-informed bulk carrier';bumpSpaceLayoutRevision('great-fortune-workbook');
- const hs=document.getElementById('hydroDataPackSelect');if(hs)hs.value='great_fortune_workbook';
- const rs=document.getElementById('referenceVesselSelect');if(rs)rs.value='greatfortune_workbook';
- syncFormFromState();renderCargoTable();renderBallastPlan();calculateAll();findAndSetEquilibrium();calculateAll({curve:false});forceInternalArrangement3DRefresh();updateHydroDataPackInfo();showSelectedReferenceVesselInfo();renderUnifiedMissionPanel();updateGlobalStabilityBadge(false,false);hideGlobalTestToast();
+ prepareReferenceVesselLoad();vesselVisualTransaction=true;
+ try{
+   resetCore();cargoItems=[];
+   state.companyName='Company not stated in workbook';state.vesselName='M.V. GREAT FORTUNE';state.hullType='bulk';
+   state.length=177.0;state.beam=29.10;state.depth=14.50;state.waterDepth=30;state.density=1.025;
+   state.lightshipMass=10138;state.lightshipKG=9.87;state.lightshipTCG=0;state.lightshipLCG=-14.50;state.krRatio=.35;
+   state.hydroDataKey='great_fortune_workbook';state.sourceConditionKey='great_fortune_workbook';
+   cargoItems=greatFortuneWorkbookCargoItems();
+   ballastTanks=greatFortuneWorkbookBallastTanks();state.ballastPlanEnabled=true;state.ballastPlanSource='vessel';state.ballastPlanLabel='M.V. GREAT FORTUNE workbook ballast condition · source masses/VCG/FSM';
+   state.fse=true;state.individualBallastFSE=false;state.grainEnabled=false;state.grainMoment=0;
+   state.spaceLayoutFamily='bulk';state.spaceLayoutLabel='M.V. GREAT FORTUNE source-informed bulk carrier';bumpSpaceLayoutRevision('great-fortune-workbook');
+   const hs=document.getElementById('hydroDataPackSelect');if(hs)hs.value='great_fortune_workbook';
+   const rs=document.getElementById('referenceVesselSelect');if(rs)rs.value='greatfortune_workbook';
+   syncFormFromState();renderCargoTable();renderBallastPlan();calculateAll();findAndSetEquilibrium();calculateAll({curve:false});updateHydroDataPackInfo();showSelectedReferenceVesselInfo();renderUnifiedMissionPanel();updateGlobalStabilityBadge(false,false);hideGlobalTestToast();
+ }finally{vesselVisualTransaction=false;}
+ commitVesselVisualRefresh('great-fortune-workbook');
 }
 
 /*
@@ -2522,24 +2529,27 @@ function loadSelectedReferenceVessel(){
  const key=document.getElementById('referenceVesselSelect')?.value;
  const r=referenceVesselPresets[key];if(!r)return;
  if(r.loadingProgramKey==='great_fortune_workbook'){loadGreatFortuneWorkbookCondition();return;}
- prepareReferenceVesselLoad();state.hydroDataKey='geometry';
- const model=teachingModelForReference(r);
- state.companyName=r.companyName;state.vesselName=r.vesselName;state.hullType=r.hullType;
- state.length=r.length;state.beam=r.beam;state.depth=r.depth;
- state.lightshipMass=model.lightshipMass;state.lightshipKG=model.lightshipKG;state.lightshipTCG=0;state.lightshipLCG=0;state.krRatio=model.krRatio;
- state.waterDepth=Math.max(state.waterDepth,state.depth+8);
- cargoItems=[];
- resetCore();
- // resetCore changes water/dynamics options but not vessel dimensions.
- state.companyName=r.companyName;state.vesselName=r.vesselName;state.hullType=r.hullType;
- state.length=r.length;state.beam=r.beam;state.depth=r.depth;
- state.lightshipMass=model.lightshipMass;state.lightshipKG=model.lightshipKG;state.lightshipTCG=0;state.lightshipLCG=0;state.krRatio=model.krRatio;
- state.waterDepth=Math.max(15,state.depth+8);
- state.hydroDataKey=(r.hydroDataKey&&hydrostaticDataPacks[r.hydroDataKey])?r.hydroDataKey:'geometry';
- const hydroSel=document.getElementById('hydroDataPackSelect');if(hydroSel)hydroSel.value=state.hydroDataKey;
- initialiseEmptyVesselContainers({render:false,revision:false});bumpSpaceLayoutRevision('reference-vessel-load');
- syncFormFromState();renderCargoTable();renderBallastPlan();calculateAll();findAndSetEquilibrium();calculateAll({curve:false});forceInternalArrangement3DRefresh();updateHydroDataPackInfo();
- showSelectedReferenceVesselInfo();renderUnifiedMissionPanel();updateGlobalStabilityBadge(false,false);hideGlobalTestToast();
+ prepareReferenceVesselLoad();vesselVisualTransaction=true;
+ try{
+   state.hydroDataKey='geometry';
+   const model=teachingModelForReference(r);
+   state.companyName=r.companyName;state.vesselName=r.vesselName;state.hullType=r.hullType;
+   state.length=r.length;state.beam=r.beam;state.depth=r.depth;
+   state.lightshipMass=model.lightshipMass;state.lightshipKG=model.lightshipKG;state.lightshipTCG=0;state.lightshipLCG=0;state.krRatio=model.krRatio;
+   state.waterDepth=Math.max(state.waterDepth,state.depth+8);
+   cargoItems=[];
+   resetCore();
+   state.companyName=r.companyName;state.vesselName=r.vesselName;state.hullType=r.hullType;
+   state.length=r.length;state.beam=r.beam;state.depth=r.depth;
+   state.lightshipMass=model.lightshipMass;state.lightshipKG=model.lightshipKG;state.lightshipTCG=0;state.lightshipLCG=0;state.krRatio=model.krRatio;
+   state.waterDepth=Math.max(15,state.depth+8);
+   state.hydroDataKey=(r.hydroDataKey&&hydrostaticDataPacks[r.hydroDataKey])?r.hydroDataKey:'geometry';
+   const hydroSel=document.getElementById('hydroDataPackSelect');if(hydroSel)hydroSel.value=state.hydroDataKey;
+   initialiseEmptyVesselContainers({render:false,revision:false});bumpSpaceLayoutRevision('reference-vessel-load');
+   syncFormFromState();renderCargoTable();renderBallastPlan();calculateAll();findAndSetEquilibrium();calculateAll({curve:false});updateHydroDataPackInfo();
+   showSelectedReferenceVesselInfo();renderUnifiedMissionPanel();updateGlobalStabilityBadge(false,false);hideGlobalTestToast();
+ }finally{vesselVisualTransaction=false;}
+ commitVesselVisualRefresh('reference-vessel-load');
 }
 
 const vesselPresets={
@@ -2562,43 +2572,104 @@ function bumpSpaceLayoutRevision(reason='layout-change'){
  if(typeof renderCargoArrangementSchematic==='function')renderCargoArrangementSchematic._sig='';
 }
 function current3DRuntimePayload(){
- return {dynTime,dynamicsRunning,cargoItems,ballastTanks:visualBallastTanks(),ballastPlanEnabled:state.ballastPlanEnabled,engineRoom:engineRoomArrangement(),cargoSpaces:cargoSpacesWithFill(),spaceLayoutRevision:Number(state.spaceLayoutRevision)||0,spaceLayoutFamily:state.spaceLayoutFamily||state.hullType};
+ const family=cargoFamilyKey(),cargoSpaces=cargoSpacesWithFill(),ballast=visualBallastTanks(),engine=engineRoomArrangement();
+ const cargoIds=cargoSpaces.map(x=>String(x.id||x.name||'')).join(',');
+ const tankIds=ballast.map(x=>String(x.id||x.name||'')).join(',');
+ const revision=Number(state.spaceLayoutRevision)||0;
+ return {
+   dynTime,dynamicsRunning,
+   cargoItems:cargoItems.map(x=>({...x})),
+   ballastTanks:ballast.map(x=>({...x})),
+   ballastPlanEnabled:state.ballastPlanEnabled,
+   engineRoom:engine?{...engine}:null,
+   cargoSpaces:cargoSpaces.map(x=>({...x})),
+   spaceLayoutRevision:revision,
+   spaceLayoutFamily:family,
+   spaceLayoutKey:`${family}|${state.vesselName||'family-template'}|${Number(state.length).toFixed(2)}|${Number(state.beam).toFixed(2)}|${Number(state.depth).toFixed(2)}|R${revision}|C:${cargoIds}|B:${tankIds}`
+ };
+}
+function current3DStateSnapshot(){
+ // State is copied before crossing into the module so a later vessel selection cannot mutate an in-flight visual load.
+ return {...state,upright:state.upright?{...state.upright}:state.upright,hydro:state.hydro?{...state.hydro}:state.hydro};
+}
+function report3DVisualError(err,reason='3D sync'){
+ const msg=String(err?.message||err||'Unknown 3D error'),now=Date.now();
+ if(msg!==last3DVisualError||now-last3DVisualErrorAt>2500){console.error(`AMCOL ${reason}:`,err);last3DVisualError=msg;last3DVisualErrorAt=now;}
+ const status=document.getElementById('threeDLoading');
+ if(displayMode==='3d'&&status){status.classList.remove('hidden');status.innerHTML='<div class="three-d-control rounded-xl px-4 py-3 text-center"><div class="text-amber-300 font-black text-xs">3D VISUAL RECOVERY</div><div class="text-[9px] text-slate-400 mt-1">The vessel physics remains active. Re-enter 3D or use 2D while the visual scene reloads.</div></div>';}
+}
+function safeSync3D({hard=false,reason='state-update'}={}){
+ const stateSnap=current3DStateSnapshot(),runtime=current3DRuntimePayload();
+ window.__AMCOL_PENDING_VISUAL__={state:stateSnap,runtime,reason,revision:renderLifecycleRevision};
+ if(!window.AMCOL3D?.ready)return false;
+ try{
+   const result=hard&&window.AMCOL3D?.hardLoadVesselSnapshot
+     ? window.AMCOL3D.hardLoadVesselSnapshot(stateSnap,runtime)
+     : window.AMCOL3D?.syncFromSimulator?.(stateSnap,runtime);
+   return result!==false;
+ }catch(err){report3DVisualError(err,reason);return false;}
+}
+function safeSync3DPose(reason='physics-pose'){
+ if(!window.AMCOL3D?.ready)return false;const stateSnap=current3DStateSnapshot();
+ try{if(window.AMCOL3D?.syncPoseFromSimulator)return window.AMCOL3D.syncPoseFromSimulator(stateSnap)!==false;return safeSync3D({hard:false,reason});}catch(err){report3DVisualError(err,reason);return false;}
+}
+function schedule2DVisualPaint(reason='state-update',attempt=0){
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   if(displayMode!=='2d'||!canvas||!ctx)return;
+   const p=canvas.parentElement,w=p?.clientWidth||p?.getBoundingClientRect?.().width||0,h=p?.clientHeight||p?.getBoundingClientRect?.().height||0;
+   if((w<8||h<8)&&attempt<8){setTimeout(()=>schedule2DVisualPaint(reason,attempt+1),40);return;}
+   try{resizeCanvas();render();}catch(err){console.error(`AMCOL 2D paint (${reason}) error:`,err);}
+ }));
+}
+function commitVesselVisualRefresh(reason='vessel-change'){
+ renderLifecycleRevision++;
+ pendingHard3DReload=true;
+ // 2D must be correct even when Three.js/CDN/WebGL is unavailable.
+ schedule2DVisualPaint(reason);
+ if(displayMode==='3d'){
+   const ok=safeSync3D({hard:true,reason});
+   if(ok)pendingHard3DReload=false;
+   try{window.AMCOL3D?.resize?.();}catch(err){report3DVisualError(err,reason);}
+ }
+ try{window.dispatchEvent(new CustomEvent('amcol:vessel-visual-commit',{detail:{reason,revision:renderLifecycleRevision,hullType:state.hullType}}));}catch(e){}
 }
 function forceInternalArrangement3DRefresh(){
- try{
-   const payload=current3DRuntimePayload();
-   if(window.AMCOL3D?.syncFromSimulator)window.AMCOL3D.syncFromSimulator(state,payload);
-   if(window.AMCOL3D?.invalidateHull)window.AMCOL3D.invalidateHull();
-   if(window.AMCOL3D?.syncFromSimulator)window.AMCOL3D.syncFromSimulator(state,payload);
- }catch(e){console.warn('AMCOL internal arrangement refresh:',e);}
+ // Backwards-compatible entry point used by a few older workflows. A vessel-space change is now a full atomic visual commit.
+ commitVesselVisualRefresh('internal-arrangement-refresh');
 }
+window.AMCOL_GET_RENDER_SNAPSHOT=()=>({state:current3DStateSnapshot(),runtime:current3DRuntimePayload(),revision:renderLifecycleRevision});
 function applyVesselFamilyTemplate(next,{announce=true}={}){
  const p=vesselPresets[next]||vesselPresets.general;
  cancelStabilityTestRuntime();
- state.hullType=next in vesselPresets?next:'general';
- state.companyName='';state.vesselName='';state.sourceConditionKey=null;state.hydroDataKey='geometry';state.hydroDataReference=null;
- // Selecting a vessel family loads that family's representative teaching particulars first.
- // The user can freely edit L/B/D/lightship values afterwards.
- state.length=p.length;state.beam=p.beam;state.depth=p.depth;state.lightshipMass=p.lightshipMass;state.lightshipKG=p.lightshipKG;state.lightshipTCG=0;state.lightshipLCG=0;state.krRatio=p.krRatio;
- state.waterDepth=Math.max(state.depth+5,15);
- initialiseEmptyVesselContainers({render:false,revision:false});
- bumpSpaceLayoutRevision('vessel-family-selection');
- syncFormFromState();renderCargoTable();renderBallastPlan();populateCargoLibraryUI();renderSpaceFillMonitor();
- calculateAll();findAndSetEquilibrium();calculateAll({curve:false});
- forceInternalArrangement3DRefresh();
- updateGlobalStabilityBadge(false,false);hideGlobalTestToast();
- if(announce&&typeof showCleanFeedback==='function')showCleanFeedback(`${p.label}: family-specific cargo spaces, ballast tanks and machinery arrangement rebuilt.`);
+ vesselVisualTransaction=true;
+ try{
+   state.hullType=next in vesselPresets?next:'general';
+   state.companyName='';state.vesselName='';state.sourceConditionKey=null;state.hydroDataKey='geometry';state.hydroDataReference=null;
+   state.length=p.length;state.beam=p.beam;state.depth=p.depth;state.lightshipMass=p.lightshipMass;state.lightshipKG=p.lightshipKG;state.lightshipTCG=0;state.lightshipLCG=0;state.krRatio=p.krRatio;
+   state.waterDepth=Math.max(state.depth+5,15);
+   initialiseEmptyVesselContainers({render:false,revision:false});
+   bumpSpaceLayoutRevision('vessel-family-selection');
+   syncFormFromState();renderCargoTable();renderBallastPlan();populateCargoLibraryUI();renderSpaceFillMonitor();
+   calculateAll();findAndSetEquilibrium();calculateAll({curve:false});
+   updateGlobalStabilityBadge(false,false);hideGlobalTestToast();
+ }finally{vesselVisualTransaction=false;}
+ commitVesselVisualRefresh('vessel-family-selection');
+ if(announce&&typeof showCleanFeedback==='function')showCleanFeedback(`${p.label}: hull and family-specific internal arrangement loaded.`);
 }
 
 function applyCurrentVesselPreset(){
  const p=vesselPresets[state.hullType]||vesselPresets.general;
- state.sourceConditionKey=null;state.hydroDataKey='geometry';state.hydroDataReference=null;
- state.length=p.length;state.beam=p.beam;state.depth=p.depth;
- state.lightshipMass=p.lightshipMass;state.lightshipKG=p.lightshipKG;state.lightshipTCG=0;state.lightshipLCG=0;
- state.krRatio=p.krRatio;state.waterDepth=Math.max(state.depth+5,state.waterDepth);
- initialiseEmptyVesselContainers({render:false,revision:false});bumpSpaceLayoutRevision('apply-family-preset');
- syncFormFromState();renderCargoTable();renderBallastPlan();calculateAll();forceInternalArrangement3DRefresh();
- updateGlobalStabilityBadge(false,false);hideGlobalTestToast();
+ vesselVisualTransaction=true;
+ try{
+   state.sourceConditionKey=null;state.hydroDataKey='geometry';state.hydroDataReference=null;
+   state.length=p.length;state.beam=p.beam;state.depth=p.depth;
+   state.lightshipMass=p.lightshipMass;state.lightshipKG=p.lightshipKG;state.lightshipTCG=0;state.lightshipLCG=0;
+   state.krRatio=p.krRatio;state.waterDepth=Math.max(state.depth+5,state.waterDepth);
+   initialiseEmptyVesselContainers({render:false,revision:false});bumpSpaceLayoutRevision('apply-family-preset');
+   syncFormFromState();renderCargoTable();renderBallastPlan();calculateAll();findAndSetEquilibrium();calculateAll({curve:false});
+   updateGlobalStabilityBadge(false,false);hideGlobalTestToast();
+ }finally{vesselVisualTransaction=false;}
+ commitVesselVisualRefresh('apply-family-preset');
 }
 function getSavedVesselProfiles(){
  try{return JSON.parse(localStorage.getItem('amcol_vessel_profiles_v1')||'{}')}catch(e){return {}}
@@ -2624,7 +2695,14 @@ function saveCurrentVesselProfile(){
 function loadSelectedVesselProfile(){
  const key=document.getElementById('savedVesselProfiles')?.value;if(!key)return;
  const p=getSavedVesselProfiles()[key];if(!p)return;
- Object.assign(state,p);state.sourceConditionKey=null;state.hydroDataKey='geometry';state.hydroDataReference=null;initialiseEmptyVesselContainers({render:false,revision:false});bumpSpaceLayoutRevision('saved-vessel-profile');syncFormFromState();renderCargoTable();renderBallastPlan();calculateAll();forceInternalArrangement3DRefresh();updateGlobalStabilityBadge(false,false);hideGlobalTestToast();
+ cancelStabilityTestRuntime();vesselVisualTransaction=true;
+ try{
+   Object.assign(state,p);state.sourceConditionKey=null;state.hydroDataKey='geometry';state.hydroDataReference=null;
+   initialiseEmptyVesselContainers({render:false,revision:false});bumpSpaceLayoutRevision('saved-vessel-profile');
+   syncFormFromState();renderCargoTable();renderBallastPlan();calculateAll();findAndSetEquilibrium();calculateAll({curve:false});
+   updateGlobalStabilityBadge(false,false);hideGlobalTestToast();
+ }finally{vesselVisualTransaction=false;}
+ commitVesselVisualRefresh('saved-vessel-profile');
 }
 function deleteSelectedVesselProfile(){
  const sel=document.getElementById('savedVesselProfiles'),key=sel?.value;if(!key)return;
@@ -3789,7 +3867,7 @@ function ensureCurrentVesselSpaceLayout({force=false,render=false}={}){
    bumpSpaceLayoutRevision(familyChanged?'automatic-family-change':'layout-consistency-repair');
    state.ballastPlanLabel=`Preloaded ${vesselPresets[state.hullType]?.label||state.hullType} ballast arrangement · ${ballastTanks.length} tanks`;
    if(render){renderCargoTable();renderBallastPlan();populateCargoLibraryUI();renderSpaceFillMonitor();}
-   try{forceInternalArrangement3DRefresh();}catch(e){}
+   if(vesselVisualTransaction)pendingHard3DReload=true;else try{forceInternalArrangement3DRefresh();}catch(e){}
  }
  return changed;
 }
@@ -4145,7 +4223,7 @@ function bindControls(){
  bind('inputDensity','density');
  const companyInput=document.getElementById('inputCompanyName'),vesselInput=document.getElementById('inputVesselName');
  if(companyInput)companyInput.addEventListener('input',e=>state.companyName=e.target.value);
- if(vesselInput)vesselInput.addEventListener('input',e=>state.vesselName=e.target.value);bind('inputLength','length');bind('inputBeam','beam');bind('inputDepth','depth');['inputLength','inputBeam','inputDepth'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>{refreshRepresentativeBallastTemplateGeometry();bumpSpaceLayoutRevision('principal-dimensions-change');renderBallastPlan();renderCargoTable();calculateAll();forceInternalArrangement3DRefresh();}));bind('inputWaterDepth','waterDepth');bind('inputLightshipMass','lightshipMass');bind('inputLightshipKG','lightshipKG');bind('inputLightshipTCG','lightshipTCG');bind('inputLightshipLCG','lightshipLCG');
+ if(vesselInput)vesselInput.addEventListener('input',e=>state.vesselName=e.target.value);bind('inputLength','length');bind('inputBeam','beam');bind('inputDepth','depth');['inputLength','inputBeam','inputDepth'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>{vesselVisualTransaction=true;try{refreshRepresentativeBallastTemplateGeometry();bumpSpaceLayoutRevision('principal-dimensions-change');renderBallastPlan();renderCargoTable();calculateAll();}finally{vesselVisualTransaction=false;}commitVesselVisualRefresh('principal-dimensions-change');}));bind('inputWaterDepth','waterDepth');bind('inputLightshipMass','lightshipMass');bind('inputLightshipKG','lightshipKG');bind('inputLightshipTCG','lightshipTCG');bind('inputLightshipLCG','lightshipLCG');
  bind('inputTankCount','tankCount');bind('inputTankLength','tankLength');bind('inputTankBreadth','tankBreadth');bind('inputTankDensity','tankDensity');bind('inputTankFill','tankFill');
  bind('inputGrainMoment','grainMoment');
  bind('inputCraneMass','craneMass');bind('inputCraneHeight','craneHeight');bind('inputCraneOutreach','craneOutreach');bind('inputCraneSide','craneSide');bind('inputCraneLCG','craneLCG');
@@ -4329,7 +4407,7 @@ function fillPercentLabel(raw){const n=Math.max(0,Number(raw)||0);return n>100.0
 function fillStatusClass(raw){const n=Math.max(0,Number(raw)||0);return n>100.05?'text-rose-300 border-rose-500/30 bg-rose-500/10':n>=99.5?'text-emerald-300 border-emerald-500/30 bg-emerald-500/10':n>.05?'text-cyan-300 border-cyan-500/30 bg-cyan-500/10':'text-slate-400 border-slate-700 bg-slate-900/70';}
 function renderSpaceFillMonitor(){
  const host=document.getElementById('spaceFillMonitor');if(!host)return;const spaces=cargoSpacesWithFill(),tanks=visualBallastTanks();
- const cargoRows=spaces.map(sp=>{const f={rawPercent:sp.fillRawPercent,percent:sp.fillPercent,mass:sp.fillMass,capacityVolume:sp.fillCapacityVolume,method:sp.fillMethod};return `<div class="rounded-lg border ${fillStatusClass(f.rawPercent)} p-2"><div class="flex items-center justify-between gap-2"><span class="font-bold text-[9px] text-slate-200 truncate">${escapeHtml(sp.name)}</span><span class="text-[9px] font-black whitespace-nowrap">${fillPercentLabel(f.rawPercent)}</span></div><div class="h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden"><div class="h-full bg-current opacity-80" style="width:${Math.min(100,f.percent).toFixed(1)}%"></div></div><div class="text-[8px] text-slate-500 mt-1">${f.mass.toFixed(0)} t · ${f.capacityVolume?`${f.usedVolume.toFixed(0)} / ${f.capacityVolume.toFixed(0)} m³ · `:''}${escapeHtml(f.method)}</div></div>`}).join('');
+ const cargoRows=spaces.map(sp=>{const f={rawPercent:sp.fillRawPercent,percent:sp.fillPercent,mass:sp.fillMass,usedVolume:sp.fillUsedVolume,capacityVolume:sp.fillCapacityVolume,method:sp.fillMethod};return `<div class="rounded-lg border ${fillStatusClass(f.rawPercent)} p-2"><div class="flex items-center justify-between gap-2"><span class="font-bold text-[9px] text-slate-200 truncate">${escapeHtml(sp.name)}</span><span class="text-[9px] font-black whitespace-nowrap">${fillPercentLabel(f.rawPercent)}</span></div><div class="h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden"><div class="h-full bg-current opacity-80" style="width:${Math.min(100,f.percent).toFixed(1)}%"></div></div><div class="text-[8px] text-slate-500 mt-1">${f.mass.toFixed(0)} t · ${f.capacityVolume?`${f.usedVolume.toFixed(0)} / ${f.capacityVolume.toFixed(0)} m³ · `:''}${escapeHtml(f.method)}</div></div>`}).join('');
  const tankRows=tanks.map(t=>{const raw=Math.max(0,Number(t.fill)||0),mass=typeof ballastTankMass==='function'?ballastTankMass(t):0;return `<div class="rounded-lg border ${fillStatusClass(raw)} p-2"><div class="flex items-center justify-between gap-2"><span class="font-bold text-[9px] text-slate-200 truncate">${escapeHtml(t.name||'Tank')}</span><span class="text-[9px] font-black whitespace-nowrap">${fillPercentLabel(raw)}</span></div><div class="h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden"><div class="h-full bg-current opacity-80" style="width:${Math.min(100,raw).toFixed(1)}%"></div></div><div class="text-[8px] text-slate-500 mt-1">${mass.toFixed(1)} t${Number(t.capacity)>0?` · capacity ${Number(t.capacity).toFixed(0)} t`:''}</div></div>`}).join('');
  host.innerHTML=`<div class="grid grid-cols-1 xl:grid-cols-2 gap-2"><div><div class="text-[9px] font-bold text-amber-300 mb-1.5">CARGO HOLDS / CARGO TANKS</div><div class="space-y-1.5">${cargoRows||'<div class="text-[9px] text-slate-500">No cargo spaces available.</div>'}</div></div><div><div class="text-[9px] font-bold text-blue-300 mb-1.5">BALLAST / LIQUID TANKS</div><div class="space-y-1.5">${tankRows||'<div class="text-[9px] text-slate-500">No ballast tanks available.</div>'}</div></div></div><div class="mt-2 text-[8px] text-slate-500">% FULL is input-derived. Bulk/grain/liquid/gas uses occupied volume from mass ÷ density when possible; containers, vehicles and discrete loads use the entered Fill %. Engine rooms and machinery spaces are not given a fictitious fullness percentage.</div>`;
 }
@@ -4571,8 +4649,13 @@ function makeConditionSnapshot(name='Condition'){
  return {id:`cond_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,name,created:new Date().toISOString(),state:s,cargo:deepClonePlain(cargoItems||[]),ballast:deepClonePlain(ballastTanks||[]),operationalLimits:deepClonePlain(operationalLimits),customHullForm:window.AMCOL_CUSTOM_HULL_FORM?deepClonePlain(window.AMCOL_CUSTOM_HULL_FORM):null,summary:conditionSummarySnapshot()};
 }
 function restoreConditionSnapshot(rec,{announce=true}={}){
- if(!rec?.state)return false;prepareReferenceVesselLoad();Object.assign(state,deepClonePlain(rec.state));cargoItems=deepClonePlain(rec.cargo||[]);ballastTanks=deepClonePlain(rec.ballast||[]);operationalLimits=rec.operationalLimits?deepClonePlain(rec.operationalLimits):operationalLimits;window.AMCOL_CUSTOM_HULL_FORM=rec.customHullForm?deepClonePlain(rec.customHullForm):null;
- syncFormFromState();syncEnvironmentForm();renderCargoTable();renderBallastPlan();calculateAll();findAndSetEquilibrium();calculateAll({curve:false});window.AMCOL3D?.invalidateHull?.();renderConditionLibrary();renderOperationalLimitsCard();renderDataCompleteness();renderHullEnvelopeStatus();if(announce)showCleanFeedback(`Loaded condition: ${rec.name||'Saved condition'}`);return true;
+ if(!rec?.state)return false;prepareReferenceVesselLoad();vesselVisualTransaction=true;
+ try{
+   Object.assign(state,deepClonePlain(rec.state));cargoItems=deepClonePlain(rec.cargo||[]);ballastTanks=deepClonePlain(rec.ballast||[]);operationalLimits=rec.operationalLimits?deepClonePlain(rec.operationalLimits):operationalLimits;window.AMCOL_CUSTOM_HULL_FORM=rec.customHullForm?deepClonePlain(rec.customHullForm):null;
+   bumpSpaceLayoutRevision('condition-library-load');
+   syncFormFromState();syncEnvironmentForm();renderCargoTable();renderBallastPlan();calculateAll();findAndSetEquilibrium();calculateAll({curve:false});renderConditionLibrary();renderOperationalLimitsCard();renderDataCompleteness();renderHullEnvelopeStatus();
+ }finally{vesselVisualTransaction=false;}
+ commitVesselVisualRefresh('condition-library-load');if(announce)showCleanFeedback(`Loaded condition: ${rec.name||'Saved condition'}`);return true;
 }
 function loadConditionLibrary(){try{const a=JSON.parse(localStorage.getItem(CONDITION_LIBRARY_STORAGE_KEY)||'[]');savedConditionLibrary=Array.isArray(a)?a:[];}catch(e){savedConditionLibrary=[];}renderConditionLibrary();}
 function persistConditionLibrary(){try{localStorage.setItem(CONDITION_LIBRARY_STORAGE_KEY,JSON.stringify(savedConditionLibrary.slice(0,12)));}catch(e){console.warn('Condition library save failed',e);}}
@@ -5066,6 +5149,8 @@ function testCurrentStabilityCore(showToast=true){
   updateGlobalStabilityBadge(false,true);if(showToast)showGlobalTestToast(false,'NO STABLE EQUILIBRIUM','The active stability model could not find a finite equilibrium heel angle for this condition.','Review displacement, KG/GM, loading, damage and the active hydrostatic/GZ data source.');return false;
  }
  state.equilibrium=eq;
+ // 3D is a visual client of the physics engine. A failed visual preflight cannot cancel this test.
+ if(displayMode==='3d'){const ok=safeSync3D({hard:pendingHard3DReload,reason:'stability-test-preflight'});if(ok)pendingHard3DReload=false;}
  const kick=state.gm<0?3:Math.max(5,Math.min(10,Math.abs(eq)<10?8:5));
  const direction=eq>0?-1:1;
  stabilityTestRuntime={active:true,endAt:performance.now()+6500,showToast,originalHeel:state.heel};
@@ -5120,24 +5205,20 @@ function loadScenario(key){
  if(stabilityTestRuntime.active){stabilityTestRuntime.active=false;dynamicsRunning=false;dynOmega=0;setTestingUI(false);}
  stabilityMission.active=false;closeChallengeBriefing();hideReferenceSolution();hideGlobalTestToast();
  const sc=scenarios[key]||scenarios.baseline;key=scenarios[key]?key:'baseline';
- sc.apply();syncFormFromState();renderCargoTable();calculateAll();findAndSetEquilibrium();calculateAll();
+ vesselVisualTransaction=true;
+ try{
+   sc.apply();ensureCurrentVesselSpaceLayout({force:true,render:false});syncFormFromState();renderCargoTable();renderBallastPlan();calculateAll();findAndSetEquilibrium();calculateAll();
+ }finally{vesselVisualTransaction=false;}
+ commitVesselVisualRefresh(`scenario-load:${key}`);
  challengeBaselineSnapshot=challengeMeta[key]?captureChallengeSnapshot():null;
  document.getElementById('scenarioSelect').value=key;updateMissionSelectorUI();
  unifiedMission={active:true,key,attempts:0,initial:null,initialEvaluation:null,autoTesting:true,pendingSubmit:false,lastResult:null};
  unifiedMission.initial=captureUnifiedMissionCondition();
- // Initial evaluation is captured before any student correction. For auto-graded challenges,
- // required-correction detection intentionally remains false at this baseline condition.
  unifiedMission.initialEvaluation=evaluateCurrentStability();
  renderScenario();switchTab('simulate');updateGlobalStabilityBadge(false,false);
  const briefingBtn=document.getElementById('challengeBriefingStartBtn');if(briefingBtn)briefingBtn.innerHTML='<i class="fa-solid fa-play mr-1"></i>Close Instructions';
  renderUnifiedMissionPanel();
- // Start the standard nonlinear roll/stability animation automatically so the student sees
- // the loaded vessel response before deciding what to correct.
- setTimeout(()=>{
-  if(!unifiedMission.active||unifiedMission.key!==key||stabilityTestRuntime.active)return;
-  findAndSetEquilibrium();renderUnifiedMissionPanel();const started=testCurrentStability(false);
-  if(started===false){unifiedMission.autoTesting=false;renderUnifiedMissionPanel();}
- },220);
+ setTimeout(()=>{if(!unifiedMission.active||unifiedMission.key!==key||stabilityTestRuntime.active)return;findAndSetEquilibrium();renderUnifiedMissionPanel();const started=testCurrentStability(false);if(started===false){unifiedMission.autoTesting=false;renderUnifiedMissionPanel();}},220);
 }
 function syncFormFromState(){
  if(state.waveModel==='manual')state.wavePeriod=state.waveLength/Math.max(.1,state.waveSpeed);else applyPhysicalWaveFromPeriod(false);
@@ -5637,6 +5718,8 @@ function updateUI(){
  renderUnifiedMissionPanel();
  updateCleanLivePanel();
  updateActivePoint();
+ // Visual errors must never escape into the mass/hydrostatic/roll physics path.
+ if(displayMode==='3d'&&!vesselVisualTransaction){if(dynamicsRunning||stabilityTestRuntime.active)safeSync3DPose('roll-pose-sync');else safeSync3D({hard:false,reason:'physics-ui-sync'});}
 }
 
 
@@ -5727,58 +5810,19 @@ function drawShipOutfit(phi,sink,scale,cx,waterY){
 function setDisplayMode(mode){
  displayMode=mode==='3d'?'3d':'2d';
  const is3D=displayMode==='3d';
- const shipCanvas=document.getElementById('shipCanvas');
- const three=document.getElementById('threeDContainer');
- const tools=document.getElementById('canvas2DTools');
- const overlay=document.getElementById('viewOrientationOverlay');
- const stateHud=document.getElementById('stateHud');
-
- if(stateHud){
-  stateHud.classList.toggle('left-3',!is3D);
-  stateHud.classList.toggle('right-3',is3D);
- }
- document.getElementById('display2DBtn')?.classList.toggle('active',!is3D);
- document.getElementById('display3DBtn')?.classList.toggle('active',is3D);
- document.getElementById('view3DPerspectiveBtn')?.classList.toggle('hidden',!is3D);
- document.getElementById('view3DTopBtn')?.classList.toggle('hidden',!is3D);
-
- // Use both utility classes and explicit styles. This avoids a stale WebGL layer
- // trapping the viewport if runtime Tailwind class generation or pointer capture lags.
- if(shipCanvas){
-  shipCanvas.classList.toggle('invisible',is3D);
-  shipCanvas.style.visibility=is3D?'hidden':'visible';
-  shipCanvas.style.opacity=is3D?'0':'1';
-  shipCanvas.style.pointerEvents=is3D?'none':'auto';
-  shipCanvas.style.zIndex=is3D?'0':'1';
- }
- if(three){
-  three.classList.toggle('opacity-0',!is3D);
-  three.classList.toggle('pointer-events-none',!is3D);
-  three.style.opacity=is3D?'1':'0';
-  three.style.visibility=is3D?'visible':'hidden';
-  three.style.pointerEvents=is3D?'auto':'none';
-  three.style.zIndex=is3D?'2':'0';
-  three.setAttribute('aria-hidden',String(!is3D));
- }
- if(tools)tools.classList.toggle('hidden',is3D);
- if(overlay)overlay.classList.toggle('hidden',is3D);
-
- // Explicitly activate/deactivate the Three.js input lifecycle.
- window.AMCOL3D?.setViewActive?.(is3D);
-
+ const shipCanvas=document.getElementById('shipCanvas'),three=document.getElementById('threeDContainer'),tools=document.getElementById('canvas2DTools'),overlay=document.getElementById('viewOrientationOverlay'),stateHud=document.getElementById('stateHud');
+ if(stateHud){stateHud.classList.toggle('left-3',!is3D);stateHud.classList.toggle('right-3',is3D);}
+ document.getElementById('display2DBtn')?.classList.toggle('active',!is3D);document.getElementById('display3DBtn')?.classList.toggle('active',is3D);document.getElementById('view3DPerspectiveBtn')?.classList.toggle('hidden',!is3D);document.getElementById('view3DTopBtn')?.classList.toggle('hidden',!is3D);
+ if(shipCanvas){shipCanvas.classList.toggle('invisible',is3D);shipCanvas.style.visibility=is3D?'hidden':'visible';shipCanvas.style.opacity=is3D?'0':'1';shipCanvas.style.pointerEvents=is3D?'none':'auto';shipCanvas.style.zIndex=is3D?'0':'1';}
+ if(three){three.classList.toggle('opacity-0',!is3D);three.classList.toggle('pointer-events-none',!is3D);three.style.opacity=is3D?'1':'0';three.style.visibility=is3D?'visible':'hidden';three.style.pointerEvents=is3D?'auto':'none';three.style.zIndex=is3D?'2':'0';three.setAttribute('aria-hidden',String(!is3D));}
+ if(tools)tools.classList.toggle('hidden',is3D);if(overlay)overlay.classList.toggle('hidden',is3D);
+ try{window.AMCOL3D?.setViewActive?.(is3D);}catch(err){report3DVisualError(err,'view activation');}
  if(is3D){
-  window.AMCOL3D?.syncFromSimulator?.(state,current3DRuntimePayload());
-  window.AMCOL3D?.resize?.();
-  // Internal arrangement is the default teaching view so cargo/ballast/machinery spaces are visible immediately.
-  window.AMCOL3D?.setInternalArrangementView?.(true);
+   // Entering 3D always starts from one complete vessel snapshot. No stale family spaces can survive this boundary.
+   const ok=safeSync3D({hard:true,reason:'enter-3d'});if(ok)pendingHard3DReload=false;
+   try{window.AMCOL3D?.resize?.();}catch(err){report3DVisualError(err,'enter-3d');}
  }else{
-  // Returning from WebGL may occur after the viewport has been resized while the 2D
-  // canvas was hidden. Refit and redraw on the next frame so Bow/Stern/side views work immediately.
-  requestAnimationFrame(()=>{
-   resizeCanvas();
-   setViewMode(state.viewMode||'bow');
-   render();
-  });
+   schedule2DVisualPaint('enter-2d');
  }
  render();
 }
@@ -5957,38 +6001,22 @@ function sideToScreen(x,y,scaleX,scaleY,cx,waterY,motion){
 }
 
 function setupCanvas(){
- canvas=document.getElementById('shipCanvas');ctx=canvas.getContext('2d');resizeCanvas();updateCameraZoomUI();
+ canvas=document.getElementById('shipCanvas');ctx=canvas?.getContext?.('2d');if(!canvas||!ctx)return;resizeCanvas();updateCameraZoomUI();
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('hydroTableBackdrop')?.classList.contains('hidden'))closeHydrostaticTableModal();});
-window.addEventListener('resize',()=>{resizeCanvas();render();});
- canvas.addEventListener('wheel',e=>{
-  e.preventDefault();
-  const step=e.deltaY<0?.20:-.20;
-  setCameraZoom(cameraZoom+step,e.clientX,e.clientY);
- },{passive:false});
+ window.addEventListener('resize',()=>{if(displayMode==='2d')schedule2DVisualPaint('window-resize');else try{window.AMCOL3D?.resize?.();}catch(e){}});
+ if(window.ResizeObserver){
+   simulatorResizeObserver=new ResizeObserver(()=>{if(displayMode==='2d')schedule2DVisualPaint('canvas-container-resize');else try{window.AMCOL3D?.resize?.();}catch(e){}});
+   if(canvas.parentElement)simulatorResizeObserver.observe(canvas.parentElement);
+ }
+ canvas.addEventListener('wheel',e=>{e.preventDefault();const step=e.deltaY<0?.20:-.20;setCameraZoom(cameraZoom+step,e.clientX,e.clientY);},{passive:false});
  canvas.addEventListener('dblclick',()=>fitCameraView());
- canvas.addEventListener('pointerdown',e=>{
-  lastPointerX=e.clientX;lastPointerY=e.clientY;
-  const side=state.viewMode==='starboard'||state.viewMode==='port';
-  const wantsPan=cameraPanMode||e.button===1||(side&&cameraZoom>1.001);
-  if(wantsPan){
-   cameraPanning=true;dragging=false;
-   canvas.setPointerCapture(e.pointerId);canvas.style.cursor='grabbing';return;
-  }
-  if(state.viewMode!=='bow'&&state.viewMode!=='stern')return;
-  dragging=true;cameraPanning=false;canvas.setPointerCapture(e.pointerId);
- });
- canvas.addEventListener('pointermove',e=>{
-  const dx=e.clientX-lastPointerX,dy=e.clientY-lastPointerY;lastPointerX=e.clientX;lastPointerY=e.clientY;
-  if(cameraPanning){panCamera(dx,dy);return;}
-  if(!dragging)return;
-  setHeel(state.heel+dx*.25);
- });
- const endPointer=()=>{dragging=false;cameraPanning=false;updateCameraZoomUI();};
- canvas.addEventListener('pointerup',endPointer);
- canvas.addEventListener('pointercancel',endPointer);
- canvas.addEventListener('pointerleave',()=>{if(!dragging&&!cameraPanning)updateCameraZoomUI();});
+ canvas.addEventListener('pointerdown',e=>{lastPointerX=e.clientX;lastPointerY=e.clientY;const side=state.viewMode==='starboard'||state.viewMode==='port';const wantsPan=cameraPanMode||e.button===1||(side&&cameraZoom>1.001);if(wantsPan){cameraPanning=true;dragging=false;canvas.setPointerCapture(e.pointerId);canvas.style.cursor='grabbing';return;}if(state.viewMode!=='bow'&&state.viewMode!=='stern')return;dragging=true;cameraPanning=false;canvas.setPointerCapture(e.pointerId);});
+ canvas.addEventListener('pointermove',e=>{const dx=e.clientX-lastPointerX,dy=e.clientY-lastPointerY;lastPointerX=e.clientX;lastPointerY=e.clientY;if(cameraPanning){panCamera(dx,dy);return;}if(!dragging)return;setHeel(state.heel+dx*.25);});
+ const endPointer=()=>{dragging=false;cameraPanning=false;updateCameraZoomUI();};canvas.addEventListener('pointerup',endPointer);canvas.addEventListener('pointercancel',endPointer);canvas.addEventListener('pointerleave',()=>{if(!dragging&&!cameraPanning)updateCameraZoomUI();});
 }
-function resizeCanvas(){const p=canvas.parentElement,dpr=window.devicePixelRatio||1;canvas.width=Math.max(1,p.clientWidth*dpr);canvas.height=Math.max(1,p.clientHeight*dpr);canvas.style.width=p.clientWidth+'px';canvas.style.height=p.clientHeight+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
+function resizeCanvas(){
+ if(!canvas||!ctx||!canvas.parentElement)return false;const p=canvas.parentElement,r=p.getBoundingClientRect?.(),w=Math.round(p.clientWidth||r?.width||0),h=Math.round(p.clientHeight||r?.height||0);if(w<4||h<4)return false;const dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(w*dpr));canvas.height=Math.max(1,Math.round(h*dpr));canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(dpr,0,0,dpr,0,0);return true;
+}
 function worldToScreen(x,y,scale,cx,wy){return[cx+transverseScreenSign()*x*scale,wy-y*scale]}
 function renderTransverseView(){if(!ctx||!state.hydro||state.hydro.invalid)return;const dpr=window.devicePixelRatio||1,W=canvas.width/dpr,H=canvas.height/dpr;ctx.clearRect(0,0,W,H);const h=state.hydro;const baseScale=Math.min(W/(state.beam*2.1),H/(state.depth*2.7)),scale=baseScale*cameraZoom,cx=W/2+cameraPanX,waterY=H*.58+cameraPanY;
  const waveAmp=state.waveEnabled?Math.max(4,Math.min(22,state.waveHeight*scale*.18)):2.5;const waveLenPx=state.waveEnabled?Math.max(90,state.waveLength*scale*.5):180;const waveOmega=2*Math.PI/Math.max(.1,state.wavePeriod);const waveDir=state.waveHeading==='head'?-1:1;const waveY=(x,offset=0)=>waterY + waveAmp*Math.sin((x/waveLenPx)*2*Math.PI-waveDir*waveOmega*dynTime+offset) + waveAmp*.32*Math.sin((x/(waveLenPx*.52))*2*Math.PI-waveDir*waveOmega*dynTime*1.35+offset*1.7);
@@ -6280,7 +6308,7 @@ function reportRenderError(err){
 function render(){
  try{
   if(displayMode==='3d'){
-   window.AMCOL3D?.syncFromSimulator?.(state,current3DRuntimePayload());
+   // Three.js owns its own requestAnimationFrame loop. Do not rebuild/synchronise the 3D scene here.
    return;
   }
   if(state.viewMode==='starboard'||state.viewMode==='port')renderSideView();
@@ -6309,12 +6337,20 @@ function printReport(){const cr=evaluateIMO(),h=state.hydro,u=state.upright,w=wi
 
 </body></html>`);w.document.close();w.print();}
 
-window.addEventListener('DOMContentLoaded',()=>{initCleanUI();setupCanvas();initChart();setupGZPanelDrag();bindControls();syncFormFromState();populateReferenceVesselSelect();restoreUploadedHydroBundle();updateHydroDataPackInfo();refreshSavedVesselProfiles();enterFreeCustomisation(false);if(!cargoItems.length)initialiseEmptyCargoTemplate();if(!restoreBallastPlanLocal())initialiseEmptyBallastTemplate();renderCargoTable();renderBallastPlan();calculateAll();updatePhysicsValidity();renderScenario();setViewMode('bow');window.addEventListener('keydown',e=>{
- if(e.key==='Escape'&&!document.getElementById('challengeBriefingBackdrop')?.classList.contains('hidden')){
-   closeChallengeBriefing();e.preventDefault();
- }
+window.addEventListener('DOMContentLoaded',()=>{
+ initCleanUI();setupCanvas();initChart();setupGZPanelDrag();bindControls();syncFormFromState();populateReferenceVesselSelect();restoreUploadedHydroBundle();updateHydroDataPackInfo();refreshSavedVesselProfiles();enterFreeCustomisation(false);
+ vesselVisualTransaction=true;
+ try{
+   if(!cargoItems.length)initialiseEmptyCargoTemplate();if(!restoreBallastPlanLocal())initialiseEmptyBallastTemplate();
+   if(!Number(state.spaceLayoutRevision))bumpSpaceLayoutRevision('startup');
+   renderCargoTable();renderBallastPlan();calculateAll();updatePhysicsValidity();renderScenario();setViewMode('bow');
+ }finally{vesselVisualTransaction=false;}
+ setDisplayMode('2d');schedule2DVisualPaint('startup');pendingHard3DReload=true;
+ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('challengeBriefingBackdrop')?.classList.contains('hidden')){closeChallengeBriefing();e.preventDefault();}});
+ window.addEventListener('keydown',e=>{if(e.target&&['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;if(e.key==='1')setViewMode('bow');if(e.key==='2')setViewMode('stern');if(e.key==='3')setViewMode('starboard');if(e.key==='4')setViewMode('port');if(e.key==='+'||e.key==='='){e.preventDefault();zoomCamera(.25)}if(e.key==='-'||e.key==='_'){e.preventDefault();zoomCamera(-.25)}if(e.key==='0'){e.preventDefault();fitCameraView()}if(e.key.toLowerCase()==='p'){e.preventDefault();toggleCameraPanMode()}if(e.key.toLowerCase()==='d'){e.preventDefault();setDisplayMode(displayMode==='3d'?'2d':'3d')}if(displayMode==='3d'){const k=e.key.toLowerCase();if(k==='i')window.AMCOL3D?.setInteractionMode('inspect');if(k==='c')window.AMCOL3D?.setInteractionMode('cargo');if(k==='r')window.AMCOL3D?.setInteractionMode('crane');if(k==='x')window.AMCOL3D?.setInteractionAxis('x');if(k==='y')window.AMCOL3D?.setInteractionAxis('y');if(k==='z')window.AMCOL3D?.setInteractionAxis('z')}});
+ try{window.dispatchEvent(new CustomEvent('amcol:simulator-ready',{detail:{hullType:state.hullType}}));}catch(e){}
+ requestAnimationFrame(animationLoop);
 });
-window.addEventListener('keydown',e=>{if(e.target&&['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;if(e.key==='1')setViewMode('bow');if(e.key==='2')setViewMode('stern');if(e.key==='3')setViewMode('starboard');if(e.key==='4')setViewMode('port');if(e.key==='+'||e.key==='='){e.preventDefault();zoomCamera(.25)}if(e.key==='-'||e.key==='_'){e.preventDefault();zoomCamera(-.25)}if(e.key==='0'){e.preventDefault();fitCameraView()}if(e.key.toLowerCase()==='p'){e.preventDefault();toggleCameraPanMode()}if(e.key.toLowerCase()==='d'){e.preventDefault();setDisplayMode(displayMode==='3d'?'2d':'3d')}if(displayMode==='3d'){const k=e.key.toLowerCase();if(k==='i')window.AMCOL3D?.setInteractionMode('inspect');if(k==='c')window.AMCOL3D?.setInteractionMode('cargo');if(k==='r')window.AMCOL3D?.setInteractionMode('crane');if(k==='x')window.AMCOL3D?.setInteractionAxis('x');if(k==='y')window.AMCOL3D?.setInteractionAxis('y');if(k==='z')window.AMCOL3D?.setInteractionAxis('z')}});requestAnimationFrame(animationLoop)});
 </script>
 <!-- Three.js Phase 1. CDN-connected, matching the simulator's existing CDN-based architecture. -->
 <script type="importmap">
@@ -6339,7 +6375,7 @@ let shipRoot, shipVisual, water, seabed, waterlineMarker;
 let hydroGroup, hydroPointsGroup, hydroForcesGroup, hydroGZGroup, hydroReferenceGroup, hydroLabelsGroup;
 let hydroMarkers={}, hydroLabels={}, hydroLines={}, weightArrow=null, buoyancyArrow=null, sectionPlane=null;
 let operationsGroup, cargo3DGroup, cargoSpaces3DGroup, tanks3DGroup, machinery3DGroup, crane3DGroup, damage3DGroup, operationsLabelsGroup;
-let operationPickables=[], tankLiquidPivots=[], operationSignature='';
+let operationPickables=[], tankLiquidPivots=[], operationSignature='', internalLayoutIdentity='';
 let environmentGroup, windVectorGroup, currentVectorGroup, environmentForceGroup;
 let rainPoints=null, rainPositions=null, rainSeeds=[], skyDome=null, envHeelingArrow=null;
 let envHemi=null, envSun=null, envFill=null, sunSprite=null;
@@ -6348,8 +6384,8 @@ let latestState = null, latestRuntime = null;
 let vesselSignature = '', hydroSignature='';
 let currentPreset = 'perspective';
 let sceneReady = false;
-const hydroOptions={master:true,points:true,forces:true,gz:true,references:true,labels:true,sectionPlane:false,xray:true};
-let internalArrangementView=true;
+const hydroOptions={master:true,points:true,forces:true,gz:true,references:true,labels:true,sectionPlane:false,xray:false};
+let internalArrangementView=false;
 const operationOptions={master:true,cargo:true,cargoSpaces:true,tanks:true,machinery:true,crane:true,damage:true,labels:true};
 const environmentOptions={master:true,sea:true,wind:true,current:true,atmosphere:true,lighting:true,heelingArm:true};
 let detailQuality='balanced';
@@ -7210,16 +7246,23 @@ function cylinderBetween(a,b,r,color,opacity=1){
   mesh.castShadow=true;return mesh;
 }
 function clearOperations(){
-  if(interactiveObject)deselectInteractiveObject(false);
-  if(operationsGroup){
-    shipRoot.remove(operationsGroup);
-    disposeObject(operationsGroup);
+  if(interactiveObject){try{deselectInteractiveObject(false);}catch(e){interactiveObject=null;}}
+  // Remove every previous internal-arrangement group, not only the object currently
+  // stored in operationsGroup. This prevents an orphaned General Cargo layout from
+  // surviving a later Bulk/Tanker/Ro-Ro/etc. vessel change.
+  if(shipRoot){
+    const stale=shipRoot.children.filter(ch=>ch===operationsGroup||ch?.name==='3DOperations');
+    stale.forEach(ch=>{try{shipRoot.remove(ch);disposeObject(ch);}catch(e){console.warn('AMCOL 3D stale space cleanup:',e);}});
   }
   operationsGroup=new THREE.Group();operationsGroup.name='3DOperations';
-  cargo3DGroup=new THREE.Group();cargoSpaces3DGroup=new THREE.Group();tanks3DGroup=new THREE.Group();machinery3DGroup=new THREE.Group();crane3DGroup=new THREE.Group();damage3DGroup=new THREE.Group();operationsLabelsGroup=new THREE.Group();
+  cargo3DGroup=new THREE.Group();cargo3DGroup.name='CargoLoads3D';
+  cargoSpaces3DGroup=new THREE.Group();cargoSpaces3DGroup.name='CargoSpaces3D';
+  tanks3DGroup=new THREE.Group();tanks3DGroup.name='BallastSpaces3D';
+  machinery3DGroup=new THREE.Group();machinery3DGroup.name='MachinerySpaces3D';
+  crane3DGroup=new THREE.Group();damage3DGroup=new THREE.Group();operationsLabelsGroup=new THREE.Group();
   operationsGroup.add(cargoSpaces3DGroup,cargo3DGroup,tanks3DGroup,machinery3DGroup,crane3DGroup,damage3DGroup,operationsLabelsGroup);
-  shipRoot.add(operationsGroup);
-  operationPickables=[];tankLiquidPivots=[];
+  shipRoot?.add(operationsGroup);
+  operationPickables=[];tankLiquidPivots=[];ballastTankVisuals={};
 }
 function hullVisualLimitsAt(s,z){
   const B=Math.max(4,+s.beam||16),D=Math.max(3,+s.depth||10),L=Math.max(20,+s.length||80),type=s.hullType||'general';
@@ -7457,12 +7500,18 @@ function buildCargo3D(s,cargoItems,spaces=[]){
 function buildTank3D(s,plan=[]){
   const B=Math.max(4,+s.beam||16),D=Math.max(3,+s.depth||10),tanks=Array.isArray(plan)&&plan.length?plan:[];
   tanks.forEach((t,i)=>{
-    const v=ballastTankVisualBox(s,t),sec=shellTankSection(s,t,v),fillPct=Math.max(0,Math.min(100,+t.fill||0)),fill=fillPct/100;
-    const pivot=new THREE.Group();pivot.position.set(sec.x,sec.y,sec.z);tanks3DGroup.add(pivot);
-    const shell=makeCompartmentMesh(sec.points,sec.length,0x0ea5e9,.08);shell.userData.operationType='tank';shell.userData.operationData={index:i+1,name:t.name,type:t.type,fill:fillPct,length:sec.length,breadth:v.w,height:v.h,density:+t.density||1.025,lcg:+t.lcg||0,tcg:+t.tcg||0,capacity:+t.capacity||0,visualConstrained:true,visualShape:tankVisualClass(t)};pivot.add(shell);operationPickables.push(shell);
-    const outline=makeCompartmentEdges(sec.points,sec.length,0x38bdf8,.90);outline.userData.operationType='tank';outline.userData.operationData=shell.userData.operationData;pivot.add(outline);operationPickables.push(outline);
-    if(fill>0){const liquidPivot=new THREE.Group();pivot.add(liquidPivot);const liquid=makeFillMesh(sec.points,sec.length,fill,0x0284c7,.48);if(liquid){liquid.userData.operationType='tank';liquid.userData.operationData=shell.userData.operationData;liquidPivot.add(liquid);operationPickables.push(liquid);}tankLiquidPivots.push({pivot:liquidPivot,slack:fill>0&&fill<1,index:i,breadth:v.w});}
-    if(i<22){const sp=operationSprite(`${t.name||'Ballast tank'} · ${fillPercentLabel(fillPct)}`,'#7dd3fc',Math.max(.42,Math.min(.68,B/31)));const b=sectionBounds(sec.points);sp.position.set(sec.x,sec.y+b.maxY+D*.07,sec.z);operationsLabelsGroup.add(sp);}
+    const key=String(t.id||t.key||`tank_${i}`),v=ballastTankVisualBox(s,t),sec=shellTankSection(s,t,v),fillPct=Math.max(0,Math.min(100,+t.fill||0)),fill=fillPct/100;
+    const pivot=new THREE.Group();pivot.position.set(sec.x,sec.y,sec.z);pivot.name=`VesselBallastTank:${key}`;tanks3DGroup.add(pivot);
+    const operationData={id:key,index:i+1,name:t.name,type:t.type,fill:fillPct,length:sec.length,breadth:v.w,height:v.h,density:+t.density||1.025,lcg:+t.lcg||0,tcg:+t.tcg||0,capacity:+t.capacity||0,visualConstrained:true,visualShape:tankVisualClass(t)};
+    const shell=makeCompartmentMesh(sec.points,sec.length,0x0ea5e9,.08);shell.userData.operationType='tank';shell.userData.operationData=operationData;pivot.add(shell);operationPickables.push(shell);
+    const outline=makeCompartmentEdges(sec.points,sec.length,0x38bdf8,.90);outline.userData.operationType='tank';outline.userData.operationData=operationData;pivot.add(outline);operationPickables.push(outline);
+    const liquidPivot=new THREE.Group();liquidPivot.name=`VesselBallastLiquid:${key}`;pivot.add(liquidPivot);
+    let liquid=null;
+    if(fill>0){liquid=makeFillMesh(sec.points,sec.length,fill,0x0284c7,.48);if(liquid){liquid.userData.operationType='tank';liquid.userData.operationData=operationData;liquidPivot.add(liquid);operationPickables.push(liquid);}}
+    const fsEntry={pivot:liquidPivot,slack:fill>0&&fill<1,index:i,breadth:v.w};tankLiquidPivots.push(fsEntry);
+    let label=null;
+    if(i<22){label=operationSprite(`${t.name||'Ballast tank'} · ${fillPercentLabel(fillPct)}`,'#7dd3fc',Math.max(.42,Math.min(.68,B/31)));const b=sectionBounds(sec.points);label.position.set(sec.x,sec.y+b.maxY+D*.07,sec.z);operationsLabelsGroup.add(label);}
+    ballastTankVisuals[key]={key,pivot,shell,outline,liquidPivot,liquid,label,sectionPoints:sec.points.map(p=>[p[0],p[1]]),length:sec.length,breadth:v.w,freeSurfaceEntry:fsEntry,operationData,lastFill:fill};
   });
 }
 function buildMachinery3D(s,er=null){
@@ -7545,14 +7594,14 @@ function operationStateSignature(s,cargoItems,ballastPlan=[],engineRoom=null,car
   return [s.hullType,s.spaceLayoutRevision||0,s.spaceLayoutFamily||s.hullType,s.length,s.beam,s.depth,s.ballastPlanSource||'',cargo,tanks,spaces,er,s.crane,s.craneMass,s.craneHeight,s.craneOutreach,s.craneSide,s.craneLCG,s.damage,s.damageMode,s.dmgMass,s.dmgVCG,s.dmgTCG,s.damageSide,s.damageWidth,s.damageHeight,s.damagePerm].join('~');
 }
 function buildOperations(s,cargoItems=[],ballastPlan=[],engineRoom=null,cargoSpaces=[]){
-  clearOperations();buildCargoSpaces3D(s,cargoSpaces);buildCargo3D(s,cargoItems,cargoSpaces);buildTank3D(s,ballastPlan);buildMachinery3D(s,engineRoom);buildCrane3D(s);buildDamage3D(s);operationSignature=operationStateSignature(s,cargoItems,ballastPlan,engineRoom,cargoSpaces);updateOperationVisibility();updateOperationsReadout(s,cargoItems,ballastPlan,engineRoom,cargoSpaces);
+  clearOperations();buildCargoSpaces3D(s,cargoSpaces);buildCargo3D(s,cargoItems,cargoSpaces);buildTank3D(s,ballastPlan);buildMachinery3D(s,engineRoom);buildCrane3D(s);buildDamage3D(s);operationSignature=operationStateSignature(s,cargoItems,ballastPlan,engineRoom,cargoSpaces);updateOperationVisibility();updateOperationsReadout(s,cargoItems,ballastPlan,engineRoom,cargoSpaces);if(ballastLab.active)buildBallastLabVisuals();
 }
 function updateOperationVisibility(){
   if(!operationsGroup)return;
   operationsGroup.visible=!!operationOptions.master;
   cargo3DGroup.visible=!!operationOptions.cargo;
   if(cargoSpaces3DGroup)cargoSpaces3DGroup.visible=!!operationOptions.cargoSpaces;
-  tanks3DGroup.visible=!!operationOptions.tanks&&!ballastLab.active;
+  tanks3DGroup.visible=!!operationOptions.tanks;
   if(ballastLabGroup)ballastLabGroup.visible=!!operationOptions.tanks;
   if(machinery3DGroup)machinery3DGroup.visible=!!operationOptions.machinery;
   crane3DGroup.visible=!!operationOptions.crane;
@@ -7571,8 +7620,8 @@ function setInternalArrangementView(enabled=true){
   const ib=document.getElementById('internal3DViewBtn'),eb=document.getElementById('exterior3DViewBtn');
   if(ib){ib.classList.toggle('bg-violet-500/15',internalArrangementView);ib.classList.toggle('border-violet-400/40',internalArrangementView);ib.classList.toggle('bg-slate-900',!internalArrangementView);ib.classList.toggle('border-slate-700',!internalArrangementView);}
   if(eb){eb.classList.toggle('bg-cyan-500/15',!internalArrangementView);eb.classList.toggle('border-cyan-400/40',!internalArrangementView);eb.classList.toggle('bg-slate-900',internalArrangementView);eb.classList.toggle('border-slate-700',internalArrangementView);}
-  updateOperationVisibility();updateHydroVisibility();
-  if(latestState)setCameraPreset('starboard');
+  updateOperationVisibility();updateHydroVisibility();updateOperations._readoutSig='';
+  if(latestState){updateOperations(latestState,latestRuntime);setCameraPreset('starboard');}
 }
 function updateTankFreeSurface(s){
   if(!tankLiquidPivots.length)return;
@@ -7631,11 +7680,60 @@ function showOperationInspector(obj){
   selectedInspectionObject=obj;
   if(inspectionOptions.autoFocus)focusObject3D(obj,650);
 }
+function cloneRuntimeFor3D(runtime={}){
+  return {
+    ...runtime,
+    cargoItems:Array.isArray(runtime.cargoItems)?runtime.cargoItems.map(x=>({...x})):[],
+    ballastTanks:Array.isArray(runtime.ballastTanks)?runtime.ballastTanks.map(x=>({...x})):[],
+    cargoSpaces:Array.isArray(runtime.cargoSpaces)?runtime.cargoSpaces.map(x=>({...x})):[],
+    engineRoom:runtime.engineRoom?{...runtime.engineRoom}:null
+  };
+}
+function internalLayoutIdentityFor(s,runtime={}){
+  const family=String(runtime.spaceLayoutFamily||expectedInternalFamily(s?.hullType||'general'));
+  const rev=Number(runtime.spaceLayoutRevision||s?.spaceLayoutRevision||0);
+  const cargo=(Array.isArray(runtime.cargoSpaces)?runtime.cargoSpaces:[]).map(x=>String(x.id||x.name||'')).join(',');
+  const tanks=(Array.isArray(runtime.ballastTanks)?runtime.ballastTanks:[]).map(x=>String(x.id||x.name||'')).join(',');
+  const er=runtime.engineRoom||{};
+  return String(runtime.spaceLayoutKey||`${family}|${s?.vesselName||''}|${(+s?.length||0).toFixed(2)}|${(+s?.beam||0).toFixed(2)}|${(+s?.depth||0).toFixed(2)}|R${rev}|C:${cargo}|B:${tanks}|ER:${er.label||''}:${(+er.lcg||0).toFixed(2)}`);
+}
+function replaceInternalArrangement(s,runtime={}){
+  const snap=cloneRuntimeFor3D(runtime);
+  latestState=s;latestRuntime=snap;
+  if(!sceneReady||!s)return;
+  if(!runtimeInternalFamilyOK(s,snap)){
+    const expected=expectedInternalFamily(s?.hullType||'general'),actual=String(snap?.spaceLayoutFamily||'unknown');
+    console.warn(`AMCOL 3D refused internal-layout replacement: expected ${expected}, received ${actual}.`);
+    clearOperations();operationSignature='';internalLayoutIdentity='';return;
+  }
+  const cargoItems=snap.cargoItems,ballastPlan=snap.ballastTanks,engineRoom=snap.engineRoom,cargoSpaces=snap.cargoSpaces;
+  // One atomic replacement: old vessel spaces are disposed before the new family is built.
+  clearOperations();
+  buildCargoSpaces3D(s,cargoSpaces);buildCargo3D(s,cargoItems,cargoSpaces);buildTank3D(s,ballastPlan);buildMachinery3D(s,engineRoom);buildCrane3D(s);buildDamage3D(s);
+  operationSignature=operationStateSignature(s,cargoItems,ballastPlan,engineRoom,cargoSpaces);
+  internalLayoutIdentity=internalLayoutIdentityFor(s,snap);
+  if(operationsGroup){operationsGroup.userData.layoutIdentity=internalLayoutIdentity;operationsGroup.userData.family=snap.spaceLayoutFamily||expectedInternalFamily(s.hullType);operationsGroup.userData.revision=snap.spaceLayoutRevision||0;operationsGroup.userData.vesselName=s.vesselName||'';}
+  updateOperationVisibility();updateOperationsReadout(s,cargoItems,ballastPlan,engineRoom,cargoSpaces);
+  updateOperations._readoutSig='';
+}
 function updateOperations(s,runtime={}){
   const cargoItems=Array.isArray(runtime?.cargoItems)?runtime.cargoItems:[],ballastPlan=Array.isArray(runtime?.ballastTanks)?runtime.ballastTanks:[],engineRoom=runtime?.engineRoom||null,cargoSpaces=Array.isArray(runtime?.cargoSpaces)?runtime.cargoSpaces:[];
+  if(!runtimeInternalFamilyOK(s,runtime)){
+    const expected=expectedInternalFamily(s?.hullType||'general'),actual=String(runtime?.spaceLayoutFamily||'unknown');
+    if(updateOperations._familyWarn!==`${expected}|${actual}`){updateOperations._familyWarn=`${expected}|${actual}`;console.warn(`AMCOL 3D rejected stale internal layout: expected ${expected}, received ${actual}.`);}
+    operationSignature='';internalLayoutIdentity='';clearOperations();return;
+  }
+  updateOperations._familyWarn='';
+  const layoutId=internalLayoutIdentityFor(s,runtime);
+  // Structural vessel-space changes are handled separately from fill/mass changes.
+  // This guarantees that General Cargo spaces cannot survive a Bulk/Tanker/Ro-Ro/etc. switch.
+  if(layoutId!==internalLayoutIdentity){replaceInternalArrangement(s,runtime);return;}
   const sig=operationStateSignature(s,cargoItems,ballastPlan,engineRoom,cargoSpaces);
   if(sig!==operationSignature)buildOperations(s,cargoItems,ballastPlan,engineRoom,cargoSpaces);
-  updateTankFreeSurface(s);updateOperationsReadout(s,cargoItems,ballastPlan,engineRoom,cargoSpaces);
+  internalLayoutIdentity=layoutId;
+  updateTankFreeSurface(s);
+  const readoutSig=[layoutId,cargoSpaces.length,ballastPlan.length,+s.tcg||0,+s.lcg||0,s.crane,s.damage,internalArrangementView].join('|');
+  if(updateOperations._readoutSig!==readoutSig){updateOperations._readoutSig=readoutSig;updateOperationsReadout(s,cargoItems,ballastPlan,engineRoom,cargoSpaces);}
 }
 
 function buildVessel(s){
@@ -7899,19 +7997,20 @@ function buildVessel(s){
   waterlineMarker=null;
 
   shipRoot.add(shipVisual);
-  const customHullData=window.AMCOL_CUSTOM_HULL_FORM,customHullApplies=!!(customHullData?.enabled&&(!customHullData.vesselName||customHullData.vesselName===(latestState?.vesselName||s?.vesselName||''))),customHullSig=customHullApplies?`${customHullData.label||'custom'}|${customHullData.stations?.length||0}`:'family';
-  vesselSignature=`${type}|${L.toFixed(2)}|${B.toFixed(2)}|${D.toFixed(2)}|${detailQuality}|${customHullSig}`;
+  vesselSignature=vesselGeometrySignatureFor(s);
   updateCameraLimits(s);
   buildHydroOverlay(s);
-  operationSignature='';
-  if(latestRuntime)buildOperations(s,Array.isArray(latestRuntime.cargoItems)?latestRuntime.cargoItems:[],Array.isArray(latestRuntime.ballastTanks)?latestRuntime.ballastTanks:[],latestRuntime.engineRoom||null,Array.isArray(latestRuntime.cargoSpaces)?latestRuntime.cargoSpaces:[]);
+  // Internal spaces have their own lifecycle and are rebuilt by updateOperations()
+  // from the current runtime snapshot after the hull rebuild completes.
+  operationSignature='';internalLayoutIdentity='';
   setVesselXRay(!!hydroOptions.xray);
   updateCutawayWorldPlane();applyCutawayMaterials();
-  if(ballastLab.active)buildBallastLabVisuals();
+  // Ballast transfer binds to the actual vessel tank meshes after buildOperations().
 }
 
 function createWater(){
-  const geo=new THREE.PlaneGeometry(1100,1100,128,128);
+  const waterSegments=detailQuality==='high'?112:(detailQuality==='performance'?48:72);
+  const geo=new THREE.PlaneGeometry(1100,1100,waterSegments,waterSegments);
   const mat=new THREE.ShaderMaterial({
     transparent:true,side:THREE.DoubleSide,
     uniforms:{
@@ -8179,7 +8278,7 @@ function init3D(){
     camera.position.set(40,28,70);
 
     renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
     renderer.shadowMap.enabled=true;
     renderer.shadowMap.type=THREE.PCFSoftShadowMap;
     renderer.outputColorSpace=THREE.SRGBColorSpace;
@@ -8218,8 +8317,10 @@ function init3D(){
     setCutawayMode(cutawayMode);
     updateCameraStatus();
     loading?.classList.add('hidden');
-    if(statusEl)statusEl.textContent='Three.js WebGL scene ready · procedural vessel linked to simulator physics';
-    if(latestState)syncFromSimulator(latestState,latestRuntime);
+    if(statusEl)statusEl.textContent='Three.js WebGL scene ready · waiting for vessel snapshot';
+    const boot=window.AMCOL_GET_RENDER_SNAPSHOT?.();
+    if(boot?.state)hardLoadVesselSnapshot(boot.state,boot.runtime||{});
+    else if(latestState)hardLoadVesselSnapshot(latestState,latestRuntime);
     animate3D();
   }catch(err){
     console.error('3D initialisation failed:',err);
@@ -8646,30 +8747,63 @@ function stepBallastTransfer(dt){
   src.mass-=amount;dst.mass+=amount;src.modified=dst.modified=true;ballastLab.transferred+=amount;refreshBallastTankPhysics();updateBallastTankVisuals();commitBallastLab(false);updateBallastUI();
   if(ballastLab.transferred>=ballastLab.targetMass-.001){ballastLab.running=false;ballastLab.status='Transfer complete';commitBallastLab(true);recordMissionAction(`Ballast transfer complete: ${ballastLab.transferred.toFixed(1)} t moved ${src.name} → ${dst.name}.`,'ballast');populateBallastRouteSelects(true);updateBallastUI();}
 }
+function resetBallastTankSelectionStyles(){
+  Object.values(ballastTankVisuals||{}).forEach(v=>{
+    if(v?.outline?.material?.color)v.outline.material.color.setHex(0x38bdf8);
+    if(v?.outline?.material)v.outline.material.opacity=.90;
+    if(v?.shell?.material)v.shell.material.opacity=.08;
+  });
+}
 function clearBallastLabVisuals(){
-  operationPickables=operationPickables.filter(o=>o?.userData?.operationType!=='ballastLab');
-  if(ballastLabGroup){shipRoot?.remove(ballastLabGroup);disposeObject(ballastLabGroup);}ballastLabGroup=null;ballastTankGroup=null;ballastPipeGroup=null;ballastLabelGroup=null;ballastTankVisuals={};ballastFlowParticles=[];ballastFlowCurve=null;
+  resetBallastTankSelectionStyles();
+  operationPickables=operationPickables.filter(o=>o?.userData?.operationType!=='ballastTransferRoute');
+  if(shipRoot){const stale=shipRoot.children.filter(ch=>ch===ballastLabGroup||ch?.name==='VesselBallastTransferRoute');stale.forEach(ch=>{try{shipRoot.remove(ch);disposeObject(ch);}catch(e){console.warn('AMCOL ballast route cleanup:',e);}});}
+  ballastLabGroup=null;ballastTankGroup=null;ballastPipeGroup=null;ballastLabelGroup=null;ballastFlowParticles=[];ballastFlowCurve=null;
+}
+function actualTankVisualPosition(t){
+  const v=ballastTankVisuals?.[t.key];
+  if(v?.pivot)return {x:v.pivot.position.x,y:v.pivot.position.y,z:v.pivot.position.z};
+  if(!latestState)return {x:+t.tcg||0,y:+t.bottom||0,z:-(+t.lcg||0)};
+  const raw={...t,name:t.name,type:t.type,side:t.side,tcg:t.tcg,lcg:t.lcg,bottom:t.bottom,length:t.length,breadth:t.breadth,height:t.height,source:t.source};
+  const box=ballastTankVisualBox(latestState,raw),sec=shellTankSection(latestState,raw,box);return {x:sec.x,y:sec.y,z:sec.z};
 }
 function buildBallastLabVisuals(){
   clearBallastLabVisuals();if(!ballastLab.active||!shipRoot||!latestState)return;
-  const B=Math.max(4,+latestState.beam||16);ballastLabGroup=new THREE.Group();ballastLabGroup.name='VesselBallastTransfer';shipRoot.add(ballastLabGroup);
-  ballastTankGroup=new THREE.Group();ballastPipeGroup=new THREE.Group();ballastLabelGroup=new THREE.Group();ballastLabGroup.add(ballastTankGroup,ballastPipeGroup,ballastLabelGroup);refreshBallastTankPhysics();
-  ballastLabTankArray().forEach(t=>{
-    const raw={...t,name:t.name,type:t.type,side:t.side,tcg:t.tcg,lcg:t.lcg,bottom:t.bottom,length:t.length,breadth:t.breadth,height:t.height,source:t.source};
-    const v=ballastTankVisualBox(latestState,raw),sx=Math.max(.5,v.w),sy=Math.max(.35,v.h),sz=Math.max(.8,v.l);t.x=v.x;t.y=v.y;t.z=v.z;
-    const g=new THREE.Group();g.position.set(v.x,v.y,v.z);ballastTankGroup.add(g);const outline=makeWireBox(new THREE.Vector3(sx,sy,sz),0x60a5fa,.72);g.add(outline);
-    const liquidPivot=new THREE.Group();g.add(liquidPivot);const liquid=new THREE.Mesh(new THREE.BoxGeometry(sx*.92,1,sz*.92),makeMaterial(0x0284c7,{transparent:true,opacity:.48,roughness:.20}));liquidPivot.add(liquid);
-    const surface=new THREE.Mesh(new THREE.PlaneGeometry(sx*.90,sz*.90),new THREE.MeshBasicMaterial({color:0x93c5fd,transparent:true,opacity:.72,side:THREE.DoubleSide,depthWrite:false}));surface.rotation.x=-Math.PI/2;liquidPivot.add(surface);
-    const label=operationSprite(compactTankName(t),'#bfdbfe',Math.max(.42,Math.min(.64,B/34)));label.position.set(v.x,v.y+sy*.72,v.z);ballastLabelGroup.add(label);
-    outline.userData.operationType='ballastLab';outline.userData.operationData=t;operationPickables.push(outline);ballastTankVisuals[t.key]={group:g,outline,liquidPivot,liquid,surface,label,size:{x:sx,y:sy,z:sz}};
-  });
+  // Transfer mode never creates another set of tank meshes. It only overlays the route
+  // and highlights the already-rendered vessel ballast tanks by their persistent IDs.
+  ballastLabGroup=new THREE.Group();ballastLabGroup.name='VesselBallastTransferRoute';shipRoot.add(ballastLabGroup);
+  ballastPipeGroup=new THREE.Group();ballastPipeGroup.name='BallastTransferPipe';ballastLabGroup.add(ballastPipeGroup);
+  refreshBallastTankPhysics();
+  ballastLabTankArray().forEach(t=>{const p=actualTankVisualPosition(t);t.x=p.x;t.y=p.y;t.z=p.z;});
   updateBallastTankVisuals();rebuildBallastPipe();updateOperationVisibility();
 }
+function replaceActualTankLiquid(v,t){
+  if(!v?.liquidPivot)return;
+  const fill=Math.max(0,Math.min(1,t.fill||0));
+  if(v.liquid){operationPickables=operationPickables.filter(o=>o!==v.liquid);v.liquidPivot.remove(v.liquid);disposeObject(v.liquid);v.liquid=null;}
+  const liquid=makeFillMesh(v.sectionPoints,v.length,fill,0x0284c7,.48);
+  if(liquid){liquid.userData.operationType='tank';liquid.userData.operationData=v.operationData;v.liquidPivot.add(liquid);operationPickables.push(liquid);v.liquid=liquid;}
+  if(v.operationData)v.operationData.fill=fill*100;
+  if(v.freeSurfaceEntry)v.freeSurfaceEntry.slack=fill>.001&&fill<.999;
+  v.lastFill=fill;
+}
 function updateBallastTankVisuals(){
-  if(!ballastLab.active)return;refreshBallastTankPhysics();ballastLabTankArray().forEach(t=>{const v=ballastTankVisuals[t.key];if(!v)return;const f=t.fill,h=Math.max(.012,v.size.y*f);v.liquid.scale.y=h;v.liquid.position.y=-v.size.y*.5+h*.5;v.surface.position.y=-v.size.y*.5+h+.012;v.liquid.visible=f>.001;v.surface.visible=f>.001&&f<.98;const selected=t.key===ballastLab.source?0xf59e0b:(t.key===ballastLab.destination?0x22d3ee:0x60a5fa);v.outline.material.color.setHex(selected);v.label.material.opacity=(t.key===ballastLab.source||t.key===ballastLab.destination)?1:.68;});
+  if(!ballastLab.active)return;refreshBallastTankPhysics();
+  ballastLabTankArray().forEach(t=>{
+    const v=ballastTankVisuals?.[t.key];if(!v)return;
+    const p=actualTankVisualPosition(t);t.x=p.x;t.y=p.y;t.z=p.z;
+    // Rebuild only the water body, never the tank itself. 1% threshold keeps transfer smooth.
+    if(!Number.isFinite(v.lastFill)||Math.abs(v.lastFill-t.fill)>=.01||t.fill<=.001||t.fill>=.999)replaceActualTankLiquid(v,t);
+    const isSrc=t.key===ballastLab.source,isDst=t.key===ballastLab.destination;
+    if(v.outline?.material?.color)v.outline.material.color.setHex(isSrc?0xf59e0b:(isDst?0x22d3ee:0x38bdf8));
+    if(v.outline?.material)v.outline.material.opacity=(isSrc||isDst)?1:.90;
+    if(v.shell?.material)v.shell.material.opacity=(isSrc||isDst)?.15:.08;
+  });
 }
 function updateBallastFreeSurfaces(){
-  if(!ballastLab.active||!latestState)return;const heel=THREE.MathUtils.degToRad(+latestState.heel||0),trim=THREE.MathUtils.degToRad(+latestState.trimAngle||0);ballastLabTankArray().forEach(t=>{const v=ballastTankVisuals[t.key];if(!v)return;if(t.fill>.001&&t.fill<.98){v.liquidPivot.rotation.z=heel;v.liquidPivot.rotation.x=trim;}else v.liquidPivot.rotation.set(0,0,0);});
+  // The same actual vessel tank liquid pivots are already maintained by updateTankFreeSurface().
+  // No separate transfer-tank free-surface objects exist anymore.
+  if(ballastLab.active&&latestState)updateTankFreeSurface(latestState);
 }
 function rebuildBallastPipe(){
   if(!ballastPipeGroup||!ballastLab.active)return;clearVectorGroup(ballastPipeGroup);ballastFlowParticles=[];ballastFlowCurve=null;const a=ballastLab.tanks[ballastLab.source],b=ballastLab.tanks[ballastLab.destination];if(!a||!b||a.key===b.key)return;
@@ -8690,8 +8824,8 @@ function updateBallastUI(){
   refreshBallastTankPhysics();const src=ballastLab.tanks[ballastLab.source],dst=ballastLab.tanks[ballastLab.destination],available=Math.max(0,src?.mass||0),space=Math.max(0,(dst?.capacity||0)-(dst?.mass||0)),maxTransfer=Math.min(available,space);
   if(route)route.innerHTML=src&&dst?`<b class="text-amber-300">${escBallastText(src.name)}</b> → <b class="text-cyan-300">${escBallastText(dst.name)}</b> · source available <b>${available.toFixed(1)} t</b> · destination space <b>${space.toFixed(1)} t</b> · maximum transfer <b>${maxTransfer.toFixed(1)} t</b>`:'Select a valid source and destination tank.';
   const massInput=document.getElementById('ballastTransferMass');if(massInput){massInput.max=Math.max(0,maxTransfer).toFixed(1);if(+massInput.value>maxTransfer&&maxTransfer>0)massInput.value=Math.floor(maxTransfer*10)/10;}
-  if(!el)return;const fs=ballastSlackStats(),totalFSM=arr.reduce((a,t)=>a+(t.fsm||0),0),fseOn=!!window.AMCOL_DIRECT3D_BRIDGE?.getState?.()?.fse;
-  el.innerHTML=`Tank plan <b>${arr.length}</b> spaces · partially filled tanks <b>${fs.slackCount}</b> · current tank FSM <b>${totalFSM.toFixed(0)} t·m</b> · Free Surface <b class="${fseOn?'text-cyan-300':'text-slate-500'}">${fseOn?'ON':'OFF'}</b><br>Ship TCG <b>${(+latestState?.tcg||0)>=0?'+':''}${(+latestState?.tcg||0).toFixed(3)}m</b> · trim <b>${(+latestState?.trimMeters||0)>=0?'+':''}${(+latestState?.trimMeters||0).toFixed(3)}m</b> · GM <b>${(+latestState?.gm||0).toFixed(3)}m</b> · list <b>${(+latestState?.equilibrium||0).toFixed(2)}°</b><br><span class="text-slate-500">Transfers preserve total ballast mass and update the vessel's actual preloaded tank plan directly. For source-locked workbook tanks, the first transfer converts only the modified tanks to user-modified teaching values.</span>`;
+  if(!el)return;const fs=ballastSlackStats(),totalFSM=arr.reduce((a,t)=>a+(t.fsm||0),0),fseOn=!!window.AMCOL_DIRECT3D_BRIDGE?.getState?.()?.fse,bound3D=arr.filter(t=>!!ballastTankVisuals?.[t.key]).length;
+  el.innerHTML=`Tank plan <b>${arr.length}</b> spaces · <span class="${bound3D===arr.length?'text-emerald-300':'text-amber-300'}">3D bound <b>${bound3D}/${arr.length}</b></span> · partially filled tanks <b>${fs.slackCount}</b> · current tank FSM <b>${totalFSM.toFixed(0)} t·m</b> · Free Surface <b class="${fseOn?'text-cyan-300':'text-slate-500'}">${fseOn?'ON':'OFF'}</b><br>Ship TCG <b>${(+latestState?.tcg||0)>=0?'+':''}${(+latestState?.tcg||0).toFixed(3)}m</b> · trim <b>${(+latestState?.trimMeters||0)>=0?'+':''}${(+latestState?.trimMeters||0).toFixed(3)}m</b> · GM <b>${(+latestState?.gm||0).toFixed(3)}m</b> · list <b>${(+latestState?.equilibrium||0).toFixed(2)}°</b><br><span class="text-slate-500">Transfers animate and update the same preloaded vessel tank objects shown in the 3D internal arrangement; no transfer-only tank set is generated. Total ballast mass is preserved. For source-locked workbook tanks, the first transfer converts only the modified tanks to user-modified teaching values.</span>`;
 }
 
 function toggleCleanTool(name){
@@ -9300,47 +9434,71 @@ function headingVector(name){
   return new THREE.Vector2(1,0); // beam
 }
 
-function syncFromSimulator(s,runtime={}){
-  latestState=s;latestRuntime=runtime||{};
-  if(!sceneReady||!s)return;
+function vesselGeometrySignatureFor(s){
+  if(!s)return '';
   const customHullData=window.AMCOL_CUSTOM_HULL_FORM,customHullApplies=!!(customHullData?.enabled&&(!customHullData.vesselName||customHullData.vesselName===(latestState?.vesselName||s?.vesselName||''))),customHullSig=customHullApplies?`${customHullData.label||'custom'}|${customHullData.stations?.length||0}`:'family';
-  const sig=`${s.hullType||'general'}|layout:${s.spaceLayoutRevision||0}|${(+s.length||80).toFixed(2)}|${(+s.beam||16).toFixed(2)}|${(+s.depth||10).toFixed(2)}|${detailQuality}|${customHullSig}`;
+  return `${s.hullType||'general'}|${(+s.length||80).toFixed(2)}|${(+s.beam||16).toFixed(2)}|${(+s.depth||10).toFixed(2)}|${detailQuality}|${customHullSig}`;
+}
+function expectedInternalFamily(type){return type==='ferry'?'roro':type==='barge'?'box':(type||'general');}
+function runtimeInternalFamilyOK(s,runtime){
+  const expected=expectedInternalFamily(s?.hullType||'general'),actual=String(runtime?.spaceLayoutFamily||expected);
+  return actual===expected;
+}
+function updateDynamicPose(s){
+  if(!sceneReady||!s||!shipRoot)return;
+  const heel=THREE.MathUtils.degToRad(+s.heel||0),trim=THREE.MathUtils.degToRad(+s.trimAngle||0),t=clock.elapsedTime,H=s.waveEnabled?Math.max(0,+s.waveHeight||0):0,T=Math.max(.25,+s.wavePeriod||5),heading=s.waveHeading||'beam',longitudinalFactor=(heading==='head'||heading==='following')?1:(heading==='quartering'?.62:.08),heave=H*.18*longitudinalFactor*Math.sin(2*Math.PI*t/T),wavePitch=THREE.MathUtils.degToRad(H*.22*longitudinalFactor*Math.sin(2*Math.PI*t/T+Math.PI*.5));
+  shipRoot.position.set(0,-Math.max(0,+s.eqDraft||0)+heave,0);shipRoot.rotation.z=-heel;shipRoot.rotation.x=-trim+wavePitch;
+  if(waterlineMarker)waterlineMarker.position.y=Math.max(.05,+s.eqDraft||0);
+  if(water?.material?.uniforms){water.material.uniforms.uHeight.value=H;water.material.uniforms.uWavelength.value=Math.max(5,+s.waveLength||60);water.material.uniforms.uPeriod.value=T;water.material.uniforms.uHeading.value.copy(headingVector(heading));}
+  if(seabed)seabed.position.y=-Math.max(2,+s.waterDepth||15);
+  updateTankFreeSurface(s);
+}
+
+function hardLoadVesselSnapshot(s,runtime={}){
+ if(!s)return false;
+ const snap=cloneRuntimeFor3D(runtime||{}),stateSnap={...s,upright:s.upright?{...s.upright}:s.upright,hydro:s.hydro?{...s.hydro}:s.hydro};
+ latestState=stateSnap;latestRuntime=snap;
+ if(!sceneReady)return false;
+ try{
+   // Hard boundary used only for first 3D entry or a complete vessel/reference change.
+   vesselSignature='';hydroSignature='';operationSignature='';internalLayoutIdentity='';updateOperations._readoutSig='';
+   buildVessel(stateSnap);
+   replaceInternalArrangement(stateSnap,snap);
+   const envSig=[stateSnap.length,stateSnap.beam,stateSnap.depth,stateSnap.windEnabled,stateSnap.windSpeedKts,stateSnap.gustFactor,stateSnap.windDirection,stateSnap.currentEnabled,stateSnap.currentSpeedKts,stateSnap.currentDirection].join('|');
+   syncFromSimulator._envSig=envSig;rebuildEnvironmentVectors(stateSnap);
+   updateDynamicPose(stateSnap);updateHydroOverlay(stateSnap);updateEnvironment3D(stateSnap,0);updateOperationVisibility();updateHydroVisibility();setVesselXRay(internalArrangementView||hydroOptions.xray);resize();
+   if(loading)loading.classList.add('hidden');
+   if(statusEl)statusEl.textContent=`${String(stateSnap.hullType||'general').replaceAll('_',' ').toUpperCase()} · vessel + internal spaces loaded`;
+   return true;
+ }catch(err){
+   console.error('AMCOL 3D hard vessel load error:',err);
+   if(statusEl)statusEl.textContent='3D vessel load error · 2D/physics remain available';
+   return false;
+ }
+}
+
+function syncPoseFromSimulator(s){
+ if(!s)return false;
+ latestState={...(latestState||{}),...s,upright:s.upright?{...s.upright}:s.upright,hydro:s.hydro?{...s.hydro}:s.hydro};
+ if(!sceneReady)return false;
+ try{updateDynamicPose(latestState);return true;}catch(err){console.error('AMCOL 3D pose sync error:',err);return false;}
+}
+
+function syncFromSimulator(s,runtime={}){
+  if(!s)return false;
+  latestState={...s,upright:s.upright?{...s.upright}:s.upright,hydro:s.hydro?{...s.hydro}:s.hydro};latestRuntime=cloneRuntimeFor3D(runtime||{});
+  if(!sceneReady)return false;
+  s=latestState;
+  const sig=vesselGeometrySignatureFor(s);
   if(sig!==vesselSignature)buildVessel(s);
   const envSig=[s.length,s.beam,s.depth,s.windEnabled,s.windSpeedKts,s.gustFactor,s.windDirection,s.currentEnabled,s.currentSpeedKts,s.currentDirection].join('|');
   if(syncFromSimulator._envSig!==envSig){syncFromSimulator._envSig=envSig;rebuildEnvironmentVectors(s);}
 
-  const heel=THREE.MathUtils.degToRad(+s.heel||0);
-  const trim=THREE.MathUtils.degToRad(+s.trimAngle||0);
-
-  // Lightweight wave-following visual cue. Transverse stability remains the existing GZ solver.
-  const t=clock.elapsedTime;
-  const H=s.waveEnabled?Math.max(0,+s.waveHeight||0):0;
-  const T=Math.max(.25,+s.wavePeriod||5);
-  const heading=s.waveHeading||'beam';
-  const longitudinalFactor=(heading==='head'||heading==='following')?1:(heading==='quartering'?.62:.08);
-  const heave=H*.18*longitudinalFactor*Math.sin(2*Math.PI*t/T);
-  const wavePitch=THREE.MathUtils.degToRad(
-    H*.22*longitudinalFactor*Math.sin(2*Math.PI*t/T+Math.PI*.5)
-  );
-
-  shipRoot.position.set(0,-Math.max(0,+s.eqDraft||0)+heave,0);
-  // The transverse hydro solver uses clockwise-positive heel in the bow-view convention.
-  // Three.js positive Z rotation is counter-clockwise, therefore the visual sign is inverted.
-  shipRoot.rotation.z=-heel;
-  shipRoot.rotation.x=-trim+wavePitch;
-
-  if(waterlineMarker)waterlineMarker.position.y=Math.max(.05,+s.eqDraft||0);
-
-  if(water?.material?.uniforms){
-    water.material.uniforms.uHeight.value=H;
-    water.material.uniforms.uWavelength.value=Math.max(5,+s.waveLength||60);
-    water.material.uniforms.uPeriod.value=T;
-    water.material.uniforms.uHeading.value.copy(headingVector(heading));
-  }
-  if(seabed)seabed.position.y=-Math.max(2,+s.waterDepth||15);
+  // Pose/wave motion is lightweight and does not rebuild vessel/internal geometry.
+  updateDynamicPose(s);
 
   updateHydroOverlay(s);
-  updateOperations(s,runtime);
+  updateOperations(s,latestRuntime);
   updateEnvironment3D(s,0);
   updateStabilityAdvisor();
   if(ballastLab.active&&ballastLab.scenarioKey&&activeScenarioKey()!==ballastLab.scenarioKey)abandonBallastLabForScenarioChange();
@@ -9351,6 +9509,7 @@ function syncFromSimulator(s,runtime={}){
 
   const type=(s.hullType||'general').replaceAll('_',' ');
   if(statusEl)statusEl.textContent=`${type.toUpperCase()} · ${detailQuality.toUpperCase()} DETAIL · heel ${(s.heel||0).toFixed(1)}° · trim ${(s.trimAngle||0).toFixed(2)}° · draft ${(s.eqDraft||0).toFixed(2)} m`;
+  return true;
 }
 
 function resize(){
@@ -9363,17 +9522,19 @@ function resize(){
 function animate3D(){
   if(!sceneReady)return;
   requestAnimationFrame(animate3D);
-  const dt=clock.getDelta();
-  const t=clock.elapsedTime;
-  if(water?.material?.uniforms)water.material.uniforms.uTime.value=t;
-  if(skyDome&&camera)skyDome.position.copy(camera.position);
-  if(latestState){syncFromSimulator(latestState,latestRuntime);updateRain(latestState,dt);}
-  stepBallastTransfer(dt);updateBallastFreeSurfaces();animateBallastFlow(t);
-  pollOperationalMission();
-  updateCameraTween();
-  controls?.update();
-  if(latestState&&hydroOptions.master)updateHydroMarkerPresentation();
-  renderer.render(scene,camera);
+  try{
+    const dt=clock.getDelta(),t=clock.elapsedTime;
+    if(water?.material?.uniforms)water.material.uniforms.uTime.value=t;
+    if(skyDome&&camera)skyDome.position.copy(camera.position);
+    if(latestState){updateDynamicPose(latestState);updateRain(latestState,dt);}
+    stepBallastTransfer(dt);updateBallastFreeSurfaces();animateBallastFlow(t);pollOperationalMission();updateCameraTween();controls?.update();
+    if(latestState&&hydroOptions.master)updateHydroMarkerPresentation();
+    renderer.render(scene,camera);
+    animate3D._errorCount=0;
+  }catch(err){
+    animate3D._errorCount=(animate3D._errorCount||0)+1;const now=performance.now();
+    if(!animate3D._lastErrorAt||now-animate3D._lastErrorAt>2500){animate3D._lastErrorAt=now;console.error('AMCOL 3D frame error (physics continues):',err);if(statusEl)statusEl.textContent='3D frame error · physics continues independently';}
+  }
 }
 
 function setViewActive(active){
@@ -9399,11 +9560,19 @@ function setViewActive(active){
   }
 }
 
-function invalidateHull(){vesselSignature='';hydroSignature='';operationSignature='';if(latestState)syncFromSimulator(latestState,latestRuntime);}
+function invalidateOperations(){operationSignature='';internalLayoutIdentity='';updateOperations._readoutSig='';}
+function invalidateHull(){vesselSignature='';hydroSignature='';operationSignature='';internalLayoutIdentity='';if(latestState)syncFromSimulator(latestState,latestRuntime);}
+function getInternalLayoutDebug(){return {hullType:latestState?.hullType||null,expectedFamily:expectedInternalFamily(latestState?.hullType||'general'),runtimeFamily:latestRuntime?.spaceLayoutFamily||null,layoutRevision:latestRuntime?.spaceLayoutRevision||latestState?.spaceLayoutRevision||0,layoutKey:latestRuntime?.spaceLayoutKey||null,internalLayoutIdentity,cargoSpaces:Array.isArray(latestRuntime?.cargoSpaces)?latestRuntime.cargoSpaces.map(x=>x.name):[],ballastTanks:Array.isArray(latestRuntime?.ballastTanks)?latestRuntime.ballastTanks.map(x=>x.name):[],engineRoom:latestRuntime?.engineRoom?.label||null,rendered:{family:operationsGroup?.userData?.family||null,revision:operationsGroup?.userData?.revision||0,vesselName:operationsGroup?.userData?.vesselName||'',groups:shipRoot?.children?.filter?.(x=>x?.name==='3DOperations')?.length||0,cargoSpaceObjects:cargoSpaces3DGroup?.children?.length||0,ballastObjects:tanks3DGroup?.children?.length||0,machineryObjects:machinery3DGroup?.children?.length||0},vesselSignature,operationSignature};}
 
 window.AMCOL3D={
   get ready(){return sceneReady;},
   syncFromSimulator,
+  syncPoseFromSimulator,
+  hardLoadVesselSnapshot,
+  replaceInternalArrangement,
+  updateDynamicPose,
+  invalidateOperations,
+  getInternalLayoutDebug,
   resize,
   invalidateHull,
   setViewActive,
@@ -9463,11 +9632,12 @@ window.AMCOL3D={
   showOperationInspector,
   closeInspector,
   resize,
-  rebuild(){if(latestState){vesselSignature='';hydroSignature='';operationSignature='';syncFromSimulator(latestState,latestRuntime);}},
+  rebuild(){if(latestState){vesselSignature='';hydroSignature='';operationSignature='';internalLayoutIdentity='';syncFromSimulator(latestState,latestRuntime);}},
   fit(){setCameraPreset(currentPreset||'perspective');}
 };
 
 window.addEventListener('resize',resize);
+window.addEventListener('amcol:simulator-ready',()=>{if(!sceneReady)return;const boot=window.AMCOL_GET_RENDER_SNAPSHOT?.();if(boot?.state)hardLoadVesselSnapshot(boot.state,boot.runtime||{});});
 window.addEventListener('DOMContentLoaded',init3D);
 </script>
 </body>
