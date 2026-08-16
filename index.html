@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<!-- MathJax removed in v1.9.1 reliability patch: no active MathJax rendering is used by the simulator. -->
 <style>
 body{
   font-family:"Liberation Sans","DejaVu Sans",Arial,Helvetica,sans-serif;
@@ -348,8 +348,22 @@ body.clean-ui #unifiedMissionCard{border-color:rgba(34,211,238,.26)!important}
  .clean-action-secondary{height:34px;width:34px}
 }
 
+/* v1.9.1 Reliability Patch · classroom readability and derived-field clarity */
+body.presentation-mode #controlSidebar .tiny,body.presentation-mode #controlSidebar .text-\[8px\],body.presentation-mode #controlSidebar .text-\[9px\]{font-size:12px!important;line-height:1.45!important}
+body.presentation-mode #controlSidebar .text-\[10px\],body.presentation-mode #controlSidebar .text-\[11px\]{font-size:13px!important;line-height:1.45!important}
+body.presentation-mode #controlSidebar label,body.presentation-mode #controlSidebar button{font-size:12.5px!important}
+body.presentation-mode #liveConditionPanel .live-note,body.presentation-mode #liveConditionPanel .live-source{font-size:10px!important}
+body.presentation-mode #liveConditionPanel .live-metric .k{font-size:9px!important}
+body.presentation-mode #liveConditionPanel .live-metric .v{font-size:12px!important}
+.derived-physics-output{opacity:.72;cursor:not-allowed!important;background:#111827!important;border-color:#263449!important;color:#94a3b8!important}
+.data-authority-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start;padding:7px 8px;border:1px solid #1e293b;border-radius:9px;background:rgba(2,6,23,.55)}
+.data-authority-row .src{font-size:8px;color:#64748b;margin-top:2px;line-height:1.35}
+.data-authority-badge{font-size:8px;font-weight:900;padding:3px 6px;border-radius:999px;border:1px solid #334155;white-space:nowrap}
+
 </style>
 </head>
+
+<!-- v1.9.1 RELIABILITY PATCH: mission-source lock, AMCOL context restore, input sanitisation, debounced live calculation, derived wave outputs, data authority, presentation mode and regression diagnostics. -->
 
 <!--
 PHYSICS AUDIT NOTES (teaching model)
@@ -446,6 +460,15 @@ PHYSICS AUDIT NOTES (teaching model)
 
 67) Ship Stability Mission workflow consolidates scenario, recovery-mission and challenge UX into one load-correct-test-submit path. Loading any selected scenario captures the vessel/source and initial condition, solves equilibrium and automatically runs the existing nonlinear stability animation. The captured baseline remains separate from the live condition so student corrections can be compared directly. Auto-graded challenge correction-detection logic remains unchanged.
 68) Generic scenarios clear stale named-vessel identity on reset. A mission without a source-backed named vessel is explicitly shown as a scenario teaching vessel; source-backed hydrostatic/KN confidence remains visible rather than being implied from dimensions alone.
+77) Phase 19A replaces the generic sequential heel/trim correction with a damped three-variable Newton equilibrium for heel, trim and sinkage. It reports displacement, transverse-moment and longitudinal-moment closure in physical units and does not silently accept a non-converged result.
+78) Phase 19A formalises physics authority Levels A–D. Source hydrostatics/KN are used only inside their published interpolation envelope; out-of-range source curves are not extrapolated and the simulator visibly falls back to model geometry.
+79) Uploaded KN data are interpolated in two dimensions, heel and source-equivalent displacement, with explicit bracketing. A single-displacement KN curve is only authoritative within a narrow tolerance of its published displacement.
+80) Phase 19B adds angle-aware rectangular liquid-centroid geometry for non-source-locked partially filled ballast tanks and liquid cargo spaces in Enhanced/Vessel modes. Published/source FSM remains authoritative where the actual tank transverse geometry is not source-backed. Initial FSC and finite-angle liquid shift are therefore separated rather than double-counted.
+81) The Physics Integrity Monitor checks finite outputs, coupled equilibrium closure, ballast bounds, longitudinal-strength closure and uploaded KN validity. A hard numerical-integrity failure blocks a stability PASS.
+82) Longitudinal strength now preserves raw force/moment closure residuals before numerical diagram closure and reports positive sagging and negative hogging extrema under the simulator's stated buoyancy-minus-weight sign convention.
+83) Roll dynamics retain the nonlinear GZ restoring model but use adaptive semi-implicit substeps to reduce numerical energy growth during low-frame-rate spikes or stiff high-GM conditions.
+84) Damage refinement adds longitudinal extent and LCG. Lost buoyancy is removed only over the damaged length in the coupled station solver, while the transverse solver uses the equivalent damaged-length fraction. Added-weight flooding now contributes its LCG to trim and longitudinal strength.
+85) Uploaded vessel bundles may include downflooding-opening coordinates (TCG/x, height/y and LCG). Opening immersion then includes current trim; watertight openings are excluded from downflooding.
 Operational use still requires approved ship-specific stability information.
 -->
 
@@ -455,7 +478,7 @@ Operational use still requires approved ship-specific stability information.
   <div class="px-3 md:px-4 py-2 flex items-center justify-between gap-3">
     <div class="flex items-center gap-3 min-w-0">
       <div class="h-9 w-9 md:h-10 md:w-10 rounded-lg border border-amber-500/40 bg-slate-950 flex items-center justify-center overflow-hidden shrink-0">
-        <img src="assets/logo.png" alt="Simulator logo" class="h-full w-full object-contain">
+        <img src="assets/logo.png" alt="AMCOL logo" class="h-full w-full object-contain" onerror="this.classList.add('hidden');this.nextElementSibling.classList.remove('hidden')"><span class="hidden text-[8px] font-black tracking-wider text-amber-300">AMCOL</span>
       </div>
       <div class="min-w-0">
         <h1 class="font-bold text-sm md:text-base truncate">AMCOL Advanced Ship Stability &amp; Hydrostatic Simulator</h1>
@@ -473,6 +496,7 @@ Operational use still requires approved ship-specific stability information.
       <button class="lg:hidden w-8 h-8 inline-flex items-center justify-center rounded-lg bg-slate-800 border border-slate-700 text-amber-300 text-xs" onclick="toggleControlsFocus()" title="Controls Focus" aria-label="Controls Focus"><i class="fa-solid fa-table-columns"></i></button>
       <button class="lg:hidden w-8 h-8 inline-flex items-center justify-center rounded-lg bg-slate-800 border border-slate-700 text-cyan-300 text-xs" onclick="toggleControlSidebar()" title="Visual Focus" aria-label="Visual Focus"><i class="fa-solid fa-panorama"></i></button>
       <button onclick="window.AMCOL3D?.openTeacherDashboard()" class="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs hover:bg-violet-500/20" title="Teacher dashboard" aria-label="Teacher dashboard"><i class="fa-solid fa-user-shield"></i></button>
+      <button id="presentationModeBtn" onclick="togglePresentationMode()" class="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-slate-800 border border-slate-700 text-cyan-200 text-xs hover:bg-slate-700" title="Presentation / large-text mode" aria-label="Toggle presentation large-text mode" aria-pressed="false"><i class="fa-solid fa-text-height"></i></button>
       <span id="teacherExamBadge" class="hidden px-2 py-1 rounded-full text-[9px] font-black bg-rose-500/15 text-rose-300 border border-rose-500/30">EXAM MODE</span>
       <button onclick="printReport()" class="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-xs hover:bg-slate-700" title="Print report" aria-label="Print report"><i class="fa-solid fa-print"></i></button>
     </div>
@@ -750,7 +774,7 @@ Operational use still requires approved ship-specific stability information.
 </summary>
 <div class="px-3 pb-3 pt-1 space-y-3 border-t border-slate-800"><div class="space-y-2">
 <div class="flex items-center justify-between"><label class="flex items-center gap-1 tiny"><input class="accent-cyan-500" id="checkFSE" type="checkbox"/> Enable</label></div>
-<p class="tiny text-slate-400">When a vessel ballast plan is active, each preloaded or imported ballast tank contributes its own fill-dependent liquid VCG and rectangular-tank FSM while <b>Free Surface</b> is enabled. Generic identical-tank inputs are used only when no ballast plan is active.</p>
+<p class="tiny text-slate-400">When a vessel ballast plan is active, each preloaded or imported ballast tank contributes its own fill-dependent liquid VCG and initial rectangular-tank FSM while <b>Free Surface</b> is enabled. In <b>Enhanced/Vessel Data</b> modes, non-source-locked rectangular tanks also use an angle-aware liquid centroid at finite heel. Source-locked tanks with published FSM remain source-authoritative unless exact transverse tank geometry is supplied. Generic identical-tank inputs are used only when no ballast plan is active.</p>
 <div class="grid grid-cols-3 gap-2">
 <label class="tiny text-slate-400">No. tanks<input class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 font-mono" id="inputTankCount" max="20" min="1" type="number" value="1"/></label>
 <label class="tiny text-slate-400">Length (m)<input class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 font-mono" id="inputTankLength" step="0.5" type="number" value="20"/></label>
@@ -792,12 +816,15 @@ Operational use still requires approved ship-specific stability information.
 <label class="tiny text-slate-400">Flood mass (t)<input class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 font-mono" id="inputDmgMass" step="10" type="number" value="250"/></label>
 <label class="tiny text-slate-400">Flood VCG (m)<input class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 font-mono" id="inputDmgVCG" step="0.1" type="number" value="2.0"/></label>
 <label class="tiny text-slate-400">Flood TCG (m)<input class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 font-mono" id="inputDmgTCG" step="0.1" type="number" value="5.5"/></label>
+<label class="tiny text-slate-400 col-span-3">Flood LCG (m)<input class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 font-mono" id="inputDmgLCG" step="0.5" type="number" value="0"/><span class="text-[8px] text-slate-600">+ forward · − aft</span></label>
 </div>
 <div class="grid grid-cols-3 gap-2 hidden" id="damageLostInputs">
 <label class="tiny text-slate-400">Side<select class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1" id="inputDamageSide"><option value="1">Starboard</option><option value="-1">Port</option></select></label>
 <label class="tiny text-slate-400">Width % B<input class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 font-mono" id="inputDamageWidth" max="40" min="5" step="1" type="number" value="22"/></label>
 <label class="tiny text-slate-400">Height % D<input class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 font-mono" id="inputDamageHeight" max="90" min="10" step="1" type="number" value="55"/></label>
 <label class="tiny text-slate-400">Permeability<input class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 font-mono" id="inputDamagePerm" max="1" min="0.1" step="0.05" type="number" value="0.95"/></label>
+<label class="tiny text-slate-400">Damage length % L<input class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 font-mono" id="inputDamageLengthPct" max="80" min="2" step="1" type="number" value="20"/></label>
+<label class="tiny text-slate-400 col-span-2">Damage LCG (m)<input class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 font-mono" id="inputDamageLCG" step="0.5" type="number" value="0"/><span class="text-[8px] text-slate-600">Longitudinal centre of damaged extent</span></label>
 </div>
 <div class="tiny text-rose-200 bg-rose-950/30 border border-rose-900/50 rounded p-2"><b>Damage-control rule:</b> do not infer an onboard counter-flooding action from this teaching model. Use approved damage-control information.</div>
 </div></div>
@@ -982,9 +1009,12 @@ Operational use still requires approved ship-specific stability information.
 <b>Teaching model:</b> wind uses quadratic aerodynamic pressure and a user-editable projected area/heeling lever. Current uses quadratic hydrodynamic drag for a stationary/moored or current-relative vessel. Rain and visibility are visual/operational factors only and do not directly create restoring or heeling moment.
           </div></div></section><section class="space-y-3 hidden" id="tabPhysics"><div class="bg-slate-950/70 border border-violet-900/50 rounded-xl p-3 space-y-2">
   <div class="flex items-start justify-between gap-2"><div><h3 class="text-xs font-bold text-violet-300 uppercase tracking-wider">Physics Fidelity & Data Confidence</h3><p class="text-[9px] text-slate-500 mt-0.5">Choose how aggressively the simulator uses enhanced physics and see which results are source-backed versus modelled.</p></div><span id="physicsFidelityBadge" class="text-[8px] px-2 py-1 rounded-full border border-violet-500/30 text-violet-300">ENHANCED</span></div>
-  <select id="inputPhysicsFidelity" onchange="setPhysicsFidelity(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-[10px]"><option value="teaching">Teaching Model · simplest stable approximations</option><option value="enhanced" selected>Enhanced Physics · dispersion + nonlinear damping + relative flow</option><option value="vessel">Vessel Data Mode · enhanced physics + strict data validity warnings</option></select>
+  <select id="inputPhysicsFidelity" onchange="setPhysicsFidelity(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-[10px]"><option value="teaching">Teaching Model · simplest stable approximations</option><option value="enhanced" selected>Enhanced Physics · coupled Newton equilibrium + finite-angle liquids + nonlinear dynamics</option><option value="vessel">Vessel Data Mode · source-envelope enforcement + enhanced physics + strict validity warnings</option></select>
   <div id="physicsValidityGrid" class="validity-grid text-[8px]"></div>
-  <div id="physicsValidityNote" class="text-[8px] text-slate-500 leading-relaxed">Model validity will update with the active hydrostatic, KN and tank sources.</div>
+  <div id="physicsValidityNote" class="text-[8px] text-slate-500 leading-relaxed">Model validity updates with the active hydrostatic, KN, tank, opening and damage sources. Source-backed data are never silently extrapolated beyond their declared range.</div>
+</div><div class="bg-slate-950/70 border border-cyan-900/50 rounded-xl p-3 space-y-2">
+  <div class="flex items-start justify-between gap-2"><div><h3 class="text-xs font-bold text-cyan-300 uppercase tracking-wider"><i class="fa-solid fa-stethoscope mr-1.5"></i>Physics Integrity Monitor</h3><p class="text-[9px] text-slate-500 mt-0.5">Numerical closure, source-envelope validity and solver convergence. Hard failures invalidate TEST STABILITY.</p></div><span id="physicsIntegrityBadge" class="text-[8px] px-2 py-1 rounded-full border border-slate-700 text-slate-400 font-black">CHECKING</span></div>
+  <div id="physicsIntegrityReadout" class="text-[9px]"><span class="text-slate-500">Integrity checks will appear after calculation.</span></div>
 </div><div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3 space-y-2">
 <div class="flex justify-between items-center"><h3 class="text-xs font-bold text-amber-400 uppercase">Static Heel / Equilibrium</h3><button class="tiny px-2 py-1 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300" onclick="findAndSetEquilibrium()">Find equilibrium</button></div>
 <label class="tiny text-slate-400">Heel angle θ: <span class="text-amber-300 font-mono" id="heelLabel">0.0°</span><input class="w-full accent-amber-500" id="sliderHeel" max="75" min="-75" step="0.2" type="range" value="0"/></label>
@@ -1913,6 +1943,14 @@ let stabilityMission={active:false,index:0,key:null,attempts:0,hints:0,initial:n
 let unifiedMission={active:false,key:null,attempts:0,initial:null,initialEvaluation:null,autoTesting:false,pendingSubmit:false,lastResult:null};
 let challengeBaselineSnapshot=null;
 
+// v1.9.1: the physically loaded mission is authoritative. Changing the selector only chooses
+// the next mission to load; it never silently changes grading/reference-solution logic.
+function activeScenarioKey(){
+ const loaded=unifiedMission?.active&&unifiedMission.key&&unifiedMission.key!=='free'?unifiedMission.key:null;
+ return loaded||(document.getElementById('scenarioSelect')?.value||'free');
+}
+function activeMissionLoaded(){return !!(unifiedMission?.active&&unifiedMission.key&&unifiedMission.key!=='free');}
+
 function cancelStabilityTestRuntime(){
  const wasActive=!!stabilityTestRuntime.active;
  stabilityTestRuntime={active:false,endAt:0,showToast:true,originalHeel:Number.isFinite(state?.heel)?state.heel:0};
@@ -1935,13 +1973,14 @@ let state={
  lightshipMass:4200,lightshipKG:6.80,lightshipTCG:0,lightshipLCG:0,heel:0,
  fse:false,tankCount:1,tankLength:20,tankBreadth:8,tankDensity:1.025,tankFill:50,
  crane:false,craneMass:60,craneHeight:15,craneOutreach:5,craneSide:1,craneLCG:0,
- damage:false,damageMode:'added',dmgMass:250,dmgVCG:2,dmgTCG:5.5,damageSide:1,damageWidth:22,damageHeight:55,damagePerm:0.95,
+ damage:false,damageMode:'added',dmgMass:250,dmgVCG:2,dmgTCG:5.5,dmgLCG:0,damageSide:1,damageWidth:22,damageHeight:55,damageLengthPct:20,damageLCG:0,damagePerm:0.95,
  krRatio:0.35,damping:0.08,waveMoment:0,wavePeriod:10,waveEnabled:false,waveHeight:1.5,waveLength:60,waveSpeed:12,waveHeading:'beam',waveGain:1.0,rollMode:'free',shipSpeedKts:0,parametricVariation:0.20,encounterPeriod:null,dynamicRisk:null,instabilityClass:'stable',physicsFidelity:'enhanced',waveModel:'physical',quadraticDamping:0.35,shipHeadingDeg:0,currentMode:'relative',currentSetDeg:90,ballastPlanEnabled:false,ballastPlanSource:'none',ballastPlanLabel:'No ballast tank plan',
  weatherPreset:'calm',windEnabled:false,windSpeedKts:0,gustFactor:1.0,windDirection:'port_to_starboard',windCd:1.10,autoWindage:true,windageArea:0,windLever:0,
  oceanPreset:'standard',currentEnabled:false,currentSpeedKts:0,currentDirection:'port_to_starboard',currentCd:1.00,autoCurrentArea:true,currentArea:0,currentLever:0,
  rainIntensity:0,visibilityNm:12,environmentMoment:0,environmentHeelingArm:0,
  dispMass:0,kgSolid:0,tcg:0,lcg:0,fsc:0,fsmGeneric:0,fsmIndividual:0,kgCorr:0,gm:0,gmLong:0,bmLong:0,lcf:0,mct1cm:0,trimCm:0,trimMeters:0,longitudinalMoment:0,waterplaneArea:0,trimAngle:0,draftBow:0,draftStern:0,eqDraft:0,ukc:0,tpc:0,fwa:0,hydro:null,equilibrium:0,equilibriumValid:true,naturalPeriod:null,
- coupledValid:false,coupledMode:'full',coupledHeel:0,coupledTrim:0,coupledSinkage:0,coupledTCB:0,coupledVCB:0,coupledLCB:0,coupledResidualT:0,coupledResidualL:0,coupledIterations:0,coupledWaterplaneArea:0,coupledHydro:null,
+ coupledValid:false,coupledMode:'full',coupledHeel:0,coupledTrim:0,coupledSinkage:0,coupledTCB:0,coupledVCB:0,coupledLCB:0,coupledResidualT:0,coupledResidualL:0,coupledResidualMass:0,coupledResidualTMoment:0,coupledResidualLMoment:0,coupledIterations:0,coupledConvergenceQuality:'UNTESTED',coupledWaterplaneArea:0,coupledHydro:null,
+ physicsAuthorityLevel:'D',physicsAuthorityLabel:'Generic Teaching Vessel',physicsIntegrity:null,knInterpolationStatus:null,finiteAngleLiquid:null,
  individualBallastFSE:false,ballastTankPhysics:[],strength:null,
  grainEnabled:false,grainMoment:350,grainResult:null,staticGZResult:null,staticGZPortResult:null,hydroDataKey:'geometry',hydroDataReference:null,operationalGZ:0,operationalRM:0,gzShowMoment:false,gzShowConstruction:true,gzDataDrawer:false
 };
@@ -2063,6 +2102,17 @@ const AMCOL_TRAINING_VESSELS_BY_ID=Object.fromEntries((AMCOL_TRAINING_VESSELS_MA
 function amcolTrainingHydroKey(id){return 'amcol_training_'+String(id||'').toLowerCase().replace(/[^a-z0-9]+/g,'_');}
 function activeAMCOLTrainingVessel(){const v=AMCOL_TRAINING_VESSELS_BY_ID[state?.amcolTrainingVesselId];return v&&state?.vesselName===v.name?v:null;}
 function clearAMCOLTrainingContext(){state.amcolTrainingVesselId=null;window.AMCOL_ACTIVE_TANK_CALIBRATION=[];window.AMCOL_ACTIVE_STRUCTURAL_LIMITS=[];window.AMCOL_ACTIVE_TRAINING_CONDITIONS=[];if(window.AMCOL_CUSTOM_HULL_FORM?.trainingModel)window.AMCOL_CUSTOM_HULL_FORM=null;}
+function restoreAMCOLTrainingContextFromState(){
+ const id=state?.amcolTrainingVesselId,v=window.AMCOL_TRAINING_VESSELS_BY_ID?.[id]||((typeof AMCOL_TRAINING_VESSELS_BY_ID!=='undefined')?AMCOL_TRAINING_VESSELS_BY_ID[id]:null);
+ if(v){
+  window.AMCOL_ACTIVE_TANK_CALIBRATION=deepClonePlain(v.tankCalibration||[]);
+  window.AMCOL_ACTIVE_STRUCTURAL_LIMITS=deepClonePlain(v.structuralLimits||[]);
+  window.AMCOL_ACTIVE_TRAINING_CONDITIONS=deepClonePlain(v.loadingConditions||[]);
+ }else{
+  window.AMCOL_ACTIVE_TANK_CALIBRATION=[];window.AMCOL_ACTIVE_STRUCTURAL_LIMITS=[];window.AMCOL_ACTIVE_TRAINING_CONDITIONS=[];
+ }
+ return !!v;
+}
 
 const referenceVesselPresets={
  greatfortune_workbook:{
@@ -2316,20 +2366,21 @@ function cleanUploadedBundle(bundle){
  bundle.rows=(bundle.rows||bundle.hydrostatics||bundle.hydrostatic||[]).map(r=>('disp' in r&&'kmt' in r)?{...r}:normaliseHydroRow(Object.fromEntries(Object.entries(r).map(([k,v])=>[hydroHeaderKey(k),v])))).filter(r=>[r.draft,r.disp,r.kb,r.kmt].every(Number.isFinite)).sort((a,b)=>a.disp-b.disp);
  bundle.knRows=(bundle.knRows||bundle.kn||bundle.crossCurves||bundle.crosscurves||[]).map(r=>('disp' in r&&'angle' in r&&'kn' in r)?{disp:+r.disp,angle:Math.abs(+r.angle),kn:+r.kn,side:(r.side||'both').toLowerCase()}:normaliseKNRow(Object.fromEntries(Object.entries(r).map(([k,v])=>[hydroHeaderKey(k),v])))).filter(r=>[r.disp,r.angle,r.kn].every(Number.isFinite)&&r.angle>=0&&r.angle<=180).sort((a,b)=>a.disp-b.disp||a.angle-b.angle);
  const df=bundle.downflooding||{};
+ bundle.openings=(bundle.openings||bundle.downfloodingOpenings||[]).map((o,i)=>({name:String(o.name||o.label||`Opening ${i+1}`),side:String(o.side||'both').toLowerCase(),x:Number(o.x??o.tcg),y:Number(o.y??o.vcg??o.height),lcg:Number(o.lcg??o.z??0),watertight:!!o.watertight,weathertight:!!o.weathertight})).filter(o=>Number.isFinite(o.x)&&Number.isFinite(o.y)&&Number.isFinite(o.lcg));
  bundle.downfloodPort=Number.isFinite(hydroNum(bundle.downfloodPort))?hydroNum(bundle.downfloodPort):(Number.isFinite(hydroNum(df.port))?hydroNum(df.port):(Number.isFinite(hydroNum(bundle.metadata.downfloodPort))?hydroNum(bundle.metadata.downfloodPort):null));
  bundle.downfloodStarboard=Number.isFinite(hydroNum(bundle.downfloodStarboard))?hydroNum(bundle.downfloodStarboard):(Number.isFinite(hydroNum(df.starboard))?hydroNum(df.starboard):(Number.isFinite(hydroNum(bundle.metadata.downfloodStarboard))?hydroNum(bundle.metadata.downfloodStarboard):null));
  return bundle;
 }
 function uploadedPackFromBundle(bundle){
  const b=cleanUploadedBundle(bundle),m=b.metadata||{};
- return {label:m.name||b.label||'Uploaded vessel stability data',kind:'uploadedBundle',badge:'UPLOADED',source:b.source||'User-uploaded vessel hydrostatic / stability data',note:'Uploaded vessel-specific data are used as the primary calculation source wherever the required table is available. Generic geometry remains as a visual/fallback model.',sourceDensity:b.sourceDensity||1.025,rows:b.rows||[],knRows:b.knRows||[],metadata:m,downfloodPort:b.downfloodPort,downfloodStarboard:b.downfloodStarboard};
+ return {label:m.name||b.label||'Uploaded vessel stability data',kind:'uploadedBundle',badge:'UPLOADED',source:b.source||'User-uploaded vessel hydrostatic / stability data',note:'Uploaded vessel-specific data are used as the primary calculation source wherever the required table is available. Generic geometry remains as a visual/fallback model.',sourceDensity:b.sourceDensity||1.025,rows:b.rows||[],knRows:b.knRows||[],openings:b.openings||[],metadata:m,downfloodPort:b.downfloodPort,downfloodStarboard:b.downfloodStarboard};
 }
 function registerUploadedHydroBundle(bundle,{persist=true,activate=true}={}){
  const p=uploadedPackFromBundle(bundle);
  if(!p.rows.length&&!p.knRows.length)throw new Error('No valid hydrostatic or KN rows were found.');
  hydrostaticDataPacks.uploaded=p;
  const sel=document.getElementById('hydroDataPackSelect');if(sel&&!sel.querySelector('option[value="uploaded"]')){const o=document.createElement('option');o.value='uploaded';o.textContent='Uploaded vessel data · hydrostatics / KN';sel.appendChild(o);}
- if(persist){try{localStorage.setItem(UPLOADED_HYDRO_STORAGE_KEY,JSON.stringify({label:p.label,source:p.source,sourceDensity:p.sourceDensity,metadata:p.metadata,rows:p.rows,knRows:p.knRows,downfloodPort:p.downfloodPort,downfloodStarboard:p.downfloodStarboard}));}catch(e){}}
+ if(persist){try{localStorage.setItem(UPLOADED_HYDRO_STORAGE_KEY,JSON.stringify({label:p.label,source:p.source,sourceDensity:p.sourceDensity,metadata:p.metadata,rows:p.rows,knRows:p.knRows,openings:p.openings||[],downfloodPort:p.downfloodPort,downfloodStarboard:p.downfloodStarboard}));}catch(e){}}
  const applyDims=document.getElementById('applyUploadedDimensions')?.checked!==false,m=p.metadata||{};
  if(applyDims){if(Number.isFinite(+m.length)&&+m.length>0)state.length=+m.length;if(Number.isFinite(+m.beam)&&+m.beam>0)state.beam=+m.beam;if(Number.isFinite(+m.depth)&&+m.depth>0)state.depth=+m.depth;if(m.name)state.vesselName=m.name;if(m.company)state.companyName=m.company;}
  updateUploadedHydroStatus();if(activate){state.hydroDataKey='uploaded';syncFormFromState();loadHydrostaticDataPack('uploaded');}
@@ -2345,22 +2396,22 @@ function clearUploadedHydroData(){
 }
 function updateUploadedHydroStatus(message='',isError=false){
  const el=document.getElementById('uploadedHydroStatus');if(!el)return;const p=hydrostaticDataPacks.uploaded;
- if(!p){el.className='text-[9px] text-slate-400 bg-slate-900/70 border border-slate-800 rounded p-2 leading-relaxed';el.innerHTML=message||'No uploaded vessel data. Hydrostatic CSV should contain at least <b>draft, displacement, KB and KMT</b>. For realistic large-angle GZ, also upload <b>displacement, angle and KN</b> cross-curve data.';return;}
- const dispLevels=[...new Set(p.knRows.map(r=>r.disp))].sort((a,b)=>a-b),maxAngle=p.knRows.length?Math.max(...p.knRows.map(r=>r.angle)):0;
+ if(!p){el.className='text-[9px] text-slate-400 bg-slate-900/70 border border-slate-800 rounded p-2 leading-relaxed';el.innerHTML=message?escapeHtml(message):'No uploaded vessel data. Hydrostatic CSV should contain at least <b>draft, displacement, KB and KMT</b>. For realistic large-angle GZ, also upload <b>displacement, angle and KN</b> cross-curve data.';return;}
+ const dispLevels=[...new Set(p.knRows.map(r=>r.disp))].sort((a,b)=>a-b),maxAngle=p.knRows.length?Math.max(...p.knRows.map(r=>r.angle)):0,openingCount=(p.openings||[]).length;
  el.className=`text-[9px] ${isError?'text-rose-200 border-rose-800/50':'text-emerald-100 border-emerald-800/40'} bg-slate-900/70 border rounded p-2 leading-relaxed`;
- el.innerHTML=`<div class="font-bold ${isError?'text-rose-300':'text-emerald-300'}">${message||'Uploaded data ready'}</div><div>Hydrostatic rows: <b>${p.rows.length}</b> · KN rows: <b>${p.knRows.length}</b> · KN displacement levels: <b>${dispLevels.length}</b>${maxAngle?` · max heel <b>${maxAngle.toFixed(0)}°</b>`:''}</div><div>Source density: <b>${p.sourceDensity.toFixed(3)} t/m³</b>${p.metadata?.name?` · Vessel: <b>${p.metadata.name}</b>`:''}</div><div class="text-slate-500 mt-1">${p.rows.length?'Upright hydrostatics available.':'No upright hydrostatic table.'} ${p.knRows.length?'Large-angle GZ will use uploaded KN data when within its valid range.':'Large-angle GZ still uses the geometry model.'}</div>`;
+ el.innerHTML=`<div class="font-bold ${isError?'text-rose-300':'text-emerald-300'}">${message?escapeHtml(message):'Uploaded data ready'}</div><div>Hydrostatic rows: <b>${p.rows.length}</b> · KN rows: <b>${p.knRows.length}</b> · KN displacement levels: <b>${dispLevels.length}</b>${maxAngle?` · max heel <b>${maxAngle.toFixed(0)}°</b>`:''} · opening coordinates: <b>${openingCount}</b></div><div>Source density: <b>${p.sourceDensity.toFixed(3)} t/m³</b>${p.metadata?.name?` · Vessel: <b>${escapeHtml(p.metadata.name)}</b>`:''}</div><div class="text-slate-500 mt-1">${p.rows.length?'Upright hydrostatics available.':'No upright hydrostatic table.'} ${p.knRows.length?'Large-angle GZ will use uploaded KN data when within its valid range.':'Large-angle GZ still uses the geometry model.'}</div>`;
 }
 async function importHydrostaticFiles(){
  const input=document.getElementById('hydroUploadInput'),files=[...(input?.files||[])];if(!files.length){updateUploadedHydroStatus('Choose one or more CSV/JSON files first.',true);return;}
  try{
-  const bundle={label:'Uploaded vessel stability data',source:'User-uploaded stability booklet / hydrostatic data',metadata:{},rows:[],knRows:[],sourceDensity:1.025};
+  const bundle={label:'Uploaded vessel stability data',source:'User-uploaded stability booklet / hydrostatic data',metadata:{},rows:[],knRows:[],openings:[],sourceDensity:1.025};
   for(const file of files){
    const text=await file.text();
    if(file.name.toLowerCase().endsWith('.json')){
     const obj=JSON.parse(text),src=Array.isArray(obj)?{rows:obj}:obj;
     bundle.metadata={...bundle.metadata,...(src.metadata||{})};if(src.name&&!bundle.metadata.name)bundle.metadata.name=src.name;if(src.company&&!bundle.metadata.company)bundle.metadata.company=src.company;
     if(Number.isFinite(hydroNum(src.sourceDensity??src.density)))bundle.sourceDensity=hydroNum(src.sourceDensity??src.density);
-    bundle.rows.push(...(src.hydrostatics||src.hydrostatic||src.rows||[]));bundle.knRows.push(...(src.kn||src.knRows||src.crossCurves||src.crosscurves||[]));
+    bundle.rows.push(...(src.hydrostatics||src.hydrostatic||src.rows||[]));bundle.knRows.push(...(src.kn||src.knRows||src.crossCurves||src.crosscurves||[]));bundle.openings.push(...(src.openings||src.downfloodingOpenings||[]));
     const df=src.downflooding||{};if(Number.isFinite(hydroNum(df.port)))bundle.downfloodPort=hydroNum(df.port);if(Number.isFinite(hydroNum(df.starboard)))bundle.downfloodStarboard=hydroNum(df.starboard);
    }else{
     const records=csvParse(text);if(!records.length)continue;inferMetadataFromRecords(records,bundle.metadata);
@@ -2378,21 +2429,28 @@ async function importHydrostaticFiles(){
 function sourceEquivalentDisplacement(p=hydroPack()){
  const rho0=Math.max(.001,p.sourceDensity||1.025),rho=Math.max(.001,state.density||rho0);return state.dispMass*rho0/rho;
 }
-function uploadedKNForSideAt(angleMagnitude,side='starboard'){
- const p=hydroPack();if(p.kind!=='uploadedBundle'||!p.knRows?.length)return NaN;
- const all=p.knRows,sideSpecific=all.filter(r=>r.side===side),shared=all.filter(r=>!r.side||r.side==='both'||r.side==='all'||r.side==='');const rows=sideSpecific.length?sideSpecific:shared;if(!rows.length)return NaN;
+function uploadedKNInterpolation(angleMagnitude,side='starboard'){
+ const p=hydroPack();if(p.kind!=='uploadedBundle'||!p.knRows?.length)return {valid:false,reason:'no uploaded KN data'};
+ const all=p.knRows,sideSpecific=all.filter(r=>r.side===side),shared=all.filter(r=>!r.side||r.side==='both'||r.side==='all'||r.side===''),rows=sideSpecific.length?sideSpecific:shared;if(!rows.length)return {valid:false,reason:`no ${side} KN ordinates`};
  const groups=new Map();rows.forEach(r=>{if(!groups.has(r.disp))groups.set(r.disp,[]);groups.get(r.disp).push({a:r.angle,v:r.kn});});
- const levels=[...groups.keys()].sort((a,b)=>a-b),x=Math.abs(angleMagnitude),q=sourceEquivalentDisplacement(p);
- const vals=levels.map(d=>({disp:d,kn:Math.abs(interpolateAngleTable(groups.get(d),x))})).filter(o=>Number.isFinite(o.kn));if(!vals.length)return NaN;
- if(vals.length===1)return vals[0].kn;
- if(q<vals[0].disp||q>vals[vals.length-1].disp)return NaN;for(let i=1;i<vals.length;i++)if(vals[i].disp>=q){const a=vals[i-1],b=vals[i],t=(q-a.disp)/(b.disp-a.disp||1);return a.kn+t*(b.kn-a.kn);}return NaN;
+ const levels=[...groups.keys()].sort((a,b)=>a-b),x=Math.abs(Number(angleMagnitude)||0),q=sourceEquivalentDisplacement(p);
+ if(!levels.length)return {valid:false,reason:'no KN displacement levels'};
+ const perLevel=levels.map(d=>({disp:d,kn:Math.abs(interpolateAngleTable(groups.get(d),x))})).filter(o=>Number.isFinite(o.kn));
+ if(!perLevel.length)return {valid:false,reason:`heel ${x.toFixed(1)}° outside KN angle coverage`};
+ if(perLevel.length===1){const only=perLevel[0],tol=Math.max(25,Math.abs(only.disp)*.0025);if(Math.abs(q-only.disp)>tol)return {valid:false,reason:`Δ ${q.toFixed(0)} t outside single KN level ${only.disp.toFixed(0)} t`,q,levels:[only.disp],angle:x};return {valid:true,kn:only.kn,q,lower:only.disp,upper:only.disp,angle:x,mode:'single-level'};}
+ const lo=perLevel[0],hi=perLevel[perLevel.length-1];if(q<lo.disp||q>hi.disp)return {valid:false,reason:`Δ ${q.toFixed(0)} t outside KN range ${lo.disp.toFixed(0)}–${hi.disp.toFixed(0)} t`,q,range:[lo.disp,hi.disp],angle:x};
+ for(let i=1;i<perLevel.length;i++)if(perLevel[i].disp>=q){const a=perLevel[i-1],b=perLevel[i],t=(q-a.disp)/(b.disp-a.disp||1),kn=a.kn+t*(b.kn-a.kn);return {valid:true,kn,q,lower:a.disp,upper:b.disp,angle:x,mode:a.disp===b.disp?'exact':'bilinear'};}
+ return {valid:false,reason:'KN interpolation bracket failure'};
+}
+function uploadedKNForSideAt(angleMagnitude,side='starboard'){
+ const r=uploadedKNInterpolation(angleMagnitude,side);state.knInterpolationStatus=r;return r.valid?r.kn:NaN;
 }
 function uploadedOperationalGZAt(angle){
  const p=hydroPack();if(p.kind!=='uploadedBundle'||!p.knRows?.length||state.damage)return NaN;
  const side=angle<0?'port':'starboard',kn=uploadedKNForSideAt(Math.abs(angle),side);if(!Number.isFinite(kn))return NaN;
- const phi=angle*Math.PI/180,sgn=angle<0?-1:angle>0?1:0;
- // Signed lever: cross-curve KN term, vertical KG term and actual transverse CG term.
- return sgn*kn-state.kgCorr*Math.sin(phi)-state.tcg*Math.cos(phi);
+ const phi=angle*Math.PI/180,sgn=angle<0?-1:angle>0?1:0,effG=effectiveCGAtHeel(angle);
+ // Signed lever: 2D KN(Δ,heel), vertical CG term and actual transverse CG term.
+ return sgn*kn-effG.kg*Math.sin(phi)-effG.tcg*Math.cos(phi);
 }
 function hydroCSVTemplate(){return `vessel_name,company,length,beam,depth,density,draft,displacement,KB,KMT,KML,TPC,MCTC,LCF,LCB\nMV Training Vessel,Company,135.5,18.3,10.0,1.025,2.5,3785,1.35,10.75,449.0,17.69,123.0,0.85,1.30\nMV Training Vessel,Company,135.5,18.3,10.0,1.025,3.0,4674,1.61,9.56,382.3,18.12,129.1,0.83,1.30\n`}
 function knCSVTemplate(){return `vessel_name,density,displacement,angle,KN,side\nMV Training Vessel,1.025,10000,0,0.000,both\nMV Training Vessel,1.025,10000,10,1.100,both\nMV Training Vessel,1.025,10000,20,2.200,both\nMV Training Vessel,1.025,12000,0,0.000,both\nMV Training Vessel,1.025,12000,10,1.180,both\nMV Training Vessel,1.025,12000,20,2.340,both\n`}
@@ -2400,7 +2458,7 @@ function downloadText(name,text,type='text/plain'){const blob=new Blob([text],{t
 function downloadHydroCSVTemplate(){downloadText('AMCOL_hydrostatic_table_template.csv',hydroCSVTemplate(),'text/csv');}
 function downloadKNCsvTemplate(){downloadText('AMCOL_KN_cross_curves_template.csv',knCSVTemplate(),'text/csv');}
 function downloadHydroJSONTemplate(){
- const obj={metadata:{name:'MV Training Vessel',company:'Company',length:135.5,beam:18.3,depth:10.0,density:1.025},sourceDensity:1.025,downflooding:{port:55,starboard:55},hydrostatics:[{draft:2.5,disp:3785,kb:1.35,kmt:10.75,kml:449.0,tpc:17.69,mctc:123.0,lcf:.85,lcb:1.30},{draft:3.0,disp:4674,kb:1.61,kmt:9.56,kml:382.3,tpc:18.12,mctc:129.1,lcf:.83,lcb:1.30}],kn:[{disp:10000,angle:0,kn:0,side:'both'},{disp:10000,angle:10,kn:1.10,side:'both'},{disp:10000,angle:20,kn:2.20,side:'both'},{disp:12000,angle:0,kn:0,side:'both'},{disp:12000,angle:10,kn:1.18,side:'both'},{disp:12000,angle:20,kn:2.34,side:'both'}]};downloadText('AMCOL_hydrostatic_KN_bundle_template.json',JSON.stringify(obj,null,2),'application/json');
+ const obj={metadata:{name:'MV Training Vessel',company:'Company',length:135.5,beam:18.3,depth:10.0,density:1.025},sourceDensity:1.025,downflooding:{port:55,starboard:55},openings:[{name:'Starboard engine-room ventilator',side:'starboard',x:6.5,y:11.2,lcg:-42.0,watertight:false},{name:'Port engine-room ventilator',side:'port',x:-6.5,y:11.2,lcg:-42.0,watertight:false}],hydrostatics:[{draft:2.5,disp:3785,kb:1.35,kmt:10.75,kml:449.0,tpc:17.69,mctc:123.0,lcf:.85,lcb:1.30},{draft:3.0,disp:4674,kb:1.61,kmt:9.56,kml:382.3,tpc:18.12,mctc:129.1,lcf:.83,lcb:1.30}],kn:[{disp:10000,angle:0,kn:0,side:'both'},{disp:10000,angle:10,kn:1.10,side:'both'},{disp:10000,angle:20,kn:2.20,side:'both'},{disp:12000,angle:0,kn:0,side:'both'},{disp:12000,angle:10,kn:1.18,side:'both'},{disp:12000,angle:20,kn:2.34,side:'both'}]};downloadText('AMCOL_hydrostatic_KN_bundle_template.json',JSON.stringify(obj,null,2),'application/json');
 }
 
 function lerpRows(rows,key,x){
@@ -2423,22 +2481,24 @@ function hydroTableAtCurrentDisplacement(){
  return lerpRows(p.rows,'disp',p.kind==='uploadedBundle'?sourceEquivalentDisplacement(p):state.dispMass);
 }
 function textbookReferenceGZAt(angle){
- const p=hydroPack(),phi=(Number(angle)||0)*Math.PI/180,rad=Math.abs(phi),sign=angle<0?-1:angle>0?1:0;
- // Source GZ/KN curves assume G on the centreline. Apply both vertical-KG and actual TCG corrections.
+ const p=hydroPack(),phi=(Number(angle)||0)*Math.PI/180,rad=Math.abs(phi),sign=angle<0?-1:angle>0?1:0,effG=effectiveCGAtHeel(angle);
+ // Single-displacement textbook curves are authority-limited: no silent displacement extrapolation.
+ if(Number.isFinite(Number(p.referenceDisp))&&p.referenceDisp>0){const err=Math.abs(state.dispMass-p.referenceDisp)/p.referenceDisp;if(err>.02)return NaN;}
  if(p.kind==='gzReference'){
    const base=interpolateAngleTable(p.gz,angle);if(!Number.isFinite(base))return NaN;
-   return base+sign*(p.assumedKG-state.kgCorr)*Math.sin(rad)-state.tcg*Math.cos(phi);
+   return base+sign*(p.assumedKG-effG.kg)*Math.sin(rad)-effG.tcg*Math.cos(phi);
  }
  if(p.kind==='knReference'){
    const kn=Math.abs(interpolateAngleTable(p.kn,Math.abs(angle)));if(!Number.isFinite(kn))return NaN;
-   return sign*kn-state.kgCorr*Math.sin(phi)-state.tcg*Math.cos(phi);
+   return sign*kn-effG.kg*Math.sin(phi)-effG.tcg*Math.cos(phi);
  }
  return NaN;
 }
 function operationalGZAt(angle){
  const p=hydroPack();
- if(p.kind==='gzReference'||p.kind==='knReference')return textbookReferenceGZAt(angle);
+ if(p.kind==='gzReference'||p.kind==='knReference'){const g=textbookReferenceGZAt(angle);if(Number.isFinite(g))return g;}
  if(p.kind==='uploadedBundle'&&p.knRows?.length){const g=uploadedOperationalGZAt(angle);if(Number.isFinite(g))return g;}
+ // Source data outside its published envelope falls back visibly to the procedural geometry model; it is never extrapolated.
  const h=hydroAtAngle(angle);return h.invalid?NaN:h.gz;
 }
 
@@ -3239,7 +3299,7 @@ const scenarioReferenceSolutions={
 };
 
 function currentScenarioReferenceSolution(){
- const key=document.getElementById('scenarioSelect')?.value;
+ const key=activeScenarioKey();
  return key?scenarioReferenceSolutions[key]:null;
 }
 function showReferenceSolution(){
@@ -3265,7 +3325,7 @@ function applyReferenceSolution(){
  refreshAfterReferenceSolution();
  const panel=document.getElementById('referenceSolutionPanel'),txt=document.getElementById('referenceSolutionText');
  if(panel)panel.classList.remove('hidden');
- if(txt){const key=document.getElementById('scenarioSelect')?.value,o=challengeMeta[key]?challengeOutcome(key):null;txt.innerHTML=`${sol.text}<div class="mt-2 ${o&&o.pass?'text-emerald-300':'text-amber-300'} font-bold"><i class="fa-solid fa-${o&&o.pass?'check':'triangle-exclamation'} mr-1"></i>${o&&o.pass?'Reference settings satisfy the current challenge checks.':'Reference settings applied; run TEST STABILITY and review remaining conditions.'}</div>`;}
+ if(txt){const key=activeScenarioKey(),o=challengeMeta[key]?challengeOutcome(key):null;txt.innerHTML=`${sol.text}<div class="mt-2 ${o&&o.pass?'text-emerald-300':'text-amber-300'} font-bold"><i class="fa-solid fa-${o&&o.pass?'check':'triangle-exclamation'} mr-1"></i>${o&&o.pass?'Reference settings satisfy the current challenge checks.':'Reference settings applied; run TEST STABILITY and review remaining conditions.'}</div>`;}
 }
 
 
@@ -3512,7 +3572,7 @@ function resetCore(){
  state.companyName='';state.vesselName='';
  state.hydroDataKey='geometry';state.hydroDataReference=null;state.sourceConditionKey=null;state.amcolTrainingVesselId=null;window.AMCOL_ACTIVE_TANK_CALIBRATION=[];window.AMCOL_ACTIVE_STRUCTURAL_LIMITS=[];window.AMCOL_ACTIVE_TRAINING_CONDITIONS=[];if(window.AMCOL_CUSTOM_HULL_FORM?.trainingModel)window.AMCOL_CUSTOM_HULL_FORM=null;
  state.fse=false;state.individualBallastFSE=false;state.ballastTankPhysics=[];state.fsmGeneric=0;state.fsmIndividual=0;state.strength=null;state.coupledValid=false;state.coupledMode='full';state.coupledHydro=null;
- state.crane=false;state.damage=false;state.damageMode='added';state.heel=0;state.waterDepth=15;state.density=1.025;state.tankCount=1;state.tankLength=20;state.tankBreadth=8;state.tankDensity=1.025;state.tankFill=50;state.waveMoment=0;state.waveEnabled=false;state.waveHeight=1.5;state.waveLength=60;state.waveSpeed=12;state.wavePeriod=5;state.waveHeading='beam';state.waveGain=1.0;state.rollMode='free';state.shipSpeedKts=0;state.parametricVariation=.20;state.encounterPeriod=null;state.dynamicRisk=null;state.physicsFidelity='enhanced';state.waveModel='physical';state.quadraticDamping=.35;state.shipHeadingDeg=0;state.currentMode='relative';state.currentSetDeg=90;state.ballastPlanEnabled=false;state.ballastPlanSource='none';state.ballastPlanLabel='No ballast tank plan';ballastTanks=[];
+ state.crane=false;state.damage=false;state.damageMode='added';state.dmgLCG=0;state.damageLengthPct=20;state.damageLCG=0;state.heel=0;state.waterDepth=15;state.density=1.025;state.tankCount=1;state.tankLength=20;state.tankBreadth=8;state.tankDensity=1.025;state.tankFill=50;state.waveMoment=0;state.waveEnabled=false;state.waveHeight=1.5;state.waveLength=60;state.waveSpeed=12;state.wavePeriod=5;state.waveHeading='beam';state.waveGain=1.0;state.rollMode='free';state.shipSpeedKts=0;state.parametricVariation=.20;state.encounterPeriod=null;state.dynamicRisk=null;state.physicsFidelity='enhanced';state.waveModel='physical';state.quadraticDamping=.35;state.shipHeadingDeg=0;state.currentMode='relative';state.currentSetDeg=90;state.ballastPlanEnabled=false;state.ballastPlanSource='none';state.ballastPlanLabel='No ballast tank plan';ballastTanks=[];
  state.weatherPreset='calm';state.windEnabled=false;state.windSpeedKts=0;state.gustFactor=1;state.windDirection='port_to_starboard';state.autoWindage=true;state.windCd=1.10;state.rainIntensity=0;state.visibilityNm=12;
  state.oceanPreset='standard';state.currentEnabled=false;state.currentSpeedKts=0;state.currentDirection='port_to_starboard';state.autoCurrentArea=true;state.currentCd=1.00;
  cancelStabilityTestRuntime();dynPhi=0;dynOmega=0;dynTime=0;lastFrameTime=null;
@@ -3552,11 +3612,13 @@ function waterlineWidth(poly){
 function damageRectBody(){
  const sign=state.damageSide;const B=state.beam,D=state.depth;const w=B*(state.damageWidth/100);const x2=sign*B/2;const x1=x2-sign*w;const h=D*(state.damageHeight/100);return [[x1,0],[x2,0],[x2,h],[x1,h]];
 }
+function damageLongitudinalFraction(){return Math.max(.02,Math.min(.80,(Number(state.damageLengthPct)||20)/100));}
+function damageAppliesAtLongitudinal(longitudinal){const half=Math.max(1,state.length)*damageLongitudinalFraction()/2;return Math.abs((Number(longitudinal)||0)-(Number(state.damageLCG)||0))<=half;}
 function buoyancyAt(phi,sink){
  const hull=transformPoly(makeHullPolygon(state.hullType,state.beam,state.depth),phi,sink);const sub=clipBelowWater(hull);const base=polygonAreaCentroid(sub);let area=base.area,cx=base.cx,cy=base.cy;
  let damagedSub=[];
  if(state.damage&&state.damageMode==='lost'){
-  const dr=transformPoly(damageRectBody(),phi,sink);damagedSub=clipBelowWater(dr);const da=polygonAreaCentroid(damagedSub);const remove=state.damagePerm*da.area;
+  const dr=transformPoly(damageRectBody(),phi,sink);damagedSub=clipBelowWater(dr);const da=polygonAreaCentroid(damagedSub);const remove=state.damagePerm*da.area*damageLongitudinalFraction();
   if(area-remove>1e-8){cx=(area*cx-remove*da.cx)/(area-remove);cy=(area*cy-remove*da.cy)/(area-remove);area-=remove;}
  }
  return {area,cx,cy,hull,sub,damagedSub,bwl:waterlineWidth(hull)};
@@ -3570,12 +3632,13 @@ function hydroAtAngle(angleDeg){
  const phi=angleDeg*Math.PI/180;const target=state.dispMass/state.density/state.length;const full=polygonAreaCentroid(makeHullPolygon(state.hullType,state.beam,state.depth)).area;
  const maxEffective=buoyancyAt(phi,-3*state.depth).area;
  if(target>Math.min(full,maxEffective)*0.999)return {invalid:true,reason:'Displacement exceeds the available buoyancy capacity for this hull/damage condition.'};
- const sink=solveSinkage(phi,target);const b=buoyancyAt(phi,sink);const [gx,gy]=bodyToWorld(state.tcg,state.kgCorr,phi,sink);const gz=b.cx-gx;
+ const sink=solveSinkage(phi,target);const b=buoyancyAt(phi,sink),effG=effectiveCGAtHeel(angleDeg);const [gx,gy]=bodyToWorld(effG.tcg,effG.kg,phi,sink);const gz=b.cx-gx;
  const port=bodyToWorld(-state.beam/2,state.depth,phi,sink);const stbd=bodyToWorld(state.beam/2,state.depth,phi,sink);
  return {invalid:false,phi,sink,bx:b.cx,by:b.cy,gx,gy,gz,hull:b.hull,sub:b.sub,damagedSub:b.damagedSub,bwl:b.bwl,portFreeboard:port[1],stbdFreeboard:stbd[1],deckEdgeImmersed:Math.min(port[1],stbd[1])<=0};
 }
 
 function representativeDownfloodingPoints(){
+ const hp=hydroPack();if(hp.kind==='uploadedBundle'&&Array.isArray(hp.openings)&&hp.openings.length){return hp.openings.filter(o=>!o.watertight).flatMap(o=>{const side=o.side==='port'||o.side==='starboard'?o.side:null;if(side)return [{...o,side,source:'uploaded opening coordinates'}];if(Math.abs(o.x)<1e-6)return [{...o,side:'port',source:'uploaded opening coordinates'},{...o,side:'starboard',source:'uploaded opening coordinates'}];return [{...o,side:o.x<0?'port':'starboard',source:'uploaded opening coordinates'}];});}
  const B=Math.max(1,state.beam),D=Math.max(1,state.depth),type=state.hullType;
  const cfg={
   container:{x:.39,y:1.10,label:'side access / vent opening'},bulk:{x:.40,y:1.08,label:'deck ventilation opening'},general:{x:.39,y:1.07,label:'weather-deck opening'},
@@ -3590,7 +3653,8 @@ function representativeDownfloodingPoints(){
 }
 function openingWorldHeight(point,angleDeg){
  const h=hydroAtAngle(angleDeg);if(!h||h.invalid)return NaN;
- return bodyToWorld(point.x,point.y,angleDeg*Math.PI/180,h.sink)[1];
+ const phi=angleDeg*Math.PI/180,theta=(Number(state.trimAngle)||0)*Math.PI/180;
+ return coupledWorldPoint(point.x,point.y,Number(point.lcg)||0,phi,theta,h.sink).y;
 }
 function representativeOpeningDownflood(side='starboard'){
  const sign=side==='port'?-1:1,points=representativeDownfloodingPoints().filter(p=>p.side===side);
@@ -3602,7 +3666,7 @@ function representativeOpeningDownflood(side='starboard'){
    if(Number.isFinite(prev)&&Number.isFinite(v)&&prev>0&&v<=0){
     let lo=prevA,hi=mag;
     for(let i=0;i<30;i++){const mid=(lo+hi)/2,mv=openingWorldHeight(point,sign*mid);if(mv>0)lo=mid;else hi=mid;}
-    const angle=(lo+hi)/2;if(!best||angle<best.angle)best={angle,name:point.name,source:'representative opening'};break;
+    const angle=(lo+hi)/2;if(!best||angle<best.angle)best={angle,name:point.name,source:point.source||'representative opening'};break;
    }
    prevA=mag;prev=v;
   }
@@ -3620,12 +3684,59 @@ function ballastTankFullCapacity(t){return t.autoCapacity?ballastTankVolume(t)*M
 function ballastTankMass(t){if(t?.sourceLocked&&Number.isFinite(Number(t.sourceMass)))return Math.max(0,Number(t.sourceMass));return ballastTankFullCapacity(t)*Math.max(0,Math.min(100,Number(t.fill)||0))/100;}
 function ballastTankLiquidVCG(t){if(t?.sourceLocked&&Number.isFinite(Number(t.sourceVCG)))return Number(t.sourceVCG);const f=Math.max(0,Math.min(1,(Number(t.fill)||0)/100)),bottom=Math.max(0,Number(t.bottom)||0),h=Math.max(.05,Number(t.height)||.05);return bottom+(f*h)/2;}
 function ballastTankFSM(t){if(t?.sourceLocked&&Number.isFinite(Number(t.sourceFSM)))return Math.max(0,Number(t.sourceFSM));const f=Math.max(0,Math.min(1,(Number(t.fill)||0)/100));if(f<=.001||f>=.98)return 0;const l=Math.max(.1,Number(t.length)||.1),b=Math.max(.1,Number(t.breadth)||.1),rho=Math.max(.1,Number(t.density)||1.025),factor=Math.max(0,Math.min(1,Number.isFinite(Number(t.fsmFactor))?Number(t.fsmFactor):1));return rho*l*Math.pow(b,3)/12*factor;}
+
+// Phase 19B: finite-angle rectangular free-surface geometry for Enhanced/Vessel modes.
+// The liquid surface remains earth-horizontal while the tank rotates with the ship. Source-locked
+// tanks with published FSM but only representative geometry retain their published initial FSC
+// instead of inventing a finite-angle centroid path.
+function clipPolygonBelowLinearSurface(poly,phi,level){
+ const c=Math.cos(phi),sp=Math.sin(phi),out=[];if(!poly?.length)return out;
+ const H=p=>(-p[0]*sp+p[1]*c)-level;
+ for(let i=0;i<poly.length;i++){
+  const a=poly[i],b=poly[(i+1)%poly.length],ha=H(a),hb=H(b),ina=ha<=0,inb=hb<=0;
+  if(ina)out.push(a);
+  if(ina!==inb){const t=ha/(ha-hb);out.push([a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1])]);}
+ }
+ return out;
+}
+function rectangularLiquidCentroidAtHeel({tcg=0,bottom=0,breadth=1,height=1,fill=.5},angleDeg=0){
+ const b=Math.max(.02,Number(breadth)||.02),h=Math.max(.02,Number(height)||.02),f=Math.max(0,Math.min(1,Number(fill)||0)),x=Number(tcg)||0,y=Number(bottom)||0;
+ const upright={x,y:y+f*h/2};
+ if(f<=1e-6)return {x,y,area:0,valid:true};
+ if(f>=1-1e-6)return {x,y:y+h/2,area:b*h,valid:true};
+ const poly=[[x-b/2,y],[x+b/2,y],[x+b/2,y+h],[x-b/2,y+h]],target=b*h*f,phi=(Number(angleDeg)||0)*Math.PI/180;
+ const projected=poly.map(p=>-p[0]*Math.sin(phi)+p[1]*Math.cos(phi));let lo=Math.min(...projected)-h-b,hi=Math.max(...projected)+h+b,sub=[];
+ for(let i=0;i<52;i++){const mid=(lo+hi)/2,candidate=clipPolygonBelowLinearSurface(poly,phi,mid),a=polygonAreaCentroid(candidate).area;if(a<target)lo=mid;else hi=mid;sub=candidate;}
+ sub=clipPolygonBelowLinearSurface(poly,phi,(lo+hi)/2);const cg=polygonAreaCentroid(sub);
+ return cg.area>1e-9?{x:cg.cx,y:cg.cy,area:cg.area,valid:true}:{...upright,area:target,valid:false};
+}
+function finiteAngleLiquidCG(angleDeg=0){
+ const base={tcg:state.tcg,kg:state.kgCorr,active:false,modelledFSM:0,residualFSC:state.fsc,ballastCount:0,cargoCount:0};
+ if(!state.fse||state.physicsFidelity==='teaching'||state.dispMass<=0)return base;
+ let tm=state.tcg*state.dispMass,vm=state.kgSolid*state.dispMass,modelledFSM=0,ballastCount=0,cargoCount=0;
+ if(state.ballastPlanEnabled&&Array.isArray(ballastTanks))ballastTanks.forEach(t=>{
+  const fill=Math.max(0,Math.min(1,(Number(t.fill)||0)/100)),m=ballastTankMass(t);if(m<=0||fill<=.001||fill>=.999)return;
+  // Keep exact/source FSM authoritative when the transverse tank shape itself is not source-backed.
+  if(t.sourceLocked&&Number.isFinite(Number(t.sourceFSM)))return;
+  const cg=rectangularLiquidCentroidAtHeel({tcg:Number(t.tcg)||0,bottom:Number(t.bottom)||0,breadth:Number(t.breadth)||.1,height:Number(t.height)||.1,fill},angleDeg);if(!cg.valid)return;
+  const ux=Number(t.tcg)||0,uy=ballastTankLiquidVCG(t);tm+=m*(cg.x-ux);vm+=m*(cg.y-uy);modelledFSM+=ballastTankFSM(t);ballastCount++;
+ });
+ cargoItems.forEach(it=>{
+  ensureCargoPhysicsItem(it);if(it.physicsClass!=='liquid'||it.sourceLocked)return;const fill=Math.max(0,Math.min(1,(Number(it.fill)||0)/100));if(fill<=.001||fill>=.999)return;
+  const sp=cargoSpaceById(it.spaceId),m=cargoPhysicsMass(it);if(!sp||m<=0)return;
+  const cg=rectangularLiquidCentroidAtHeel({tcg:Number(it.tcg??sp.tcg)||0,bottom:Number(sp.bottom)||0,breadth:Number(sp.breadth)||.1,height:Number(sp.height)||.1,fill},angleDeg);if(!cg.valid)return;
+  const ux=Number(it.tcg??sp.tcg)||0,uy=cargoPhysicsVCG(it);tm+=m*(cg.x-ux);vm+=m*(cg.y-uy);modelledFSM+=cargoLiquidFSM(it);cargoCount++;
+ });
+ const totalFSM=Math.max(0,(state.fsmGeneric||0)+(state.fsmIndividual||0)),residualFSM=Math.max(0,totalFSM-modelledFSM),residualFSC=residualFSM/state.dispMass;
+ const result={tcg:tm/state.dispMass,kg:vm/state.dispMass+residualFSC,active:ballastCount+cargoCount>0,modelledFSM,residualFSC,ballastCount,cargoCount};state.finiteAngleLiquid=result;return result;
+}
+function effectiveCGAtHeel(angleDeg=0){return finiteAngleLiquidCG(angleDeg);}
 function calculateMassProperties(){
  let m=state.lightshipMass,vm=state.lightshipMass*state.lightshipKG,tm=state.lightshipMass*state.lightshipTCG,lm=state.lightshipMass*(state.lightshipLCG||0);
  cargoItems.forEach(raw=>{const it=syncCargoComputedFields(raw),mass=cargoPhysicsMass(it),vcg=cargoPhysicsVCG(it);m+=mass;vm+=mass*vcg;tm+=mass*(Number(it.tcg)||0);lm+=mass*(Number(it.lcg)||0);});
  if(state.ballastPlanEnabled&&Array.isArray(ballastTanks))ballastTanks.forEach(t=>{const mass=ballastTankMass(t);if(mass<=0)return;const vcg=ballastTankLiquidVCG(t);m+=mass;vm+=mass*vcg;tm+=mass*(Number(t.tcg)||0);lm+=mass*(Number(t.lcg)||0);});
  if(state.crane){m+=state.craneMass;vm+=state.craneMass*state.craneHeight;tm+=state.craneMass*state.craneOutreach*state.craneSide;lm+=state.craneMass*(state.craneLCG||0);}
- if(state.damage&&state.damageMode==='added'){m+=state.dmgMass;vm+=state.dmgMass*state.dmgVCG;tm+=state.dmgMass*state.dmgTCG;}
+ if(state.damage&&state.damageMode==='added'){m+=state.dmgMass;vm+=state.dmgMass*state.dmgVCG;tm+=state.dmgMass*state.dmgTCG;lm+=state.dmgMass*(state.dmgLCG||0);}
  state.dispMass=m;state.kgSolid=vm/Math.max(.001,m);state.tcg=tm/Math.max(.001,m);state.lcg=lm/Math.max(.001,m);
  let genericFSM=0,individualFSM=0,cargoFSM=0;
  // The Free Surface switch is global: OFF means no FSM/FSC is applied anywhere.
@@ -3722,7 +3833,7 @@ function integrateCoupledHydro(phi,theta,sink,N=32){
    const longitudinal=-L/2+i*dx,w=(i===0||i===N)?.5:1,poly=coupledSectionPolygon(longitudinal);
    const sub=coupledClipSection(poly,longitudinal,phi,theta,sink),base=polygonAreaCentroid(sub);
    let area=base.area,cx=base.cx,cy=base.cy;
-   if(state.damage&&state.damageMode==='lost'&&area>1e-8){
+   if(state.damage&&state.damageMode==='lost'&&area>1e-8&&damageAppliesAtLongitudinal(longitudinal)){
      const sh=coupledSectionShape(longitudinal),localB=state.beam*sh.beamScale,localD=state.depth*sh.depthScale;
      const sign=state.damageSide,wDam=localB*(state.damageWidth/100),x2=sign*localB/2,x1=x2-sign*wDam;
      const hDam=localD*(state.damageHeight/100),y0=sh.keelRise;
@@ -3745,56 +3856,49 @@ function solveCoupledSinkage(phi,theta,targetVolume){
  }
  return (lo+hi)/2;
 }
-function coupledResidual(phi,theta){
- const target=Math.max(.001,state.dispMass/state.density),sink=solveCoupledSinkage(phi,theta,target);
- const h=integrateCoupledHydro(phi,theta,sink,32);
- const B=coupledWorldPoint(h.tcb,h.vcb,h.lcb,phi,theta,sink);
- const Gp=coupledWorldPoint(state.tcg,state.kgCorr,state.lcg,phi,theta,sink);
+function coupledResidualAt(phi,theta,sink,targetVolume){
+ const h=integrateCoupledHydro(phi,theta,sink,36),B=coupledWorldPoint(h.tcb,h.vcb,h.lcb,phi,theta,sink),effG=effectiveCGAtHeel(phi*180/Math.PI),Gp=coupledWorldPoint(effG.tcg,effG.kg,state.lcg,phi,theta,sink);
  const env=state.dispMass>0?environmentalHeelingMomentN(phi*180/Math.PI)/(state.dispMass*1000*G):0;
- return {rt:B.x-Gp.x-env,rl:B.l-Gp.l,h,B,G:Gp};
+ return {rv:h.volume-targetVolume,rt:B.x-Gp.x-env,rl:B.l-Gp.l,h,B,G:Gp};
+}
+function coupledResidual(phi,theta){
+ const target=Math.max(.001,state.dispMass/state.density),sink=solveCoupledSinkage(phi,theta,target);return coupledResidualAt(phi,theta,sink,target);
+}
+function solveLinear3(A,b){
+ const m=A.map((r,i)=>[...r,b[i]]);
+ for(let c=0;c<3;c++){
+  let p=c;for(let r=c+1;r<3;r++)if(Math.abs(m[r][c])>Math.abs(m[p][c]))p=r;
+  if(!Number.isFinite(m[p][c])||Math.abs(m[p][c])<1e-10)return null;if(p!==c)[m[p],m[c]]=[m[c],m[p]];
+  const d=m[c][c];for(let j=c;j<4;j++)m[c][j]/=d;
+  for(let r=0;r<3;r++)if(r!==c){const f=m[r][c];for(let j=c;j<4;j++)m[r][j]-=f*m[c][j];}
+ }
+ const x=[m[0][3],m[1][3],m[2][3]];return x.every(Number.isFinite)?x:null;
+}
+function coupledConvergenceMetrics(r,targetVolume){
+ const massResidual=Math.abs(r.rv*state.density),tMoment=Math.abs(r.rt*state.dispMass),lMoment=Math.abs(r.rl*state.dispMass),massTol=Math.max(.25,state.dispMass*2e-5),tTol=Math.max(2,state.dispMass*Math.max(1,state.beam)*1.5e-5),lTol=Math.max(5,state.dispMass*Math.max(1,state.length)*1.5e-5);
+ const pass=massResidual<=massTol&&tMoment<=tTol&&lMoment<=lTol;return {massResidual,tMoment,lMoment,massTol,tTol,lTol,pass};
 }
 function solveCoupledEquilibrium(initialHeelDeg=0,initialTrimDeg=0){
- let phi=THREE_SAFE_RAD(initialHeelDeg),theta=THREE_SAFE_RAD(initialTrimDeg),last=null,valid=false,iterations=0;
- const eps=.0009,preserveLollBranch=state.gm<0&&Math.abs(initialHeelDeg)>1&&!state.windEnabled&&!state.currentEnabled;
- for(let k=0;k<9;k++){
-   iterations=k+1;const r=coupledResidual(phi,theta);last=r;
-   if(!Number.isFinite(r.rt)||!Number.isFinite(r.rl))break;
-   if(preserveLollBranch){
-     if(Math.abs(r.rl)<.002){valid=Math.abs(r.rt)<.10;break;}
-     const rtp=coupledResidual(phi,theta+eps),d=(rtp.rl-r.rl)/eps;
-     if(!Number.isFinite(d)||Math.abs(d)<1e-8)break;
-     let dtheta=-r.rl/d;const maxTrim=1.2*Math.PI/180;
-     dtheta=Math.max(-maxTrim,Math.min(maxTrim,dtheta));
-     theta=Math.max(-10*Math.PI/180,Math.min(10*Math.PI/180,theta+dtheta));
-     continue;
-   }
-   if(Math.abs(r.rt)<.002&&Math.abs(r.rl)<.002){valid=true;break;}
-   const rp=coupledResidual(phi+eps,theta),rtp=coupledResidual(phi,theta+eps);
-   const a=(rp.rt-r.rt)/eps,b=(rtp.rt-r.rt)/eps,c=(rp.rl-r.rl)/eps,d=(rtp.rl-r.rl)/eps,det=a*d-b*c;
-   if(!Number.isFinite(det)||Math.abs(det)<1e-8)break;
-   let dphi=(-r.rt*d+b*r.rl)/det,dtheta=(-a*r.rl+c*r.rt)/det;
-   const maxRoll=4*Math.PI/180,maxTrim=1.2*Math.PI/180;
-   dphi=Math.max(-maxRoll,Math.min(maxRoll,dphi));dtheta=Math.max(-maxTrim,Math.min(maxTrim,dtheta));
-   phi=Math.max(-65*Math.PI/180,Math.min(65*Math.PI/180,phi+dphi));
-   theta=Math.max(-10*Math.PI/180,Math.min(10*Math.PI/180,theta+dtheta));
+ const target=Math.max(.001,state.dispMass/state.density),Bscale=Math.max(1,state.beam),Lscale=Math.max(1,state.length),Vscale=Math.max(.001,target);
+ let phi=THREE_SAFE_RAD(initialHeelDeg),theta=THREE_SAFE_RAD(initialTrimDeg),sink=solveCoupledSinkage(phi,theta,target),last=null,metrics=null,iterations=0,valid=false;
+ const loll=state.gm<0&&Math.abs(initialHeelDeg)>1&&!state.windEnabled&&!state.currentEnabled,lollSign=Math.sign(initialHeelDeg)||1;
+ for(let k=0;k<16;k++){
+  iterations=k+1;const r=coupledResidualAt(phi,theta,sink,target);last=r;metrics=coupledConvergenceMetrics(r,target);if(metrics.pass){valid=true;break;}
+  const F=[r.rv/Vscale,r.rt/Bscale,r.rl/Lscale],steps=[7e-4,5e-4,Math.max(.002,state.depth*2e-4)],vars=[phi,theta,sink],J=[[],[],[]];
+  for(let j=0;j<3;j++){
+   const v=[...vars];v[j]+=steps[j];const rp=coupledResidualAt(v[0],v[1],v[2],target),Fp=[rp.rv/Vscale,rp.rt/Bscale,rp.rl/Lscale];for(let i=0;i<3;i++)J[i][j]=(Fp[i]-F[i])/steps[j];
+  }
+  const dx=solveLinear3(J,F.map(v=>-v));if(!dx)break;
+  let [dphi,dtheta,dsink]=dx;dphi=Math.max(-3*Math.PI/180,Math.min(3*Math.PI/180,dphi));dtheta=Math.max(-.8*Math.PI/180,Math.min(.8*Math.PI/180,dtheta));dsink=Math.max(-state.depth*.12,Math.min(state.depth*.12,dsink));
+  // Damped Newton step: reduce the step if the normalised residual grows.
+  const norm=Math.hypot(...F);let accepted=false,alpha=1;
+  for(let trial=0;trial<5;trial++,alpha*=.5){let np=phi+dphi*alpha,nt=theta+dtheta*alpha,ns=sink+dsink*alpha;np=Math.max(-65*Math.PI/180,Math.min(65*Math.PI/180,np));nt=Math.max(-10*Math.PI/180,Math.min(10*Math.PI/180,nt));if(loll&&Math.sign(np)!==lollSign)np=lollSign*Math.max(.5*Math.PI/180,Math.abs(np));const rr=coupledResidualAt(np,nt,ns,target),Fn=[rr.rv/Vscale,rr.rt/Bscale,rr.rl/Lscale],nn=Math.hypot(...Fn);if(Number.isFinite(nn)&&nn<=norm*1.03){phi=np;theta=nt;sink=ns;accepted=true;break;}}
+  if(!accepted)break;
  }
- if(!last)last=coupledResidual(phi,theta);
- const h=last.h,deep=integrateCoupledHydro(phi,theta,h.sink-.005,24),shallow=integrateCoupledHydro(phi,theta,h.sink+.005,24);
- const Awp=Math.max(.01,(deep.volume-shallow.volume)/.01);
- const bowKeel=coupledWorldPoint(0,0,state.length/2,phi,theta,h.sink);
- const sternKeel=coupledWorldPoint(0,0,-state.length/2,phi,theta,h.sink);
- state.coupledMode=preserveLollBranch?'gz-loll-branch':'full';
- state.coupledValid=valid||(preserveLollBranch?Math.abs(last.rl)<.01:Math.hypot(last.rt,last.rl)<.01);
- state.coupledHeel=phi*180/Math.PI;state.coupledTrim=theta*180/Math.PI;state.coupledSinkage=h.sink;
- state.coupledTCB=h.tcb;state.coupledVCB=h.vcb;state.coupledLCB=h.lcb;
- state.coupledResidualT=last.rt;state.coupledResidualL=last.rl;state.coupledIterations=iterations;state.coupledWaterplaneArea=Awp;state.coupledHydro=h;
- if(state.coupledValid){
-   state.equilibrium=state.coupledHeel;state.trimAngle=state.coupledTrim;
-   state.eqDraft=Math.max(0,-h.sink);state.draftBow=Math.max(0,-bowKeel.y);state.draftStern=Math.max(0,-sternKeel.y);
-   state.trimMeters=state.draftBow-state.draftStern;state.trimCm=state.trimMeters*100;
-   state.ukc=state.waterDepth-Math.max(state.eqDraft,state.draftBow,state.draftStern);
-   state.tpc=Awp*state.density/100;const tpcSW=Awp*1.025/100;state.fwa=tpcSW>0?state.dispMass/(4*tpcSW):0;
- }
+ if(!last||last.h?.sink!==sink){last=coupledResidualAt(phi,theta,sink,target);metrics=coupledConvergenceMetrics(last,target);valid=metrics.pass;}
+ const h=last.h,deep=integrateCoupledHydro(phi,theta,h.sink-.005,28),shallow=integrateCoupledHydro(phi,theta,h.sink+.005,28),Awp=Math.max(.01,(deep.volume-shallow.volume)/.01),bowKeel=coupledWorldPoint(0,0,state.length/2,phi,theta,h.sink),sternKeel=coupledWorldPoint(0,0,-state.length/2,phi,theta,h.sink);
+ state.coupledMode=loll?'3d-newton-loll':'3d-newton';state.coupledValid=valid;state.coupledHeel=phi*180/Math.PI;state.coupledTrim=theta*180/Math.PI;state.coupledSinkage=h.sink;state.coupledTCB=h.tcb;state.coupledVCB=h.vcb;state.coupledLCB=h.lcb;state.coupledResidualT=last.rt;state.coupledResidualL=last.rl;state.coupledResidualMass=metrics?.massResidual??Infinity;state.coupledResidualTMoment=metrics?.tMoment??Infinity;state.coupledResidualLMoment=metrics?.lMoment??Infinity;state.coupledIterations=iterations;state.coupledConvergenceQuality=valid?(iterations<=5?'HIGH':iterations<=10?'GOOD':'ACCEPTABLE'):'INVALID';state.coupledWaterplaneArea=Awp;state.coupledHydro=h;
+ if(state.coupledValid){state.equilibrium=state.coupledHeel;state.trimAngle=state.coupledTrim;state.eqDraft=Math.max(0,-h.sink);state.draftBow=Math.max(0,-bowKeel.y);state.draftStern=Math.max(0,-sternKeel.y);state.trimMeters=state.draftBow-state.draftStern;state.trimCm=state.trimMeters*100;state.ukc=state.waterDepth-Math.max(state.eqDraft,state.draftBow,state.draftStern);state.tpc=Awp*state.density/100;const tpcSW=Awp*1.025/100;state.fwa=tpcSW>0?state.dispMass/(4*tpcSW):0;}
  return state.coupledValid;
 }
 function anchorCoupledHydroToAuthoritativeEquilibrium(heelDeg=0,trimDeg=0){
@@ -3808,8 +3912,8 @@ function anchorCoupledHydroToAuthoritativeEquilibrium(heelDeg=0,trimDeg=0){
  state.coupledMode='source-anchored';state.coupledValid=true;
  state.coupledHeel=heelDeg;state.coupledTrim=trimDeg;state.coupledSinkage=sink;
  state.coupledTCB=h.tcb;state.coupledVCB=h.vcb;state.coupledLCB=h.lcb;
- state.coupledResidualT=Number.isFinite(r?.rt)?r.rt:0;state.coupledResidualL=Number.isFinite(r?.rl)?r.rl:0;
- state.coupledIterations=0;state.coupledWaterplaneArea=Math.max(.01,h.waterplaneArea||0);state.coupledHydro=h;
+ state.coupledResidualT=Number.isFinite(r?.rt)?r.rt:0;state.coupledResidualL=Number.isFinite(r?.rl)?r.rl:0;state.coupledResidualMass=Math.abs((h.volume-target)*state.density);state.coupledResidualTMoment=Math.abs(state.coupledResidualT*state.dispMass);state.coupledResidualLMoment=Math.abs(state.coupledResidualL*state.dispMass);
+ state.coupledIterations=0;state.coupledConvergenceQuality='SOURCE-ANCHORED';state.coupledWaterplaneArea=Math.max(.01,h.waterplaneArea||0);state.coupledHydro=h;
  return true;
 }
 function THREE_SAFE_RAD(deg){return (Number(deg)||0)*Math.PI/180;}
@@ -3874,16 +3978,21 @@ function calculateLongitudinalStrength(){
  lightShape.forEach((v,i)=>weight[i]+=state.lightshipMass*v/lightSum);
  // Movable cargo / ballast: finite longitudinal footprint rather than mathematical point load.
  cargoItems.forEach(it=>{
-   const span=Math.max(L*.012,Math.min(L*.075,Number(it.strengthSpan)||L*(.018+Math.min(.045,(Number(it.mass)||0)/Math.max(1,state.dispMass)*.20))));
+   const mass=cargoPhysicsMass(it),span=Math.max(L*.012,Math.min(L*.075,Number(it.strengthSpan)||L*(.018+Math.min(.045,mass/Math.max(1,state.dispMass)*.20))));
    const w=gaussianStationWeights(xs,Number(it.lcg)||0,span);
-   w.forEach((v,i)=>weight[i]+=(Number(it.mass)||0)*v);
+   w.forEach((v,i)=>weight[i]+=mass*v);
+ });
+ // Ballast is a real longitudinal weight component. Distribute each active tank over a finite span
+ // so trim corrections do not disappear from the SF/BM model.
+ if(state.ballastPlanEnabled&&Array.isArray(ballastTanks))ballastTanks.forEach(t=>{
+   const mass=ballastTankMass(t);if(mass<=0)return;const span=Math.max(L*.008,Math.min(L*.10,Math.max(Number(t.length)||0,L*.018)*.38)),w=gaussianStationWeights(xs,Number(t.lcg)||0,span);w.forEach((v,i)=>weight[i]+=mass*v);
  });
  if(state.crane){
    const w=gaussianStationWeights(xs,state.craneLCG||0,L*.018);
    w.forEach((v,i)=>weight[i]+=state.craneMass*v);
  }
  if(state.damage&&state.damageMode==='added'){
-   const w=gaussianStationWeights(xs,0,L*.035);w.forEach((v,i)=>weight[i]+=state.dmgMass*v);
+   const w=gaussianStationWeights(xs,state.dmgLCG||0,Math.max(L*.012,L*.035));w.forEach((v,i)=>weight[i]+=state.dmgMass*v);
  }
  // Buoyancy from the actual coupled submerged section areas.
  stations.forEach((s,i)=>buoy[i]=s.area*dx*state.density);
@@ -3891,22 +4000,21 @@ function calculateLongitudinalStrength(){
  if(N>1){buoy[0]*=.5;buoy[N-1]*=.5;}
  const bsum=buoy.reduce((a,v)=>a+v,0)||1;
  buoy.forEach((v,i)=>buoy[i]=v*state.dispMass/bsum);
- // Convert station masses to distributed kN/m for integration.
- const q=weight.map((w,i)=>(buoy[i]-w)*G/dx);
+ // Convert nodal masses to distributed kN/m. Endpoint control lengths are dx/2 so
+ // trapezoidal integration reproduces the exact nodal total rather than under-counting the ends.
+ const q=weight.map((w,i)=>(buoy[i]-w)*G/((i===0||i===N-1)?dx*.5:dx));
  const shear=new Array(N).fill(0),moment=new Array(N).fill(0);
  for(let i=1;i<N;i++){
    shear[i]=shear[i-1]+.5*(q[i-1]+q[i])*dx;
    moment[i]=moment[i-1]+.5*(shear[i-1]+shear[i])*dx;
  }
- // Remove tiny numerical end drift linearly so the diagram closes at the bow.
- const endS=shear[N-1],endM=moment[N-1];
- for(let i=0;i<N;i++){
-   const t=i/(N-1);shear[i]-=endS*t;moment[i]-=endM*t;
- }
- const maxSF=Math.max(...shear.map(Math.abs)),maxBM=Math.max(...moment.map(Math.abs));
- const sfIndex=maxSF/Math.max(1,state.dispMass*G),bmIndex=maxBM/Math.max(1,state.dispMass*G*L);
- const concentration=Math.max(sfIndex,bmIndex*4);
- state.strength={xs,weight,buoy,q,shear,moment,maxSF,maxBM,sfIndex,bmIndex,concentration};
+ // Preserve raw closure residuals for the integrity monitor, then remove only numerical drift for display.
+ const rawEndS=shear[N-1],rawEndM=moment[N-1],massResidual=weight.reduce((a,v)=>a+v,0)-buoy.reduce((a,v)=>a+v,0);
+ for(let i=0;i<N;i++){const t=i/(N-1);shear[i]-=rawEndS*t;moment[i]-=rawEndM*t;}
+ const maxSF=Math.max(...shear.map(Math.abs)),maxBM=Math.max(...moment.map(Math.abs)),maxPositiveBM=Math.max(...moment),maxNegativeBM=Math.min(...moment),iPos=moment.indexOf(maxPositiveBM),iNeg=moment.indexOf(maxNegativeBM);
+ const sfIndex=maxSF/Math.max(1,state.dispMass*G),bmIndex=maxBM/Math.max(1,state.dispMass*G*L),concentration=Math.max(sfIndex,bmIndex*4);
+ // With q = buoyancy − weight and integration from aft to bow, negative midship BM represents hogging in this teaching convention.
+ state.strength={xs,weight,buoy,q,shear,moment,maxSF,maxBM,maxSaggingBM:maxPositiveBM,maxHoggingBM:Math.abs(maxNegativeBM),saggingX:xs[iPos]||0,hoggingX:xs[iNeg]||0,rawEndShear:rawEndS,rawEndMoment:rawEndM,massResidual,sfIndex,bmIndex,concentration};
 }
 
 
@@ -4166,7 +4274,7 @@ function saveBallastPlanLocal(){try{localStorage.setItem(BALLAST_PLAN_STORAGE_KE
 function restoreBallastPlanLocal(){try{const raw=localStorage.getItem(BALLAST_PLAN_STORAGE_KEY);if(!raw)return false;const o=JSON.parse(raw),key=`${state.hullType}|${Number(state.length).toFixed(2)}|${Number(state.beam).toFixed(2)}|${Number(state.depth).toFixed(2)}`;if(!o.vesselKey||o.vesselKey!==key)return false;if(Array.isArray(o.tanks)){ballastTanks=o.tanks;state.ballastPlanEnabled=!!o.enabled;state.ballastPlanSource=o.source||'custom';state.ballastPlanLabel=o.label||`Custom ballast plan · ${ballastTanks.length} tanks`;renderBallastPlan();return true;}}catch(e){}return false;}
 function exportBallastPlanJSON(){downloadText(`${(state.vesselName||'vessel').replace(/[^a-z0-9]+/gi,'_')}_ballast_plan.json`,JSON.stringify({metadata:{vessel:state.vesselName,type:state.hullType,length:state.length,beam:state.beam,depth:state.depth,source:state.ballastPlanSource},tanks:ballastTanks},null,2),'application/json');}
 function downloadBallastTankTemplate(){const csv='name,type,zone,side,fluid,capacity,fill,lcg,tcg,bottom,length,breadth,height,density,fsmFactor\\nFore Peak,Peak,fore_peak,centre,seawater,500,0,35,0,0.4,8,12,3,1.025,1\\nDB 1 P,Double Bottom,forward,port,seawater,350,0,15,-4.5,0.3,10,4,2.5,1.025,1';downloadText('ballast_tank_plan_template.csv',csv,'text/csv');}
-async function importBallastTankPlan(files){const file=files?.[0];if(!file)return;try{const text=await file.text();let rows=[];if(file.name.toLowerCase().endsWith('.json')){const o=JSON.parse(text);rows=o.tanks||o.ballastTanks||[];}else{rows=csvParse(text).map(r=>({name:sFrom(r,['name','tank']),type:sFrom(r,['type','tanktype']),zone:sFrom(r,['zone','position']),side:(sFrom(r,['side'])||'centre').toLowerCase(),fluid:sFrom(r,['fluid','liquid']),capacity:nFrom(r,['capacity','capacityt','tonnes']),fill:nFrom(r,['fill','fillpercent']),lcg:nFrom(r,['lcg']),tcg:nFrom(r,['tcg']),bottom:nFrom(r,['bottom','bottomz']),length:nFrom(r,['length']),breadth:nFrom(r,['breadth','width']),height:nFrom(r,['height']),density:nFrom(r,['density','rho']),fsmFactor:nFrom(r,['fsmfactor'])}));}ballastTanks=rows.map((r,i)=>({id:r.id||`import_${Date.now()}_${i}`,name:r.name||`Tank ${i+1}`,type:r.type||'Ballast',side:['port','starboard','centre','center'].includes(String(r.side).toLowerCase())?(String(r.side).toLowerCase()==='center'?'centre':String(r.side).toLowerCase()):((Number(r.tcg)||0)>0?'starboard':(Number(r.tcg)||0)<0?'port':'centre'),capacity:Math.max(0,Number(r.capacity)||0),fill:Math.max(0,Math.min(100,Number(r.fill)||0)),lcg:Number(r.lcg)||0,tcg:Number(r.tcg)||0,bottom:Math.max(0,Number(r.bottom)||0),length:Math.max(.1,Number(r.length)||1),breadth:Math.max(.1,Number(r.breadth)||1),height:Math.max(.1,Number(r.height)||1),density:Math.max(.1,Number(r.density)||1.025),fluid:(['seawater','fresh','brackish'].includes(String(r.fluid||'').toLowerCase())?String(r.fluid).toLowerCase():'custom'),autoCapacity:false,blockFactor:.85,zone:(['aft_peak','aft','mid','forward','fore_peak'].includes(String(r.zone||'').toLowerCase())?String(r.zone).toLowerCase():ballastTankZoneFromLCG(Number(r.lcg)||0)),fsmFactor:Number.isFinite(Number(r.fsmFactor))?Number(r.fsmFactor):1,source:'vessel'}));state.ballastPlanSource='vessel';state.ballastPlanLabel=`Imported vessel tank plan · ${ballastTanks.length} tanks`;state.ballastPlanEnabled=true;renderBallastPlan();calculateAll();saveBallastPlanLocal();openBallastPlanManager();}catch(e){alert('Ballast tank plan import failed: '+e.message);}}
+async function importBallastTankPlan(files){const file=files?.[0];if(!file)return;try{const text=await file.text();let rows=[];if(file.name.toLowerCase().endsWith('.json')){const o=JSON.parse(text);rows=o.tanks||o.ballastTanks||[];}else{rows=csvParse(text).map(r=>({name:sFrom(r,['name','tank']),type:sFrom(r,['type','tanktype']),zone:sFrom(r,['zone','position']),side:(sFrom(r,['side'])||'centre').toLowerCase(),fluid:sFrom(r,['fluid','liquid']),capacity:nFrom(r,['capacity','capacityt','tonnes']),fill:nFrom(r,['fill','fillpercent']),lcg:nFrom(r,['lcg']),tcg:nFrom(r,['tcg']),bottom:nFrom(r,['bottom','bottomz']),length:nFrom(r,['length']),breadth:nFrom(r,['breadth','width']),height:nFrom(r,['height']),density:nFrom(r,['density','rho']),fsmFactor:nFrom(r,['fsmfactor'])}));}ballastTanks=rows.map((r,i)=>({id:`import_${Date.now()}_${i}_${Math.random().toString(36).slice(2,7)}`,sourceId:r.id?String(r.id):'',name:r.name||`Tank ${i+1}`,type:r.type||'Ballast',side:['port','starboard','centre','center'].includes(String(r.side).toLowerCase())?(String(r.side).toLowerCase()==='center'?'centre':String(r.side).toLowerCase()):((Number(r.tcg)||0)>0?'starboard':(Number(r.tcg)||0)<0?'port':'centre'),capacity:Math.max(0,Number(r.capacity)||0),fill:Math.max(0,Math.min(100,Number(r.fill)||0)),lcg:Number(r.lcg)||0,tcg:Number(r.tcg)||0,bottom:Math.max(0,Number(r.bottom)||0),length:Math.max(.1,Number(r.length)||1),breadth:Math.max(.1,Number(r.breadth)||1),height:Math.max(.1,Number(r.height)||1),density:Math.max(.1,Number(r.density)||1.025),fluid:(['seawater','fresh','brackish'].includes(String(r.fluid||'').toLowerCase())?String(r.fluid).toLowerCase():'custom'),autoCapacity:false,blockFactor:.85,zone:(['aft_peak','aft','mid','forward','fore_peak'].includes(String(r.zone||'').toLowerCase())?String(r.zone).toLowerCase():ballastTankZoneFromLCG(Number(r.lcg)||0)),fsmFactor:Number.isFinite(Number(r.fsmFactor))?Number(r.fsmFactor):1,source:'vessel'}));state.ballastPlanSource='vessel';state.ballastPlanLabel=`Imported vessel tank plan · ${ballastTanks.length} tanks`;state.ballastPlanEnabled=true;renderBallastPlan();calculateAll();saveBallastPlanLocal();openBallastPlanManager();}catch(e){alert('Ballast tank plan import failed: '+e.message);}}
 function physicsValidity(){const p=hydroPack(),hr=hydroTableAtCurrentDisplacement(),hydro=!!hr,kn=p.kind==='gzReference'||p.kind==='knReference'||(p.kind==='uploadedBundle'&&p.knRows?.length&&Number.isFinite(uploadedOperationalGZAt(Math.min(20,Math.max(5,Math.abs(state.heel)||10))))),tank=['vessel','training'].includes(state.ballastPlanSource)&&ballastTanks.length>0,wave=state.waveModel==='physical',damageExact=false;return {hydro,kn:!!kn,tank,wave,damageExact};}
 function updatePhysicsValidity(){const v=physicsValidity(),grid=document.getElementById('physicsValidityGrid'),badge=document.getElementById('physicsFidelityBadge'),note=document.getElementById('physicsValidityNote');if(badge){badge.textContent=state.physicsFidelity==='vessel'?'VESSEL DATA':state.physicsFidelity==='teaching'?'TEACHING':'ENHANCED';}if(grid){const items=[['Upright hydro',v.hydro,'Vessel/table','Geometry model'],['Large-angle GZ',v.kn,'KN/GZ source','Generic geometry'],['Ballast tanks',v.tank,state.ballastPlanSource==='training'?'AMCOL training tank plan':'Vessel tank plan',ballastTanks.length?'Representative/custom':'No tank plan'],['Wave field',v.wave,'Dispersion solved','Manual wave'],['Damage','warn','Teaching compartment','Teaching model'],['Long. strength','warn','Teaching distribution','Teaching model']];grid.innerHTML=items.map(([k,ok,a,b])=>{const cls=ok===true?'text-emerald-300 border-emerald-900/40':ok==='warn'?'text-amber-300 border-amber-900/40':'text-amber-300 border-amber-900/40';return `<div class="validity-chip ${cls}"><div class="text-slate-500">${k}</div><b>${ok===true?a:b}</b></div>`}).join('');}if(note)note.innerHTML=state.physicsFidelity==='vessel'&&!v.hydro?'<span class="text-rose-300"><b>Vessel Data Mode:</b> no source-backed upright hydrostatics cover the current displacement. Results continue only as clearly labelled model fallback.</span>':'No hidden extrapolation: source tables are used only inside their valid ranges; missing data fall back to teaching models and are shown here.';}
 function setPhysicsFidelity(v){state.physicsFidelity=['teaching','enhanced','vessel'].includes(v)?v:'enhanced';if(state.physicsFidelity!=='teaching'&&state.waveModel==='physical')applyPhysicalWaveFromPeriod(true);updatePhysicsValidity();calculateAll({curve:false});}
@@ -4183,6 +4291,31 @@ function refreshInitialGMFromActiveSourceCurve(){
  if(state.upright){state.upright.KM=state.kgCorr+slope;if(Number.isFinite(state.upright.KB))state.upright.BM=state.upright.KM-state.upright.KB;state.upright.source=(state.upright.source||'geometry')+' · initial GM from active source GZ slope';}
  state.naturalPeriod=state.gm>0?2*Math.PI*(state.krRatio*state.beam)/Math.sqrt(G*state.gm):null;
  return true;
+}
+function physicsAuthority(){
+ const p=hydroPack(),tv=activeAMCOLTrainingVessel(),hyd=hydroTableAtCurrentDisplacement(),probe=10;
+ const kn=(p.kind==='gzReference'||p.kind==='knReference')?Number.isFinite(textbookReferenceGZAt(probe)):(p.kind==='uploadedBundle'&&p.knRows?.length?Number.isFinite(uploadedOperationalGZAt(probe)):false),exactTank=state.ballastPlanSource==='vessel'&&ballastTanks.length>0;
+ let level='D',label='Generic Teaching Vessel',detail='Procedural hydrostatics and nonlinear geometry.';
+ if(tv){level='C';label='AMCOL Calibrated Training Vessel';detail='Complete AMCOL educational dataset; not approved ship data.';}
+ else if(hyd&&kn&&exactTank){level='A';label='Vessel-Data Condition';detail='Source hydrostatics + valid KN/GZ + imported/source tank plan.';}
+ else if(hyd||kn){level='B';label='Hybrid Vessel-Data Condition';detail=`${hyd?'Source hydrostatics':'Model hydrostatics'} + ${kn?'source KN/GZ':'model large-angle GZ'}.`;}
+ state.physicsAuthorityLevel=level;state.physicsAuthorityLabel=label;return {level,label,detail,hydro:!!hyd,kn:!!kn,tanks:exactTank};
+}
+function runPhysicsIntegrityMonitor(){
+ const checks=[],add=(name,pass,value='',severity='error')=>checks.push({name,pass:!!pass,value,severity});
+ const finite=['dispMass','kgSolid','kgCorr','gm','eqDraft','draftBow','draftStern','equilibrium','trimMeters'];finite.forEach(k=>add(`Finite ${k}`,Number.isFinite(Number(state[k])),Number.isFinite(Number(state[k]))?Number(state[k]).toFixed(4):'NaN/∞'));
+ add('Positive displacement',state.dispMass>0,`${state.dispMass.toFixed(2)} t`);
+ add('Draft inside numeric envelope',state.eqDraft>=0&&state.draftBow>=0&&state.draftStern>=0,'non-negative drafts');
+ if(state.coupledHydro){const cm=state.coupledResidualMass||0,ct=state.coupledResidualTMoment||0,cl=state.coupledResidualLMoment||0;add('Coupled displacement closure',state.coupledMode==='source-anchored'||cm<=Math.max(.5,state.dispMass*5e-5),`${cm.toFixed(3)} t`);add('Coupled transverse moment closure',state.coupledMode==='source-anchored'||ct<=Math.max(5,state.dispMass*state.beam*4e-5),`${ct.toFixed(2)} t·m`);add('Coupled longitudinal moment closure',state.coupledMode==='source-anchored'||cl<=Math.max(20,state.dispMass*state.length*4e-5),`${cl.toFixed(2)} t·m`);}
+ if(state.ballastPlanEnabled){const bad=ballastTanks.filter(t=>!Number.isFinite(Number(t.fill))||Number(t.fill)<-1e-6||Number(t.fill)>100+1e-6||ballastTankMass(t)<-1e-6);add('Ballast bounds',bad.length===0,bad.length?`${bad.length} invalid tank(s)`:`${ballastTanks.length} tanks valid`);}
+ if(state.strength){const s=state.strength,forceTol=Math.max(5,state.dispMass*G*.002),momentTol=Math.max(50,state.dispMass*G*state.length*.002);add('Strength mass closure',Math.abs(s.massResidual||0)<=Math.max(.5,state.dispMass*5e-5),`${(s.massResidual||0).toFixed(3)} t`);add('Raw SF end closure',Math.abs(s.rawEndShear||0)<=forceTol,`${(s.rawEndShear||0).toFixed(1)} kN`,'warn');add('Raw BM end closure',Math.abs(s.rawEndMoment||0)<=momentTol,`${((s.rawEndMoment||0)/1000).toFixed(2)} MN·m`,'warn');}
+ const p=hydroPack();if(p.kind==='uploadedBundle'&&p.knRows?.length){const kr=uploadedKNInterpolation(Math.min(10,Math.max(5,Math.abs(state.equilibrium)||5)),state.equilibrium<0?'port':'starboard');add('Uploaded KN validity',kr.valid,kr.valid?`Δ bracket ${kr.lower?.toFixed?.(0)||'—'}–${kr.upper?.toFixed?.(0)||'—'} t`:(kr.reason||'out of range'),'warn');}
+ const hard=checks.filter(c=>!c.pass&&c.severity!=='warn'),warnings=checks.filter(c=>!c.pass&&c.severity==='warn'),pass=hard.length===0;state.physicsIntegrity={pass,checks,hardFailures:hard.length,warnings:warnings.length,timestamp:Date.now()};return state.physicsIntegrity;
+}
+function renderPhysicsIntegrity(){
+ const box=document.getElementById('physicsIntegrityReadout'),badge=document.getElementById('physicsIntegrityBadge');if(!box)return;const r=state.physicsIntegrity||runPhysicsIntegrityMonitor(),a=physicsAuthority();
+ if(badge){badge.textContent=r.pass?(r.warnings?'PASS + WARN':'PASS'):'INVALID';badge.className=`text-[8px] px-2 py-1 rounded-full border font-black ${r.pass?(r.warnings?'border-amber-500/40 text-amber-300 bg-amber-500/10':'border-emerald-500/40 text-emerald-300 bg-emerald-500/10'):'border-rose-500/50 text-rose-300 bg-rose-500/10'}`;}
+ const key=r.checks.filter(c=>!c.pass).slice(0,5);box.innerHTML=`<div class="rounded-lg border border-slate-800 bg-slate-950/70 p-2"><div class="flex justify-between gap-2"><span class="font-bold text-cyan-300">Authority Level ${a.level}</span><span>${escapeHtml(a.label)}</span></div><div class="text-[8px] text-slate-500 mt-1">${escapeHtml(a.detail)}</div></div><div class="grid grid-cols-2 gap-1 mt-2"><div class="rounded bg-slate-900 p-2"><div class="text-slate-500">Coupled residual Δ</div><div class="font-mono">${Number(state.coupledResidualMass||0).toFixed(3)} t</div></div><div class="rounded bg-slate-900 p-2"><div class="text-slate-500">T / L moments</div><div class="font-mono">${Number(state.coupledResidualTMoment||0).toFixed(1)} / ${Number(state.coupledResidualLMoment||0).toFixed(1)} t·m</div></div><div class="rounded bg-slate-900 p-2"><div class="text-slate-500">Iterations</div><div class="font-mono">${state.coupledIterations||0} · ${escapeHtml(state.coupledConvergenceQuality||'—')}</div></div><div class="rounded bg-slate-900 p-2"><div class="text-slate-500">Finite-angle liquid</div><div class="font-mono">${state.finiteAngleLiquid?.active?`${state.finiteAngleLiquid.ballastCount||0} ballast + ${state.finiteAngleLiquid.cargoCount||0} cargo`:'equivalent FSC / none'}</div></div></div>${key.length?`<div class="mt-2 space-y-1">${key.map(c=>`<div class="rounded px-2 py-1 ${c.severity==='warn'?'bg-amber-950/20 text-amber-300':'bg-rose-950/25 text-rose-300'}">${c.severity==='warn'?'⚠':'✕'} ${escapeHtml(c.name)} · ${escapeHtml(String(c.value||''))}</div>`).join('')}</div>`:'<div class="mt-2 text-emerald-300">✓ No hard numerical-integrity failures detected.</div>'}`;
 }
 function calculateAll({curve=true}={}){
  ensureCurrentVesselSpaceLayout({render:false});
@@ -4211,7 +4344,8 @@ function calculateAll({curve=true}={}){
  }
 
  calculateLongitudinalStrength();
- updatePhysicsValidity();renderBallastPlan();if(document.getElementById('cargoManagerBackdrop')&&!document.getElementById('cargoManagerBackdrop').classList.contains('hidden'))renderCargoManager();
+ physicsAuthority();runPhysicsIntegrityMonitor();
+ updatePhysicsValidity();renderBallastPlan();renderDataAuthority();renderPhysicsIntegrity();if(document.getElementById('cargoManagerBackdrop')&&!document.getElementById('cargoManagerBackdrop').classList.contains('hidden'))renderCargoManager();
  state.operationalGZ=operationalGZAt(state.heel);state.operationalRM=state.dispMass*G*state.operationalGZ;
  updateUI();
 }
@@ -4434,7 +4568,14 @@ function evaluateIMO(){
  ];
 }
 
-function bind(id,key,parser=parseFloat){const el=document.getElementById(id);if(!el)return;el.addEventListener('input',()=>{state[key]=parser(el.value);calculateAll();});el.addEventListener('change',()=>{state[key]=parser(el.value);calculateAll();});}
+let liveCalcTimer=null;
+function requestLiveCalculation(delay=70){clearTimeout(liveCalcTimer);liveCalcTimer=setTimeout(()=>{liveCalcTimer=null;calculateAll();},delay);}
+function bind(id,key,parser=parseFloat){
+ const el=document.getElementById(id);if(!el)return;
+ const dimensionField=['inputLength','inputBeam','inputDepth'].includes(id);
+ el.addEventListener('input',()=>{state[key]=parser(el.value);requestLiveCalculation();});
+ el.addEventListener('change',()=>{state[key]=parser(el.value);clearTimeout(liveCalcTimer);liveCalcTimer=null;if(!dimensionField)calculateAll();});
+}
 function bindControls(){
  const hullTypeEl=document.getElementById('inputHullType');
  if(hullTypeEl){const applyHullType=()=>{const next=hullTypeEl.value;if(next===state.hullType&&String(state.spaceLayoutFamily||'')===String(cargoFamilyKey()))return;applyVesselFamilyTemplate(next,{announce:true});};hullTypeEl.addEventListener('change',applyHullType);}
@@ -4445,7 +4586,7 @@ function bindControls(){
  bind('inputTankCount','tankCount');bind('inputTankLength','tankLength');bind('inputTankBreadth','tankBreadth');bind('inputTankDensity','tankDensity');bind('inputTankFill','tankFill');
  bind('inputGrainMoment','grainMoment');
  bind('inputCraneMass','craneMass');bind('inputCraneHeight','craneHeight');bind('inputCraneOutreach','craneOutreach');bind('inputCraneSide','craneSide');bind('inputCraneLCG','craneLCG');
- bind('damageMode','damageMode',v=>v);bind('inputDmgMass','dmgMass');bind('inputDmgVCG','dmgVCG');bind('inputDmgTCG','dmgTCG');bind('inputDamageSide','damageSide');bind('inputDamageWidth','damageWidth');bind('inputDamageHeight','damageHeight');bind('inputDamagePerm','damagePerm');
+ bind('damageMode','damageMode',v=>v);bind('inputDmgMass','dmgMass');bind('inputDmgVCG','dmgVCG');bind('inputDmgTCG','dmgTCG');bind('inputDmgLCG','dmgLCG');bind('inputDamageSide','damageSide');bind('inputDamageWidth','damageWidth');bind('inputDamageHeight','damageHeight');bind('inputDamageLengthPct','damageLengthPct');bind('inputDamageLCG','damageLCG');bind('inputDamagePerm','damagePerm');
  bind('inputKrRatio','krRatio');bind('inputDamping','damping');bind('inputQuadraticDamping','quadraticDamping');bind('inputWaveMoment','waveMoment');bind('inputWaveHeight','waveHeight');bind('inputWaveHeading','waveHeading',v=>v);bind('inputWaveGain','waveGain');bind('inputRollMode','rollMode',v=>v);bind('inputShipSpeed','shipSpeedKts');bind('inputParametricVariation','parametricVariation');
  bind('inputWindSpeed','windSpeedKts');bind('inputGustFactor','gustFactor');bind('inputWindDirection','windDirection',v=>v);bind('inputWindageArea','windageArea');bind('inputWindLever','windLever');bind('inputWindCd','windCd');
  bind('inputCurrentSpeed','currentSpeedKts');bind('inputCurrentDirection','currentDirection',v=>v);bind('inputCurrentMode','currentMode',v=>v);bind('inputShipHeading','shipHeadingDeg');bind('inputCurrentSet','currentSetDeg');bind('inputCurrentArea','currentArea');bind('inputCurrentLever','currentLever');bind('inputCurrentCd','currentCd');
@@ -4487,7 +4628,14 @@ function solveWaveDispersion(T,h){
  const lambda=2*Math.PI/k,c=lambda/Math.max(.1,T),kh=k*depth;return {k,lambda,c,kh,regime:kh>Math.PI?'deep':kh<Math.PI/10?'shallow':'intermediate'};
 }
 function applyPhysicalWaveFromPeriod(updateForm=true){const r=solveWaveDispersion(state.wavePeriod,state.waterDepth);state.waveLength=r.lambda;state.waveSpeed=r.c;state.waveRegime=r.regime;if(updateForm){const l=document.getElementById('inputWaveLength'),c=document.getElementById('inputWaveSpeed');if(l)l.value=state.waveLength.toFixed(2);if(c)c.value=state.waveSpeed.toFixed(3);}return r;}
-function setWaveModel(v){state.waveModel=v==='manual'?'manual':'physical';if(state.waveModel==='physical')applyPhysicalWaveFromPeriod(true);syncFormFromState();calculateAll({curve:false});}
+function updateWaveInputMode(){
+ const physical=state.waveModel==='physical',l=document.getElementById('inputWaveLength'),c=document.getElementById('inputWaveSpeed'),t=document.getElementById('inputWavePeriod');
+ [l,c].forEach(el=>{if(!el)return;el.readOnly=physical;el.classList.toggle('derived-physics-output',physical);el.setAttribute('aria-readonly',physical?'true':'false');});
+ if(l)l.title=physical?'Calculated from finite-depth dispersion using wave period and water depth.':'Editable wavelength in Manual Teaching Wave mode.';
+ if(c)c.title=physical?'Calculated phase celerity from the active physical wave solution.':'Editable celerity in Manual Teaching Wave mode.';
+ if(t)t.title=physical?'Primary wave input in Physical Wave mode.':'Editable period; manual wavelength/celerity remain linked.';
+}
+function setWaveModel(v){state.waveModel=v==='manual'?'manual':'physical';if(state.waveModel==='physical')applyPhysicalWaveFromPeriod(true);syncFormFromState();updateWaveInputMode();calculateAll({curve:false});}
 function bindWaveKinematics(){
  const l=document.getElementById('inputWaveLength'),c=document.getElementById('inputWaveSpeed'),t=document.getElementById('inputWavePeriod');if(!l||!c||!t)return;
  const refreshPhysical=()=>{state.wavePeriod=Math.max(.1,parseFloat(t.value)||state.wavePeriod);applyPhysicalWaveFromPeriod(true);calculateAll({curve:false});};
@@ -4830,7 +4978,7 @@ window.AMCOL_DIRECT3D_BRIDGE={
  },
  getOperationalMissionSnapshot(){
   calculateAll();
-  const key=document.getElementById('scenarioSelect')?.value;
+  const key=activeScenarioKey();
   const o=challengeMeta[key]?challengeOutcome(key):null;
   const stateKeys=['density','waterDepth','lightshipMass','lightshipKG','lightshipTCG','lightshipLCG','tankCount','tankLength','tankBreadth','tankDensity','tankFill','fse','crane','craneMass','craneHeight','craneOutreach','craneSide','craneLCG','windEnabled','windSpeedKts','gustFactor','windDirection','currentEnabled','currentSpeedKts','currentDirection','waveEnabled','waveHeight','waveLength','waveSpeed','wavePeriod','waveHeading','damage','damageMode','dmgMass','dmgVCG','dmgTCG'];
   const inputs={};stateKeys.forEach(k=>inputs[k]=state[k]);
@@ -4870,6 +5018,7 @@ function restoreConditionSnapshot(rec,{announce=true}={}){
  if(!rec?.state)return false;prepareReferenceVesselLoad();vesselVisualTransaction=true;
  try{
    Object.assign(state,deepClonePlain(rec.state));cargoItems=deepClonePlain(rec.cargo||[]);ballastTanks=deepClonePlain(rec.ballast||[]);operationalLimits=rec.operationalLimits?deepClonePlain(rec.operationalLimits):operationalLimits;window.AMCOL_CUSTOM_HULL_FORM=rec.customHullForm?deepClonePlain(rec.customHullForm):null;
+   restoreAMCOLTrainingContextFromState();
    bumpSpaceLayoutRevision('condition-library-load');
    syncFormFromState();syncEnvironmentForm();renderCargoTable();renderBallastPlan();calculateAll();findAndSetEquilibrium();calculateAll({curve:false});renderConditionLibrary();renderOperationalLimitsCard();renderDataCompleteness();renderHullEnvelopeStatus();
  }finally{vesselVisualTransaction=false;}
@@ -4894,6 +5043,21 @@ function vesselDataCompleteness(){const tv=activeAMCOLTrainingVessel();if(tv){co
  {name:'Principal dimensions',status:'training',weight:12},{name:'Hydrostatic table',status:'training',weight:18},{name:'KN / cross-curves',status:'training',weight:18},{name:'Cargo hold centres/capacities',status:'training',weight:10},{name:'Ballast tank centres/FSM',status:'training',weight:10},{name:'Hull station / offset geometry',status:'training',weight:12},{name:'Downflooding openings',status:'training',weight:8},{name:'Tank calibration / sounding tables',status:(tv.tankCalibration||[]).length?'training':'missing',weight:6},{name:'Allowable SF/BM envelopes',status:(tv.structuralLimits||[]).length?'training':'missing',weight:6}
  ];return {items,score:0,trainingScore:items.filter(i=>i.status==='training').reduce((s,i)=>s+i.weight,0)};}
  const hp=hydroPack(),pv=physicsValidity(),ref=Object.values(referenceVesselPresets||{}).find(r=>r.vesselName===state.vesselName),ch=window.AMCOL_CUSTOM_HULL_FORM,custom=!!(ch?.enabled&&(!ch.vesselName||ch.vesselName===state.vesselName));const exactDf=hp.kind==='uploadedBundle'&&(Number.isFinite(+hp.downfloodPort)||Number.isFinite(+hp.downfloodStarboard));const items=[{name:'Principal dimensions',status:ref||state.sourceConditionKey?'source':'model',weight:12},{name:'Hydrostatic table',status:pv.hydro?'source':'model',weight:18},{name:'KN / cross-curves',status:pv.kn?'source':'model',weight:18},{name:'Cargo hold centres/capacities',status:isGreatFortuneWorkbookVessel()?'source':'representative',weight:10},{name:'Ballast tank centres/FSM',status:state.ballastPlanSource==='vessel'&&ballastTanks.length?'source':'representative',weight:10},{name:'Hull station / offset geometry',status:custom?'user':'representative',weight:12},{name:'Downflooding openings',status:exactDf?'source':'representative',weight:8},{name:'Tank calibration / sounding tables',status:'missing',weight:6},{name:'Allowable SF/BM envelopes',status:'missing',weight:6}];const score=items.reduce((s,i)=>s+(i.status==='source'?i.weight:i.status==='user'?i.weight*.7:0),0);return {items,score:Math.round(score)};}
+function renderDataAuthority(){
+ const box=document.getElementById('dataAuthorityReadout');if(!box)return;
+ const p=hydroPack(),hr=hydroTableAtCurrentDisplacement(),tv=activeAMCOLTrainingVessel();
+ const largeSource=(p.kind==='gzReference'||p.kind==='knReference'||(p.kind==='uploadedBundle'&&p.knRows?.length));
+ const tankStatus=state.ballastPlanSource==='training'?'AMCOL TRAINING':state.ballastPlanSource==='vessel'?'VESSEL / IMPORTED':state.ballastPlanSource==='representative-template'||state.ballastPlanSource==='representative'?'REPRESENTATIVE':'CUSTOM / NONE';
+ const rows=[
+  {n:'Upright hydrostatics',b:hr?'SOURCE DATA':tv?'AMCOL TRAINING':'MODELLED',c:hr?'good':tv?'training':'model',s:hr?(p.source||p.label):tv?'AMCOL synthetic/derived training hydrostatics':'Procedural geometry hydrostatics'},
+  {n:'Large-angle GZ / KN',b:largeSource?'SOURCE / TABLE':tv?'AMCOL TRAINING':'MODELLED',c:largeSource?'good':tv?'training':'model',s:largeSource?(p.source||p.label):tv?'AMCOL training KN/cross-curve dataset':'Procedural nonlinear geometry model'},
+  {n:'Ballast tank plan',b:tankStatus,c:state.ballastPlanSource==='vessel'?'good':state.ballastPlanSource==='training'?'training':'model',s:state.ballastPlanLabel||'No active tank plan'},
+  {n:'Structural SF/BM limits',b:(tv&&window.AMCOL_ACTIVE_STRUCTURAL_LIMITS?.length)?'AMCOL TRAINING':'NOT APPROVED',c:(tv&&window.AMCOL_ACTIVE_STRUCTURAL_LIMITS?.length)?'training':'warn',s:(tv&&window.AMCOL_ACTIVE_STRUCTURAL_LIMITS?.length)?'Training limit rows loaded; not class permissible values.':'No approved permissible SF/BM limits are loaded.'}
+ ];
+ const cls={good:'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',training:'border-violet-500/30 bg-violet-500/10 text-violet-300',model:'border-amber-500/30 bg-amber-500/10 text-amber-300',warn:'border-rose-500/30 bg-rose-500/10 text-rose-300'};
+ const libs=`Chart.js ${typeof window.Chart==='function'?'READY':'MISSING'} · 3D ${window.AMCOL3D?'READY':'CDN / NOT INITIALISED'}`,a=physicsAuthority();
+ box.innerHTML=`<div class="mb-2 rounded-lg border border-cyan-500/25 bg-cyan-950/20 p-2"><div class="flex items-center justify-between gap-2"><span class="font-black text-cyan-300">PHYSICS AUTHORITY · LEVEL ${a.level}</span><span class="text-[8px] font-bold text-slate-200">${escapeHtml(a.label)}</span></div><div class="mt-1 text-[8px] text-slate-500">${escapeHtml(a.detail)} Source data are never extrapolated outside their declared displacement/angle envelope; the simulator falls back to a visibly modelled calculation instead.</div></div>`+rows.map(r=>`<div class="data-authority-row"><div><div class="font-bold text-slate-200">${escapeHtml(r.n)}</div><div class="src">${escapeHtml(r.s)}</div></div><span class="data-authority-badge ${cls[r.c]||cls.model}">${escapeHtml(r.b)}</span></div>`).join('')+`<div class="mt-2 text-[8px] text-slate-500">Authority labels describe the current calculation source. They do not convert training/model data into approved operational data.<br><span class="text-cyan-400">Runtime libraries:</span> ${escapeHtml(libs)}. Critical CDN resources should be vendored locally for fully offline classroom deployment.</div>`;
+}
 function renderDataCompleteness(){const box=document.getElementById('dataCompletenessReadout');if(!box)return;const r=vesselDataCompleteness(),training=Number.isFinite(r.trainingScore),cls=s=>s==='source'?'text-emerald-300':s==='training'?'text-violet-300':s==='user'?'text-cyan-300':s==='representative'?'text-amber-300':'text-rose-300';box.innerHTML=training?`<div class="flex items-end justify-between gap-3"><div><div class="text-[8px] uppercase text-slate-500">AMCOL training-dataset completeness</div><div class="text-2xl font-black text-violet-300">${r.trainingScore}%</div></div><div class="text-[8px] text-amber-300 text-right">Complete educational dataset<br>NOT source/class-approved data.</div></div><div class="mt-2 grid md:grid-cols-2 gap-1">${r.items.map(i=>`<div class="flex justify-between rounded bg-slate-950/70 border border-slate-800 px-2 py-1"><span>${i.name}</span><span class="font-bold uppercase ${cls(i.status)}">${i.status}</span></div>`).join('')}</div>`:`<div class="flex items-end justify-between gap-3"><div><div class="text-[8px] uppercase text-slate-500">Source-backed completeness</div><div class="text-2xl font-black ${r.score>=70?'text-emerald-300':r.score>=40?'text-amber-300':'text-rose-300'}">${r.score}%</div></div><div class="text-[8px] text-slate-500 text-right">Representative geometry does not increase<br>the source-backed score.</div></div><div class="mt-2 grid md:grid-cols-2 gap-1">${r.items.map(i=>`<div class="flex justify-between rounded bg-slate-950/70 border border-slate-800 px-2 py-1"><span>${i.name}</span><span class="font-bold uppercase ${cls(i.status)}">${i.status}</span></div>`).join('')}</div>`;}
 function renderAMCOLTrainingDataPanel(){const box=document.getElementById('amcolTrainingDataReadout');if(!box)return;const v=activeAMCOLTrainingVessel();if(!v){box.innerHTML='<span class="text-slate-500">Load an AMCOL Training Vessel from Ship → Reference Vessel Library to activate its complete training dataset.</span>';return;}const pp=v.principalParticulars||{},c=(v.loadingConditions||[])[0]||{},s=state.strength;box.innerHTML=`<div class="flex items-center justify-between gap-2"><div><div class="font-black text-violet-300">${escapeHtml(v.name)}</div><div class="text-slate-500">${escapeHtml(v.typeLabel||v.family)} · AMCOL TRAINING MODEL</div></div><span class="rounded-full border border-violet-500/30 bg-violet-500/10 px-2 py-1 text-violet-300 font-bold">TRAINING DATA</span></div><div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-1"><div class="rounded bg-slate-950 p-2">Hydro<br><b>${v.hydrostatics?.length||0} rows</b></div><div class="rounded bg-slate-950 p-2">KN<br><b>${v.knCrossCurves?.length||0} rows</b></div><div class="rounded bg-slate-950 p-2">Cargo<br><b>${v.cargoSpaces?.length||0} spaces</b></div><div class="rounded bg-slate-950 p-2">Ballast<br><b>${v.ballastTanks?.length||0} tanks</b></div><div class="rounded bg-slate-950 p-2">Tank calibration<br><b>${v.tankCalibration?.length||0} rows</b></div><div class="rounded bg-slate-950 p-2">Hull envelope<br><b>${v.stationEnvelope?.length||0} stations</b></div><div class="rounded bg-slate-950 p-2">SF/BM envelope<br><b>${v.structuralLimits?.length||0} rows</b></div><div class="rounded bg-slate-950 p-2">Conditions<br><b>${v.loadingConditions?.length||0}</b></div></div><div class="mt-2 rounded border border-slate-800 bg-slate-950/70 p-2"><b class="text-cyan-300">Loaded Departure target:</b> Δ ${(Number(c.displacement)||0).toFixed(0)} t · draft ${(Number(c.meanDraft)||0).toFixed(2)} m · KGc ${(Number(c.correctedKG)||0).toFixed(3)} m · GM ${(Number(c.GM)||0).toFixed(3)} m.<br><b>Current simulator:</b> Δ ${Number.isFinite(state.dispMass)?state.dispMass.toFixed(0):'—'} t · draft ${Number.isFinite(state.eqDraft)?state.eqDraft.toFixed(2):'—'} m · KGc ${Number.isFinite(state.kgCorr)?state.kgCorr.toFixed(3):'—'} m · GM ${Number.isFinite(state.gm)?state.gm.toFixed(3):'—'} m.</div><div class="mt-2 text-amber-200">${escapeHtml(v.statutoryDisclaimer||'AMCOL TRAINING MODEL — educational use only.')}</div>`;}
 
@@ -4906,9 +5070,31 @@ function renderHullEnvelopeStatus(){const box=document.getElementById('hullEnvel
 function renderDownfloodBasis(){const box=document.getElementById('downfloodBasisReadout');if(!box)return;box.innerHTML=`<div class="grid grid-cols-2 gap-2"><div class="rounded bg-slate-950 p-2"><div class="text-slate-500">Starboard opening</div><div class="font-mono text-cyan-300">${Number.isFinite(downfloodAngle)?downfloodAngle.toFixed(1)+'°':'—'}</div><div class="text-[8px] text-slate-500">${escapeHtml(state.downfloodBasisStarboard||'not available')}</div></div><div class="rounded bg-slate-950 p-2"><div class="text-slate-500">Port opening</div><div class="font-mono text-cyan-300">${Number.isFinite(downfloodAnglePort)?downfloodAnglePort.toFixed(1)+'°':'—'}</div><div class="text-[8px] text-slate-500">${escapeHtml(state.downfloodBasisPort||'not available')}</div></div></div><div class="mt-2 text-[8px] text-slate-500">Deck-edge immersion is tracked separately (${Number.isFinite(deckEdgeAngle)?deckEdgeAngle.toFixed(1)+'° STBD':'—'} / ${Number.isFinite(deckEdgeAnglePort)?deckEdgeAnglePort.toFixed(1)+'° PORT':'—'}). Uploaded vessel opening angles override representative openings.</div>`;}
 
 function runPhysicsValidationSuite(){const box=document.getElementById('physicsValidationReadout');if(!box)return;if(unifiedMission?.active){box.innerHTML='<span class="text-amber-300">Exit the active mission before running diagnostics.</span>';return;}const saved=makeConditionSnapshot('__diagnostic_restore__');const rows=[];try{loadGreatFortuneWorkbookCondition();const t=GREAT_FORTUNE_WORKBOOK_DATA.target;const test=(n,a,b,tol,u)=>rows.push({n,a,b,tol,u,pass:Math.abs(a-b)<=tol});test('GREAT FORTUNE displacement',state.dispMass,t.disp,1,'t');test('GREAT FORTUNE corrected GM',state.gm,t.gmCondition,.03,'m');test('GREAT FORTUNE fwd draft',state.draftBow,t.draftFwd,.04,'m');test('GREAT FORTUNE aft draft',state.draftStern,t.draftAft,.04,'m');test('GREAT FORTUNE list',state.equilibrium,t.listStarboard,.05,'°');const baseMoment=state.environmentMoment;state.windEnabled=false;state.currentEnabled=true;state.currentSpeedKts=2;state.currentDirection='port_to_starboard';calculateAll();const plus=state.equilibrium;state.currentDirection='starboard_to_port';calculateAll();const minus=state.equilibrium;rows.push({n:'Current-direction symmetry',a:plus+minus,b:0,tol:.08,u:'° sum',pass:Math.abs(plus+minus)<=.08});}catch(e){rows.push({n:'Runtime diagnostic',a:NaN,b:0,tol:0,u:e.message,pass:false});}finally{restoreConditionSnapshot(saved,{announce:false});}box.innerHTML=`<div class="font-bold mb-2 ${rows.every(r=>r.pass)?'text-emerald-300':'text-rose-300'}">${rows.every(r=>r.pass)?'ALL CORE CHECKS PASSED':'CHECKS REQUIRE ATTENTION'}</div>${rows.map(r=>`<div class="flex justify-between gap-2 rounded px-2 py-1 ${r.pass?'bg-emerald-950/20':'bg-rose-950/25'}"><span>${r.pass?'✓':'✕'} ${r.n}</span><span class="font-mono">${Number.isFinite(r.a)?r.a.toFixed(3):'ERROR'} ${r.u||''}</span></div>`).join('')}`;}
+function runChallengeRegressionSuite(){
+ const box=document.getElementById('challengeRegressionReadout');if(!box)return;if(activeMissionLoaded()){box.innerHTML='<span class="text-amber-300">Exit the active mission before running challenge regression.</span>';return;}
+ const saved=makeConditionSnapshot('__challenge_regression_restore__'),savedKey=document.getElementById('scenarioSelect')?.value||'free',results=[];
+ box.innerHTML='<span class="text-cyan-300">Running 25 challenge/reference-solution checks…</span>';
+ try{
+  for(const key of Object.keys(challengeMeta)){
+   const selector=document.getElementById('scenarioSelect');if(selector)selector.value=key;
+   const sc=scenarios[key],ref=scenarioReferenceSolutions[key];let pass=false,msg='';
+   try{
+    if(!sc||typeof sc.apply!=='function'||!ref||typeof ref.apply!=='function')throw new Error('missing scenario/reference solution');
+    vesselVisualTransaction=true;try{sc.apply();ensureCurrentVesselSpaceLayout({force:true,render:false});calculateAll();findAndSetEquilibrium();calculateAll({curve:false});}finally{vesselVisualTransaction=false;}
+    challengeBaselineSnapshot=captureChallengeSnapshot();
+    ref.apply();calculateAll();findAndSetEquilibrium();calculateAll({curve:false});
+    const o=challengeOutcome(key);pass=!!o?.pass;msg=pass?'reference solution reaches PASS':(o?.target?.message||o?.physical?.reasons?.join(' · ')||'reference solution did not pass');
+   }catch(e){msg=e.message||String(e);pass=false;}
+   results.push({key,pass,msg});
+  }
+ }finally{restoreConditionSnapshot(saved,{announce:false});const sel=document.getElementById('scenarioSelect');if(sel)sel.value=scenarios[savedKey]?savedKey:'free';updateMissionSelectorUI();challengeBaselineSnapshot=null;}
+ const ok=results.filter(r=>r.pass).length;box.innerHTML=`<div class="font-bold mb-2 ${ok===results.length?'text-emerald-300':'text-rose-300'}">${ok}/${results.length} REFERENCE SOLUTIONS PASS THEIR CURRENT CHALLENGE LOGIC</div>${results.map(r=>`<div class="flex justify-between gap-2 rounded px-2 py-1 ${r.pass?'bg-emerald-950/20':'bg-rose-950/25'}"><span>${r.pass?'✓':'✕'} ${escapeHtml(r.key)}</span><span class="text-right text-[8px]">${escapeHtml(r.msg)}</span></div>`).join('')}`;
+}
+
 
 function initCleanUI(){
  document.body.classList.add('clean-ui','ui-basic');
+ togglePresentationMode(localStorage.getItem('amcol_presentation_mode')==='1');
  const content=document.getElementById('tabVessel')?.parentElement;if(!content)return;
  let ops=document.getElementById('tabOperations');if(!ops){ops=document.createElement('section');ops.id='tabOperations';ops.className='space-y-3 hidden';content.appendChild(ops);}
  let data=document.getElementById('tabData');if(!data){data=document.createElement('section');data.id='tabData';data.className='space-y-3 hidden';content.appendChild(data);}
@@ -4922,11 +5108,12 @@ function initCleanUI(){
  if(mission&&!mission.querySelector('.clean-section-intro'))mission.prepend(cleanIntro('Mission','Ship Stability Mission','Free Customisation is the default. Select a training mission only when assessment guidance is needed.'));
 
  if(data&&!document.getElementById('dataCompletenessCard')){
+  const authority=document.createElement('details');authority.id='dataAuthorityCard';authority.open=true;authority.className='rounded-xl border border-cyan-900/50 bg-cyan-950/10 p-3';authority.innerHTML='<summary class="cursor-pointer font-bold text-cyan-300">Data Authority · What Is Real vs Modelled</summary><div id="dataAuthorityReadout" class="mt-3 space-y-2 text-[9px]"></div>';data.appendChild(authority);
   const train=document.createElement('details');train.id='amcolTrainingDataCard';train.className='rounded-xl border border-violet-900/60 bg-violet-950/15 p-3';train.innerHTML='<summary class="cursor-pointer font-bold text-violet-300">AMCOL Training Vessel Data Pack</summary><div id="amcolTrainingDataReadout" class="mt-3 text-[9px] text-slate-300"></div>';data.appendChild(train);
   const card=document.createElement('details');card.id='dataCompletenessCard';card.className='rounded-xl border border-slate-800 bg-slate-950/45 p-3';card.innerHTML='<summary class="cursor-pointer font-bold text-cyan-300">Vessel Data Completeness</summary><div id="dataCompletenessReadout" class="mt-3 text-[9px]"></div>';data.appendChild(card);
   const hull=document.createElement('details');hull.id='hullEnvelopeCard';hull.className='rounded-xl border border-slate-800 bg-slate-950/45 p-3 advanced-only';hull.innerHTML='<summary class="cursor-pointer font-bold text-cyan-300">Hull Station / Offset Envelope</summary><div id="hullEnvelopeStatus" class="mt-2 text-[9px]"></div><div class="mt-2 grid grid-cols-3 gap-2"><label class="col-span-2 px-2 py-1.5 rounded border border-cyan-700/40 text-cyan-300 text-center cursor-pointer">Import station CSV<input type="file" accept=".csv" class="hidden" onchange="importHullStationEnvelope(this.files);this.value=null"></label><button onclick="downloadHullStationTemplate()" class="px-2 py-1.5 rounded border border-slate-700 text-slate-300">Template</button><button onclick="clearHullStationEnvelope()" class="col-span-3 px-2 py-1 rounded border border-rose-800/40 text-rose-300">Clear imported hull envelope</button></div>';data.appendChild(hull);
   const lib=document.createElement('details');lib.id='conditionLibraryCard';lib.className='rounded-xl border border-slate-800 bg-slate-950/45 p-3';lib.innerHTML='<summary class="cursor-pointer font-bold text-cyan-300">Condition Library · Save / Compare</summary><div class="mt-3 grid md:grid-cols-3 gap-2"><input id="conditionNameInput" placeholder="Condition name" class="md:col-span-2 bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-slate-200"><button onclick="saveCurrentCondition()" class="rounded bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-bold">Save Current</button><select id="conditionLibrarySelect" class="md:col-span-2 bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-slate-200"><option value="">Choose saved condition…</option></select><div id="conditionLibraryCount" class="text-right text-[8px] text-slate-500 self-center">0/12 saved</div><button onclick="loadSelectedCondition()" class="rounded border border-emerald-700/40 text-emerald-300 py-1.5">Load</button><button onclick="compareSelectedCondition()" class="rounded border border-amber-700/40 text-amber-300 py-1.5">Compare</button><button onclick="deleteSelectedCondition()" class="rounded border border-rose-800/40 text-rose-300 py-1.5">Delete</button></div><div id="conditionCompareReadout" class="mt-3 text-[9px] text-slate-300"></div>';data.appendChild(lib);
-  const diag=document.createElement('details');diag.id='physicsValidationCard';diag.className='rounded-xl border border-slate-800 bg-slate-950/45 p-3 advanced-only';diag.innerHTML='<summary class="cursor-pointer font-bold text-violet-300">Physics Regression Diagnostics</summary><button onclick="runPhysicsValidationSuite()" class="mt-3 w-full py-1.5 rounded bg-violet-500/10 border border-violet-500/30 text-violet-300 font-bold">Run Core Validation Suite</button><div id="physicsValidationReadout" class="mt-2 space-y-1 text-[9px] text-slate-300">Checks GREAT FORTUNE targets and transverse-force sign symmetry, then restores the current condition.</div>';data.appendChild(diag);
+  const diag=document.createElement('details');diag.id='physicsValidationCard';diag.className='rounded-xl border border-slate-800 bg-slate-950/45 p-3 advanced-only';diag.innerHTML='<summary class="cursor-pointer font-bold text-violet-300">Physics & Challenge Regression Diagnostics</summary><div class="mt-3 grid grid-cols-2 gap-2"><button onclick="runPhysicsValidationSuite()" class="py-1.5 rounded bg-violet-500/10 border border-violet-500/30 text-violet-300 font-bold">Core Physics</button><button onclick="runChallengeRegressionSuite()" class="py-1.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-bold">25 Challenges</button></div><div id="physicsValidationReadout" class="mt-2 space-y-1 text-[9px] text-slate-300">Checks GREAT FORTUNE targets and transverse-force sign symmetry, then restores the current condition.</div><div id="challengeRegressionReadout" class="mt-2 space-y-1 text-[9px] text-slate-300">Challenge regression loads each challenge, applies its reference solution and verifies the current PASS logic.</div>';data.appendChild(diag);
  }
  if(stability&&!document.getElementById('operationalLimitsCard')){
   const lim=document.createElement('details');lim.id='operationalLimitsCard';lim.className='rounded-xl border border-slate-800 bg-slate-950/45 p-3 advanced-only';lim.innerHTML='<summary class="cursor-pointer font-bold text-amber-300">Operational Draft & Margin Advisories</summary><div id="operationalLimitsReadout" class="mt-3 text-[9px]"></div>';stability.appendChild(lim);
@@ -4952,8 +5139,15 @@ function initCleanUI(){
  toggleCleanNavCompact(localStorage.getItem('amcol_clean_nav_compact')==='1');
  const remembered=localStorage.getItem('amcol_clean_active_section');if(remembered&&['vessel','cargoOps','environment','operations','physics','data','simulate'].includes(remembered))switchTab(remembered);else switchTab('vessel');
  content.querySelectorAll('section>details[open]').forEach(d=>d.open=false);
- loadConditionLibrary();renderOperationalLimitsCard();renderDataCompleteness();renderAMCOLTrainingDataPanel();renderHullEnvelopeStatus();renderDownfloodBasis();
+ loadConditionLibrary();renderOperationalLimitsCard();renderDataCompleteness();renderDataAuthority();renderAMCOLTrainingDataPanel();renderHullEnvelopeStatus();renderDownfloodBasis();
  bindCleanFeedback();
+}
+function togglePresentationMode(force=null){
+ const next=force===null?!document.body.classList.contains('presentation-mode'):!!force;
+ document.body.classList.toggle('presentation-mode',next);
+ const b=document.getElementById('presentationModeBtn');if(b){b.classList.toggle('active',next);b.setAttribute('aria-pressed',String(next));b.title=next?'Exit Presentation / large-text mode':'Presentation / large-text mode';}
+ try{localStorage.setItem('amcol_presentation_mode',next?'1':'0');}catch(e){}
+ setTimeout(()=>{resizeCanvas();render();window.AMCOL3D?.resize?.();},30);
 }
 function setCleanControlMode(mode){
  cleanControlMode=mode==='advanced'?'advanced':'basic';document.body.classList.toggle('ui-basic',cleanControlMode==='basic');document.body.classList.toggle('ui-advanced',cleanControlMode==='advanced');
@@ -5040,7 +5234,7 @@ function cloneMissionSnapshot(){
 function restoreMissionSnapshot(snap){
  if(!snap)return;
  Object.assign(state,snap.state);cargoItems=deepClonePlain(snap.cargo||[]);ballastTanks=deepClonePlain(snap.ballast||[]);window.AMCOL_CUSTOM_HULL_FORM=deepClonePlain(snap.customHull);operationalLimits=deepClonePlain(snap.operationalLimits||operationalLimits);
- const v=AMCOL_TRAINING_VESSELS_BY_ID[state.amcolTrainingVesselId];if(v){window.AMCOL_ACTIVE_TANK_CALIBRATION=deepClonePlain(v.tankCalibration||[]);window.AMCOL_ACTIVE_STRUCTURAL_LIMITS=deepClonePlain(v.structuralLimits||[]);window.AMCOL_ACTIVE_TRAINING_CONDITIONS=deepClonePlain(v.loadingConditions||[]);}
+ restoreAMCOLTrainingContextFromState();
  bumpSpaceLayoutRevision('mission-restore');syncFormFromState();renderCargoTable();renderBallastPlan();calculateAll();commitVesselVisualRefresh('mission-restore');
 }
 function startRandomStabilityMission(){
@@ -5148,7 +5342,7 @@ function challengeBriefingData(key){
  };
 }
 function showChallengeBriefing(key=null){
- const scenarioKey=key||document.getElementById('scenarioSelect')?.value;
+ const scenarioKey=key||activeScenarioKey();
  const data=challengeBriefingData(scenarioKey);
  if(!data)return false;
  activeChallengeBriefingKey=scenarioKey;
@@ -5202,14 +5396,18 @@ function compareMissionMetric(initial,current,unit='',digits=2,signed=false){
 }
 function missionFreeModeSelected(){return (document.getElementById('scenarioSelect')?.value||'free')==='free';}
 function updateMissionSelectorUI(){
- const free=missionFreeModeSelected(),btn=document.getElementById('loadScenarioBtn');
- if(btn)btn.innerHTML=free?'<i class="fa-solid fa-sliders mr-1"></i>Use Free Mode':'<i class="fa-solid fa-play mr-1"></i>Load Mission';
+ const selected=document.getElementById('scenarioSelect')?.value||'free',btn=document.getElementById('loadScenarioBtn'),loaded=activeMissionLoaded(),same=loaded&&selected===unifiedMission.key;
+ if(!btn)return;
+ if(selected==='free')btn.innerHTML=loaded?'<i class="fa-solid fa-door-open mr-1"></i>Exit Mission → Free Mode':'<i class="fa-solid fa-sliders mr-1"></i>Use Free Mode';
+ else if(same)btn.innerHTML='<i class="fa-solid fa-rotate-left mr-1"></i>Restart Loaded Mission';
+ else btn.innerHTML=loaded?'<i class="fa-solid fa-arrow-right-to-bracket mr-1"></i>Load Selected Mission':'<i class="fa-solid fa-play mr-1"></i>Load Mission';
+ btn.title=loaded&&!same?`Active mission remains ${scenarios[unifiedMission.key]?.title||unifiedMission.key} until this button is pressed.`:'';
 }
 function setMissionOnlyControlsVisible(visible){
  ['missionRestartBtn','missionTaskDetails','missionSubmitBtn','missionInstructorSupport','missionTargetBlock'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('hidden',!visible);});
 }
 function renderUnifiedMissionPanel(){
- const free=!unifiedMission.active||unifiedMission.key==='free'||missionFreeModeSelected();
+ const free=!activeMissionLoaded();
  const cur=captureUnifiedMissionCondition(),p=hydroPack();
  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
  setMissionOnlyControlsVisible(!free);
@@ -5246,7 +5444,7 @@ function enterFreeCustomisation(switchToSim=true){
 }
 function reloadUnifiedMission(){if(!unifiedMission.active||unifiedMission.key==='free'){enterFreeCustomisation(true);return;}const key=unifiedMission.key||document.getElementById('scenarioSelect')?.value||'baseline';loadScenario(key);}
 function runUnifiedMissionTest(){
- if(!unifiedMission.active||unifiedMission.key==='free'||missionFreeModeSelected()){
+ if(!activeMissionLoaded()){
   calculateAll();findAndSetEquilibrium();calculateAll();renderUnifiedMissionPanel();testCurrentStability(true);return;
  }
  findAndSetEquilibrium();unifiedMission.pendingSubmit=false;unifiedMission.autoTesting=false;renderUnifiedMissionPanel();testCurrentStability(true);
@@ -5265,7 +5463,7 @@ function finalizeUnifiedMissionSubmission(){
 }
 
 function renderScenario(){
- const key=document.getElementById('scenarioSelect')?.value||unifiedMission.key||'free';
+ const key=activeScenarioKey();
  const instructionsBtn=document.getElementById('challengeInstructionsBtn');
  if(key==='free'){
   if(instructionsBtn)instructionsBtn.classList.add('hidden');
@@ -5301,6 +5499,7 @@ function currentGenericStabilityAssessment(){
  const sourceHyd=!!hydroTableAtCurrentDisplacement();
  const sourceGZ=(p.kind==='gzReference'||p.kind==='knReference')?Number.isFinite(textbookReferenceGZAt(state.equilibrium)):(p.kind==='uploadedBundle'&&p.knRows?.length&&Number.isFinite(uploadedOperationalGZAt(state.equilibrium)));
  if(state.hydro?.invalid&&!sourceHyd&&!sourceGZ)reasons.push('hydrostatic condition invalid');
+ if(state.physicsIntegrity&&!state.physicsIntegrity.pass)reasons.push(`physics integrity monitor reports ${state.physicsIntegrity.hardFailures} hard numerical failure(s)`);
  if(state.hydro?.invalid&&(sourceHyd||sourceGZ))advisories.push('generic hull section is outside its visual buoyancy envelope; source stability data remain active');
  if(!state.equilibriumValid)reasons.push('no stable equilibrium root found in the modelled heel range');
  if(state.gm<.15)reasons.push(`GM ${state.gm.toFixed(3)} m < 0.150 m`);
@@ -5329,16 +5528,22 @@ function updateGlobalStabilityBadge(pass,tested=true){
  const badge=document.getElementById('globalStabilityBadge');if(!badge)return;
  if(!tested){badge.className='hidden md:inline-flex px-2 py-1 rounded-full text-[9px] font-bold bg-slate-800 text-slate-400 border border-slate-700';badge.textContent='NOT TESTED';return;}
  badge.className=`hidden md:inline-flex px-2 py-1 rounded-full text-[9px] font-bold ${pass?'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30':'bg-rose-500/15 text-rose-400 border border-rose-500/30'}`;
- const free=!unifiedMission.active||unifiedMission.key==='free'||missionFreeModeSelected();
+ const free=!activeMissionLoaded();
  badge.textContent=free?(pass?'STABLE':'UNSAFE'):(pass?'TARGET PASS':'TARGET FAIL');
+}
+function stabilityCalculationProvenance(){
+ const p=hydroPack(),hr=hydroTableAtCurrentDisplacement(),km=Number(state.upright?.KM),kgc=Number(state.kgCorr),gm=Number(state.gm);
+ const kmSource=hr?'source hydrostatic interpolation':(p.kind==='gzReference'||p.kind==='knReference'||(p.kind==='uploadedBundle'&&p.knRows?.length))?'active source GZ/KN initial slope':'procedural upright hydrostatics';
+ const gzSource=(p.kind==='gzReference'||p.kind==='knReference'||(p.kind==='uploadedBundle'&&p.knRows?.length))?'source/reference KN or GZ ordinates':'nonlinear procedural geometry';
+ return `<span class="font-bold text-cyan-200">Calculation trace:</span> GM = KM − KGc = ${Number.isFinite(km)?km.toFixed(3):'—'} − ${Number.isFinite(kgc)?kgc.toFixed(3):'—'} = <b>${Number.isFinite(gm)?gm.toFixed(3):'—'} m</b> · KM basis: ${escapeHtml(kmSource)} · FSC ${Number(state.fsc||0).toFixed(3)} m · finite-angle GZ basis: ${escapeHtml(gzSource)}.`;
 }
 function evaluateCurrentStability(){
  calculateAll();let pass=false,details='',basis='',title='';const physical=currentGenericStabilityAssessment();
  if(stabilityMission.active){const m=stabilityMissions[stabilityMission.index],targetPass=!!m.check(),changed=missionCorrectionDetected();pass=physical.pass&&targetPass&&changed;title=pass?'MISSION SOLVED · STABILITY TARGET ACHIEVED':!physical.pass?'UNSAFE / NOT STABLE':'PHYSICALLY STABLE · MISSION NOT SOLVED';details=`Physical screen: ${physical.pass?'PASS':'FAIL'} · Mission target: ${targetPass?'PASS':'NOT YET'} · Correction detected: ${changed?'YES':'NO'}<br>Equilibrium ${state.equilibrium.toFixed(2)}° · GM ${state.gm.toFixed(3)} m · FSC ${state.fsc.toFixed(3)} m${physical.reasons.length?'<br>'+physical.reasons.join(' · '):''}`;basis=`Mission criteria: ${m.target}`;}
- else{const key=document.getElementById('scenarioSelect')?.value,sc=scenarios[key];if(challengeMeta[key]&&sc&&typeof sc.check==='function'){const o=challengeOutcome(key);pass=o.pass;title=pass?'CHALLENGE SOLVED · STABILITY TARGET ACHIEVED':!o.physical.pass?'UNSAFE / NOT STABLE':'PHYSICALLY STABLE · CHALLENGE NOT SOLVED';details=`Physical screen: ${o.physical.pass?'PASS':'FAIL'} · Challenge target: ${o.target.pass?'PASS':'NOT YET'} · Required correction detected: ${o.changed?'YES':'NO'}<br>${o.target.message||''}${o.physical.reasons.length?'<br>'+o.physical.reasons.join(' · '):''}`;basis=sc.goal||'Challenge criteria';}
+ else{const key=activeScenarioKey(),sc=scenarios[key];if(challengeMeta[key]&&sc&&typeof sc.check==='function'){const o=challengeOutcome(key);pass=o.pass;title=pass?'CHALLENGE SOLVED · STABILITY TARGET ACHIEVED':!o.physical.pass?'UNSAFE / NOT STABLE':'PHYSICALLY STABLE · CHALLENGE NOT SOLVED';details=`Physical screen: ${o.physical.pass?'PASS':'FAIL'} · Challenge target: ${o.target.pass?'PASS':'NOT YET'} · Required correction detected: ${o.changed?'YES':'NO'}<br>${o.target.message||''}${o.physical.reasons.length?'<br>'+o.physical.reasons.join(' · '):''}`;basis=sc.goal||'Challenge criteria';}
  else if(sc&&typeof sc.check==='function'){const r=sc.check();pass=physical.pass&&!!r.pass;title=pass?'SCENARIO TARGET ACHIEVED':!physical.pass?'UNSAFE / NOT STABLE':'PHYSICALLY STABLE · SCENARIO TARGET NOT ACHIEVED';details=`Physical screen: ${physical.pass?'PASS':'FAIL'} · Scenario target: ${r.pass?'PASS':'NOT YET'}<br>${r.message||''}${physical.reasons.length?'<br>'+physical.reasons.join(' · '):''}`;basis=sc.goal||'Scenario criteria';}
  else{pass=physical.pass;title=pass?'PHYSICALLY STABLE':'UNSAFE / NOT STABLE';basis='Core physical teaching screen. IMO teaching audit is reported separately.';details=physical.reasons.length?physical.reasons.join(' · '):`Equilibrium ${state.equilibrium.toFixed(2)}° · GM ${state.gm.toFixed(3)} m · core physical checks satisfied.${physical.advisories.length?'<br><span class="text-amber-300">Advisory: '+physical.advisories.join(' · ')+'</span>':''}`;}}
- return {pass,details,basis,title,physical};
+ basis=`${basis}<br>${stabilityCalculationProvenance()}`;return {pass,details,basis,title,physical};
 }
 function setTestingUI(active){
  const btns=[document.getElementById('globalTestBtn'),...document.querySelectorAll('button[onclick*="testCurrentStability"],button[onclick*="runUnifiedMissionTest"],button[onclick*="runOperationalPhysicsTest"]')];
@@ -5403,7 +5608,7 @@ function finishAnimatedStabilityTest(){
 }
 
 function checkScenarioChallenge(){
- const key=document.getElementById('scenarioSelect').value,sc=scenarios[key],box=document.getElementById('challengeResult');
+ const key=activeScenarioKey(),sc=scenarios[key],box=document.getElementById('challengeResult');
  if(unifiedMission.active)unifiedMission.attempts++;
  box.classList.remove('hidden','border-emerald-600','bg-emerald-950/30','text-emerald-200','border-rose-600','bg-rose-950/30','text-rose-200','border-amber-600','bg-amber-950/30','text-amber-200','border-slate-700','bg-slate-900','text-slate-300');
  if(!sc||typeof sc.check!=='function'){box.classList.add('border-slate-700','bg-slate-900','text-slate-300');box.textContent='This is an investigation scenario rather than an auto-graded challenge.';return;}
@@ -5433,9 +5638,9 @@ function loadScenario(key){
 }
 function syncFormFromState(){
  if(state.waveModel==='manual')state.wavePeriod=state.waveLength/Math.max(.1,state.waveSpeed);else applyPhysicalWaveFromPeriod(false);
- const map={inputHullType:'hullType',inputDensity:'density',inputLength:'length',inputBeam:'beam',inputDepth:'depth',inputWaterDepth:'waterDepth',inputLightshipMass:'lightshipMass',inputLightshipKG:'lightshipKG',inputLightshipTCG:'lightshipTCG',inputLightshipLCG:'lightshipLCG',inputTankCount:'tankCount',inputTankLength:'tankLength',inputTankBreadth:'tankBreadth',inputTankDensity:'tankDensity',inputTankFill:'tankFill',inputGrainMoment:'grainMoment',inputCraneMass:'craneMass',inputCraneHeight:'craneHeight',inputCraneOutreach:'craneOutreach',inputCraneSide:'craneSide',inputCraneLCG:'craneLCG',damageMode:'damageMode',inputDmgMass:'dmgMass',inputDmgVCG:'dmgVCG',inputDmgTCG:'dmgTCG',inputDamageSide:'damageSide',inputDamageWidth:'damageWidth',inputDamageHeight:'damageHeight',inputDamagePerm:'damagePerm',inputKrRatio:'krRatio',inputDamping:'damping',inputWaveMoment:'waveMoment',inputWavePeriod:'wavePeriod',inputWaveHeight:'waveHeight',inputWaveLength:'waveLength',inputWaveSpeed:'waveSpeed',inputWaveHeading:'waveHeading',inputWaveGain:'waveGain',inputRollMode:'rollMode',inputShipSpeed:'shipSpeedKts',inputParametricVariation:'parametricVariation',inputQuadraticDamping:'quadraticDamping',inputPhysicsFidelity:'physicsFidelity',inputWaveModel:'waveModel'};Object.entries(map).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.value=state[k]});document.getElementById('checkFSE').checked=state.fse;const grainCheck=document.getElementById('checkGrainStability');if(grainCheck)grainCheck.checked=state.grainEnabled;document.getElementById('checkCrane').checked=state.crane;document.getElementById('checkDamage').checked=state.damage;document.getElementById('checkWaveEnabled').checked=state.waveEnabled;
+ const map={inputHullType:'hullType',inputDensity:'density',inputLength:'length',inputBeam:'beam',inputDepth:'depth',inputWaterDepth:'waterDepth',inputLightshipMass:'lightshipMass',inputLightshipKG:'lightshipKG',inputLightshipTCG:'lightshipTCG',inputLightshipLCG:'lightshipLCG',inputTankCount:'tankCount',inputTankLength:'tankLength',inputTankBreadth:'tankBreadth',inputTankDensity:'tankDensity',inputTankFill:'tankFill',inputGrainMoment:'grainMoment',inputCraneMass:'craneMass',inputCraneHeight:'craneHeight',inputCraneOutreach:'craneOutreach',inputCraneSide:'craneSide',inputCraneLCG:'craneLCG',damageMode:'damageMode',inputDmgMass:'dmgMass',inputDmgVCG:'dmgVCG',inputDmgTCG:'dmgTCG',inputDmgLCG:'dmgLCG',inputDamageSide:'damageSide',inputDamageWidth:'damageWidth',inputDamageHeight:'damageHeight',inputDamageLengthPct:'damageLengthPct',inputDamageLCG:'damageLCG',inputDamagePerm:'damagePerm',inputKrRatio:'krRatio',inputDamping:'damping',inputWaveMoment:'waveMoment',inputWavePeriod:'wavePeriod',inputWaveHeight:'waveHeight',inputWaveLength:'waveLength',inputWaveSpeed:'waveSpeed',inputWaveHeading:'waveHeading',inputWaveGain:'waveGain',inputRollMode:'rollMode',inputShipSpeed:'shipSpeedKts',inputParametricVariation:'parametricVariation',inputQuadraticDamping:'quadraticDamping',inputPhysicsFidelity:'physicsFidelity',inputWaveModel:'waveModel'};Object.entries(map).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.value=state[k]});document.getElementById('checkFSE').checked=state.fse;const grainCheck=document.getElementById('checkGrainStability');if(grainCheck)grainCheck.checked=state.grainEnabled;document.getElementById('checkCrane').checked=state.crane;document.getElementById('checkDamage').checked=state.damage;document.getElementById('checkWaveEnabled').checked=state.waveEnabled;
  const ci=document.getElementById('inputCompanyName'),vi=document.getElementById('inputVesselName');if(ci)ci.value=state.companyName||'';if(vi)vi.value=state.vesselName||'';
- const hpSel=document.getElementById('hydroDataPackSelect');if(hpSel)hpSel.value=state.hydroDataKey||'geometry';updateHydroDataPackInfo();syncEnvironmentForm();setControlValues();toggleDamageInputs();updateWaveReadout();updateDynamicsButton();}
+ const hpSel=document.getElementById('hydroDataPackSelect');if(hpSel)hpSel.value=state.hydroDataKey||'geometry';updateHydroDataPackInfo();syncEnvironmentForm();setControlValues();toggleDamageInputs();updateWaveInputMode();updateWaveReadout();updateDynamicsButton();}
 function setControlValues(){document.getElementById('sliderHeel').value=state.heel;document.getElementById('heelLabel').textContent=`${state.heel.toFixed(1)}°`;}
 
 
@@ -5513,7 +5718,12 @@ const grainChartAnnotationPlugin={
 };
 
 function initChart(){
- const c=document.getElementById('gzChart').getContext('2d');
+ const canvasEl=document.getElementById('gzChart');
+ if(!canvasEl)return false;
+ if(typeof window.Chart!=='function'){
+  gzChart=null;const wrap=document.getElementById('gzChartWrap');if(wrap&&!document.getElementById('gzChartDependencyWarning')){const w=document.createElement('div');w.id='gzChartDependencyWarning';w.className='absolute inset-3 z-20 rounded-xl border border-amber-700/40 bg-slate-950/95 p-4 text-[10px] text-amber-100';w.innerHTML='<b class="text-amber-300">GZ CHART LIBRARY UNAVAILABLE</b><br>Core stability calculations remain available in 2D, but the Chart.js visual cannot be drawn. Check the simulator network/vendor assets and reload.';wrap.appendChild(w);}console.error('AMCOL: Chart.js is unavailable; continuing without chart visualisation.');return false;
+ }
+ const c=canvasEl.getContext('2d');
  gzChart=new Chart(c,{
   type:'line',
   plugins:[staticStabilityAnnotationPlugin,grainChartAnnotationPlugin],
@@ -5556,6 +5766,7 @@ function initChart(){
    }
   }
  });
+ return true;
 }
 function updateChart(){
  if(!gzChart)return;
@@ -5708,8 +5919,10 @@ function updateCoupledHydroUI(){
     ['Trim',`${state.trimMeters>=0?'+':''}${state.trimMeters.toFixed(2)} m`],
     ['Sinkage',`${(-state.coupledSinkage).toFixed(2)} m`],
     ['B (TCB/LCB)',`${state.coupledTCB.toFixed(2)} / ${state.coupledLCB.toFixed(2)} m`],
-    ['Residual T',`${state.coupledResidualT.toFixed(4)} m`],
-    ['Residual L',`${state.coupledResidualL.toFixed(4)} m`]
+    ['Δ residual',`${Number(state.coupledResidualMass||0).toFixed(3)} t`],
+    ['T moment residual',`${Number(state.coupledResidualTMoment||0).toFixed(1)} t·m`],
+    ['L moment residual',`${Number(state.coupledResidualLMoment||0).toFixed(1)} t·m`],
+    ['Convergence',`${state.coupledIterations||0} iter · ${state.coupledConvergenceQuality||'—'}`]
    ];
    box.innerHTML=d.map(([a,b])=>`<div class="bg-slate-900 rounded p-1.5"><div class="text-slate-500">${a}</div><div class="font-mono text-slate-200">${b}</div></div>`).join('');
  }
@@ -5721,6 +5934,7 @@ function updateCoupledHydroUI(){
    const pct=s?s.concentration*100:0;
    idx.textContent=s?`${pct.toFixed(1)}% index`:'—';idx.className=`font-mono ${pct<13?'text-emerald-300':pct<18?'text-amber-300':'text-rose-300'}`;
  }
+ if(box&&s){box.insertAdjacentHTML('beforeend',`<div class="bg-slate-900 rounded p-1.5"><div class="text-slate-500">Sagging +BM</div><div class="font-mono text-amber-200">${(s.maxSaggingBM/1000).toFixed(1)} MN·m @ ${(s.saggingX/state.length*100).toFixed(0)}%L</div></div><div class="bg-slate-900 rounded p-1.5"><div class="text-slate-500">Hogging −BM</div><div class="font-mono text-violet-200">${(s.maxHoggingBM/1000).toFixed(1)} MN·m @ ${(s.hoggingX/state.length*100).toFixed(0)}%L</div></div>`);}
  updateStrengthChart();
 }
 function updateStrengthChart(){
@@ -6357,7 +6571,15 @@ function dynamicsStep(dt){
  const manualForcing=forcedMode?state.waveMoment*1000*Math.sin(2*Math.PI*dynTime/forcingPeriod):0;
  const autoForcing=forcedMode&&state.waveEnabled?estimatedWaveMomentAmplitude()*Math.sin(2*Math.PI*dynTime/forcingPeriod):0;
  const environmentalForcing=environmentalHeelingMomentN(angle),forcing=manualForcing+autoForcing+environmentalForcing;
- const acc=(-restoring-c*dynOmega-nonlinearDamping+forcing)/I;dynOmega+=acc*dt;dynPhi+=dynOmega*dt;dynTime+=dt;
+ // Adaptive semi-implicit integration: retain the stable symplectic update, but subdivide long frames
+ // so high-GM/stiff conditions cannot acquire artificial energy from a browser frame-rate spike.
+ const maxStep=Math.max(.004,Math.min(.02,(state.naturalPeriod||4)/180)),sub=Math.max(1,Math.min(10,Math.ceil(dt/maxStep))),hdt=dt/sub;
+ for(let si=0;si<sub;si++){
+  const aDeg=dynPhi*180/Math.PI,gzNow=operationalGZAt(aDeg),envNow=environmentalHeelingMomentN(aDeg),tNow=dynTime;
+  let rf=1;if(state.rollMode==='parametric'&&state.waveEnabled)rf=Math.max(.15,Math.min(1.85,1+state.parametricVariation*Math.cos(2*Math.PI*tNow/forcingPeriod)));
+  const rest=m*G*(Number.isFinite(gzNow)?gzNow:0)*rf,manual=forcedMode?state.waveMoment*1000*Math.sin(2*Math.PI*tNow/forcingPeriod):0,auto=forcedMode&&state.waveEnabled?estimatedWaveMomentAmplitude()*Math.sin(2*Math.PI*tNow/forcingPeriod):0,qd=(state.physicsFidelity==='teaching'?0:Math.max(0,Number(state.quadraticDamping)||0)*I*Math.abs(dynOmega)*dynOmega),acc=(-rest-c*dynOmega-qd+manual+auto+envNow)/I;
+  dynOmega+=acc*hdt;dynPhi+=dynOmega*hdt;dynTime+=hdt;
+ }
  if(Math.abs(dynPhi)>85*Math.PI/180){dynPhi=Math.sign(dynPhi)*85*Math.PI/180;dynOmega=0;dynamicsRunning=false;updateDynamicsButton();}
  state.heel=dynPhi*180/Math.PI;const liveHydro=hydroAtAngle(state.heel);if(!liveHydro.invalid)state.hydro=liveHydro;state.operationalGZ=operationalGZAt(state.heel);state.operationalRM=state.dispMass*G*state.operationalGZ;updateUI();
 }
@@ -6542,7 +6764,7 @@ function animationLoop(ts){
  render();
 }
 
-function printReport(){const cr=evaluateIMO(),h=state.hydro,u=state.upright,w=window.open('','_blank','width=900,height=900');w.document.write(`<html><head><title>AMCOL Stability Teaching Report</title><style>body{font-family:Arial;padding:24px;color:#172033}table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid #ccd4df;padding:7px;font-size:12px}th{background:#eef2f7}.pass{color:green;font-weight:bold}.fail{color:#b91c1c;font-weight:bold}</style></head><body><h2>AMCOL Advanced Ship Stability Simulator</h2><p><b>Educational geometry-based stability report</b> — not an approved loading-computer certificate.</p><p><b>Vessel:</b> ${state.vesselName||'Training vessel'} &nbsp; <b>Company:</b> ${state.companyName||'—'} &nbsp; <b>Type:</b> ${(vesselPresets[state.hullType]?.label||state.hullType)}</p><p><small>${Object.values(referenceVesselPresets).find(r=>r.vesselName===state.vesselName)?.source?'Reference dimensions source: '+Object.values(referenceVesselPresets).find(r=>r.vesselName===state.vesselName).source+' · Published dimensions are reference data; model KG/lightship may still require approved vessel data.':''}</small></p><p><b>Principal dimensions:</b> L ${state.length.toFixed(1)} m · B ${state.beam.toFixed(1)} m · D ${state.depth.toFixed(1)} m</p>${state.sourceConditionKey==='great_fortune_workbook'?`<p><b>Workbook source condition:</b> ${escapeHtml(GREAT_FORTUNE_WORKBOOK_DATA.sourceFile)} · target Δ ${GREAT_FORTUNE_WORKBOOK_DATA.target.disp.toFixed(0)} t · target mean draft ${GREAT_FORTUNE_WORKBOOK_DATA.target.draft.toFixed(3)} m · target trim ${GREAT_FORTUNE_WORKBOOK_DATA.target.trimByStern.toFixed(3)} m by stern.</p>`:''}<p><b>Longitudinal teaching model:</b> LCG ${state.lcg.toFixed(2)} m · LCF ${state.lcf.toFixed(2)} m · GM<sub>L</sub> ${state.gmLong.toFixed(2)} m · MCT 1 cm ${state.mct1cm.toFixed(2)} t·m/cm · Trim ${state.trimMeters.toFixed(2)} m (${state.trimAngle.toFixed(2)}°) · Draft F/A ${state.draftBow.toFixed(2)} / ${state.draftStern.toFixed(2)} m</p><p><b>3D hydro distribution:</b> ${state.coupledMode==='source-anchored'?'SOURCE-ANCHORED':(state.coupledValid?'SOLVED':'CHECK')} · heel ${state.coupledHeel.toFixed(2)}° · trim ${state.coupledTrim.toFixed(2)}° · TCB/LCB ${state.coupledTCB.toFixed(2)} / ${state.coupledLCB.toFixed(2)} m · residuals ${state.coupledResidualT.toFixed(4)} / ${state.coupledResidualL.toFixed(4)} m</p><p><b>Longitudinal strength teaching model:</b> Max |SF| ${state.strength?state.strength.maxSF.toFixed(0):'—'} kN · Max |BM| ${state.strength?(state.strength.maxBM/1000).toFixed(1):'—'} MN·m · concentration index ${state.strength?(state.strength.concentration*100).toFixed(1):'—'}% (not an approved utilisation ratio)</p><p><b>Free surface:</b> Generic FSM ${state.fsmGeneric.toFixed(0)} t·m · Individual ballast FSM ${state.fsmIndividual.toFixed(0)} t·m · FSC ${state.fsc.toFixed(3)} m</p><p><b>Environment:</b> Wind ${state.windEnabled?state.windSpeedKts.toFixed(0)+' kn · '+state.windDirection:'OFF'} · Current ${state.currentEnabled?state.currentSpeedKts.toFixed(1)+' kn · '+state.currentDirection:'OFF'} · Visibility ${state.visibilityNm.toFixed(1)} nm · Environmental heeling moment ${(state.environmentMoment/1000).toFixed(0)} kN·m</p><table><tr><th>Displacement</th><td>${state.dispMass.toFixed(1)} t</td><th>Equivalent draft</th><td>${state.eqDraft.toFixed(3)} m</td></tr><tr><th>KG corrected</th><td>${state.kgCorr.toFixed(3)} m</td><th>KM / GM</th><td>${u.KM.toFixed(3)} / ${state.gm.toFixed(3)} m</td></tr><tr><th>Heel / GZ</th><td>${Math.abs(state.heel).toFixed(2)}° ${state.heel<0?'PORT':'STBD'} / ${restoringGZAt(state.heel).toFixed(3)} m ${stabilitySenseAt(state.heel)}</td><th>Equilibrium</th><td>${state.equilibrium.toFixed(2)}°</td></tr><tr><th>TPC</th><td>${state.tpc.toFixed(3)} t/cm</td><th>FWA approx.</th><td>${state.fwa.toFixed(1)} mm</td></tr></table>${state.staticGZResult?`<h3>Static Stability GZ Characteristics</h3><p>Initial corrected GM ${state.staticGZResult.gm.toFixed(3)} m · Maximum GZ ${state.staticGZResult.maxGZ.toFixed(3)} m at ${state.staticGZResult.maxAngle.toFixed(1)}° · Contraflexure ${Number.isFinite(state.staticGZResult.contraflexureAngle)?state.staticGZResult.contraflexureAngle.toFixed(1)+'°':'N/A'} · Angle of Vanishing Stability ${Number.isFinite(state.staticGZResult.avs)?state.staticGZResult.avs.toFixed(1)+'°':'>90°'} · Positive range ${Number.isFinite(state.staticGZResult.rangeOfStability)?state.staticGZResult.rangeOfStability.toFixed(1)+'°':'>90°'}</p>`:''}<h3>General intact-stability teaching audit</h3><table><tr><th>Criterion</th><th>Actual</th><th>Requirement</th><th>Status</th></tr>${cr.map(c=>`<tr><td>${c.name}</td><td>${c.fmt(c.actual)}</td><td>${c.req}</td><td class="${c.pass?'pass':'fail'}">${c.pass?'PASS':'FAIL'}</td></tr>`).join('')}</table>${state.grainEnabled&&state.grainResult?`<h3>Grain shift stability teaching audit</h3><p>Assumed grain heeling moment ${state.grainMoment.toFixed(1)} t·m · λ₀ ${state.grainResult.lambda0.toFixed(3)} m · λ₄₀ ${state.grainResult.lambda40.toFixed(3)} m · list ${Number.isFinite(state.grainResult.listAngle)?state.grainResult.listAngle.toFixed(2)+'°':'N/A'} · residual area ${Number.isFinite(state.grainResult.residualArea)?state.grainResult.residualArea.toFixed(3)+' m·rad':'N/A'}</p><table><tr><th>Criterion</th><th>Actual</th><th>Requirement</th><th>Status</th></tr>${grainCriteria().map(c=>`<tr><td>${c.name}</td><td>${c.fmt(c.actual)}</td><td>${c.req}</td><td class="${c.pass?'pass':'fail'}">${c.pass?'PASS':'FAIL'}</td></tr>`).join('')}</table>`:''}<p><small>Operational decisions require the vessel's approved stability booklet/loading instrument, actual tank data and applicable flag/class/company requirements.</small></p>
+function printReport(){const cr=evaluateIMO(),h=state.hydro,u=state.upright,w=window.open('','_blank','width=900,height=900');w.document.write(`<html><head><title>AMCOL Stability Teaching Report</title><style>body{font-family:Arial;padding:24px;color:#172033}table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid #ccd4df;padding:7px;font-size:12px}th{background:#eef2f7}.pass{color:green;font-weight:bold}.fail{color:#b91c1c;font-weight:bold}</style></head><body><h2>AMCOL Advanced Ship Stability Simulator</h2><p><b>Educational geometry-based stability report</b> — not an approved loading-computer certificate.</p><p><b>Vessel:</b> ${escapeHtml(state.vesselName||'Training vessel')} &nbsp; <b>Company:</b> ${escapeHtml(state.companyName||'—')} &nbsp; <b>Type:</b> ${escapeHtml(vesselPresets[state.hullType]?.label||state.hullType)}</p><p><small>${Object.values(referenceVesselPresets).find(r=>r.vesselName===state.vesselName)?.source?'Reference dimensions source: '+escapeHtml(Object.values(referenceVesselPresets).find(r=>r.vesselName===state.vesselName).source)+' · Published dimensions are reference data; model KG/lightship may still require approved vessel data.':''}</small></p><p><b>Principal dimensions:</b> L ${state.length.toFixed(1)} m · B ${state.beam.toFixed(1)} m · D ${state.depth.toFixed(1)} m</p>${state.sourceConditionKey==='great_fortune_workbook'?`<p><b>Workbook source condition:</b> ${escapeHtml(GREAT_FORTUNE_WORKBOOK_DATA.sourceFile)} · target Δ ${GREAT_FORTUNE_WORKBOOK_DATA.target.disp.toFixed(0)} t · target mean draft ${GREAT_FORTUNE_WORKBOOK_DATA.target.draft.toFixed(3)} m · target trim ${GREAT_FORTUNE_WORKBOOK_DATA.target.trimByStern.toFixed(3)} m by stern.</p>`:''}<p><b>Longitudinal teaching model:</b> LCG ${state.lcg.toFixed(2)} m · LCF ${state.lcf.toFixed(2)} m · GM<sub>L</sub> ${state.gmLong.toFixed(2)} m · MCT 1 cm ${state.mct1cm.toFixed(2)} t·m/cm · Trim ${state.trimMeters.toFixed(2)} m (${state.trimAngle.toFixed(2)}°) · Draft F/A ${state.draftBow.toFixed(2)} / ${state.draftStern.toFixed(2)} m</p><p><b>3D hydro distribution:</b> ${state.coupledMode==='source-anchored'?'SOURCE-ANCHORED':(state.coupledValid?'SOLVED':'CHECK')} · heel ${state.coupledHeel.toFixed(2)}° · trim ${state.coupledTrim.toFixed(2)}° · TCB/LCB ${state.coupledTCB.toFixed(2)} / ${state.coupledLCB.toFixed(2)} m · residuals ${state.coupledResidualT.toFixed(4)} / ${state.coupledResidualL.toFixed(4)} m</p><p><b>Longitudinal strength teaching model:</b> Max |SF| ${state.strength?state.strength.maxSF.toFixed(0):'—'} kN · Max |BM| ${state.strength?(state.strength.maxBM/1000).toFixed(1):'—'} MN·m · concentration index ${state.strength?(state.strength.concentration*100).toFixed(1):'—'}% (not an approved utilisation ratio)</p><p><b>Free surface:</b> Generic FSM ${state.fsmGeneric.toFixed(0)} t·m · Individual ballast FSM ${state.fsmIndividual.toFixed(0)} t·m · FSC ${state.fsc.toFixed(3)} m</p><p><b>Environment:</b> Wind ${state.windEnabled?state.windSpeedKts.toFixed(0)+' kn · '+state.windDirection:'OFF'} · Current ${state.currentEnabled?state.currentSpeedKts.toFixed(1)+' kn · '+state.currentDirection:'OFF'} · Visibility ${state.visibilityNm.toFixed(1)} nm · Environmental heeling moment ${(state.environmentMoment/1000).toFixed(0)} kN·m</p><table><tr><th>Displacement</th><td>${state.dispMass.toFixed(1)} t</td><th>Equivalent draft</th><td>${state.eqDraft.toFixed(3)} m</td></tr><tr><th>KG corrected</th><td>${state.kgCorr.toFixed(3)} m</td><th>KM / GM</th><td>${u.KM.toFixed(3)} / ${state.gm.toFixed(3)} m</td></tr><tr><th>Heel / GZ</th><td>${Math.abs(state.heel).toFixed(2)}° ${state.heel<0?'PORT':'STBD'} / ${restoringGZAt(state.heel).toFixed(3)} m ${stabilitySenseAt(state.heel)}</td><th>Equilibrium</th><td>${state.equilibrium.toFixed(2)}°</td></tr><tr><th>TPC</th><td>${state.tpc.toFixed(3)} t/cm</td><th>FWA approx.</th><td>${state.fwa.toFixed(1)} mm</td></tr></table>${state.staticGZResult?`<h3>Static Stability GZ Characteristics</h3><p>Initial corrected GM ${state.staticGZResult.gm.toFixed(3)} m · Maximum GZ ${state.staticGZResult.maxGZ.toFixed(3)} m at ${state.staticGZResult.maxAngle.toFixed(1)}° · Contraflexure ${Number.isFinite(state.staticGZResult.contraflexureAngle)?state.staticGZResult.contraflexureAngle.toFixed(1)+'°':'N/A'} · Angle of Vanishing Stability ${Number.isFinite(state.staticGZResult.avs)?state.staticGZResult.avs.toFixed(1)+'°':'>90°'} · Positive range ${Number.isFinite(state.staticGZResult.rangeOfStability)?state.staticGZResult.rangeOfStability.toFixed(1)+'°':'>90°'}</p>`:''}<h3>General intact-stability teaching audit</h3><table><tr><th>Criterion</th><th>Actual</th><th>Requirement</th><th>Status</th></tr>${cr.map(c=>`<tr><td>${c.name}</td><td>${c.fmt(c.actual)}</td><td>${c.req}</td><td class="${c.pass?'pass':'fail'}">${c.pass?'PASS':'FAIL'}</td></tr>`).join('')}</table>${state.grainEnabled&&state.grainResult?`<h3>Grain shift stability teaching audit</h3><p>Assumed grain heeling moment ${state.grainMoment.toFixed(1)} t·m · λ₀ ${state.grainResult.lambda0.toFixed(3)} m · λ₄₀ ${state.grainResult.lambda40.toFixed(3)} m · list ${Number.isFinite(state.grainResult.listAngle)?state.grainResult.listAngle.toFixed(2)+'°':'N/A'} · residual area ${Number.isFinite(state.grainResult.residualArea)?state.grainResult.residualArea.toFixed(3)+' m·rad':'N/A'}</p><table><tr><th>Criterion</th><th>Actual</th><th>Requirement</th><th>Status</th></tr>${grainCriteria().map(c=>`<tr><td>${c.name}</td><td>${c.fmt(c.actual)}</td><td>${c.req}</td><td class="${c.pass?'pass':'fail'}">${c.pass?'PASS':'FAIL'}</td></tr>`).join('')}</table>`:''}<p><small>Operational decisions require the vessel's approved stability booklet/loading instrument, actual tank data and applicable flag/class/company requirements.</small></p>
 
 
 </body></html>`);w.document.close();w.print();}
@@ -7665,6 +7887,39 @@ function makeFillMesh(points,length,fill,color,opacity=.48){
   const clipped=clipSectionBelow(points,b.minY+(b.maxY-b.minY)*pct);if(clipped.length<3)return null;
   const mesh=new THREE.Mesh(prismGeometryFromSection(clipped,Math.max(.03,length*.94)),makeMaterial(color,{transparent:true,opacity,roughness:.24,metalness:0,depthWrite:false,side:THREE.DoubleSide}));mesh.renderOrder=52;return mesh;
 }
+function lngTankVisualSpec(s,sp={}){
+  const B=Math.max(4,+s.beam||16),D=Math.max(3,+s.depth||10),L=Math.max(20,+s.length||80);
+  const rawD=Number(sp.diameter)||Math.min((Math.max(0,Number(sp.length)||0)||B*.72),(Math.max(0,Number(sp.breadth)||0)||B*.72),(Math.max(0,Number(sp.height)||0)||0)||B*.72);
+  const d=Math.max(B*.18,Math.min(rawD||B*.72,B*.78,L*.18,D*1.72));
+  const bottom=Number.isFinite(+sp.bottom)?+sp.bottom:Math.max(D*.04,D*.82-d*.5);
+  const x=Number.isFinite(+sp.tcg)?+sp.tcg:0;
+  const z=Math.max(-L*.46,Math.min(L*.46,-(+sp.lcg||0)));
+  const centreY=Math.max(bottom+d*.5,D*.30);
+  return {x,z,d,r:d*.5,bottom,centreY,top:centreY+d*.5};
+}
+function lngCargoSphereSpaces(spaces=[]){
+  return (Array.isArray(spaces)?spaces:[]).filter(sp=>{
+    if(!sp)return false;
+    const type=String(sp.type||'').toLowerCase();
+    return !!(sp.moss||sp.shape==='sphere'||(sp.containment&&type.includes('gas'))||type.includes('lng'));
+  }).sort((a,b)=>(+a.lcg||0)-(+b.lcg||0));
+}
+function loadedLngCargoSphereSpaces(){
+  const runtimeSpaces=Array.isArray(latestRuntime?.cargoSpaces)?latestRuntime.cargoSpaces:[];
+  const runtimeLng=lngCargoSphereSpaces(runtimeSpaces);
+  if(runtimeLng.length)return runtimeLng;
+  return lngCargoSphereSpaces(cargoSpacesWithFill());
+}
+function lngExteriorTankVisualSpec(s,sp={}){
+  const B=Math.max(4,+s.beam||16),D=Math.max(3,+s.depth||10);
+  const base=lngTankVisualSpec(s,sp),r=base.r;
+  const scaleX=1.0,scaleY=.90,scaleZ=1.06;
+  const visualCentreY=Math.max(base.bottom+base.d*.585,base.centreY+base.d*.055,D*.90);
+  const visibleBottom=visualCentreY-r*scaleY;
+  const supportTop=Math.max(base.bottom+D*.012,visibleBottom+D*.020);
+  const topY=visualCentreY+r*scaleY;
+  return {...base,scaleX,scaleY,scaleZ,visualCentreY,visibleBottom,supportTop,topY};
+}
 function buildCargoSpaces3D(s,spaces=[]){
   if(!Array.isArray(spaces)||!cargoSpaces3DGroup)return;
   const B=Math.max(4,+s.beam||16),D=Math.max(3,+s.depth||10),L=Math.max(20,+s.length||80);
@@ -7672,12 +7927,14 @@ function buildCargoSpaces3D(s,spaces=[]){
     const color=(()=>{const t=String(sp.type||'').toLowerCase();if(t.includes('vehicle'))return 0x8b5cf6;if(t.includes('container'))return 0x3b82f6;if(t.includes('chemical'))return 0xd946ef;if(t.includes('oil')||t.includes('liquid'))return 0x14b8a6;if(t.includes('gas'))return 0x60a5fa;if(t.includes('deck'))return 0xf59e0b;if(t.includes('bulk'))return 0xa8a29e;return 0xf59e0b;})();
     const raw=Math.max(0,Number(sp.fillRawPercent)||0),fill=Math.min(1,raw/100);
     if(sp.moss||sp.shape==='sphere'){
-      const d=Math.max(B*.18,Math.min(+sp.diameter||B*.55,B*.78,L*.15,D*1.70)),z=Math.max(-L*.44,Math.min(L*.44,-(+sp.lcg||0))),centreY=Math.max(d*.52,D*.78);
+      const spec=lngTankVisualSpec(s,sp),d=spec.d,centreY=spec.centreY,z=spec.z,x=spec.x;
       const room=new THREE.Mesh(new THREE.SphereGeometry(d*.5,28,20),makeMaterial(color,{transparent:true,opacity:.13,roughness:.54,metalness:.03,depthWrite:false,side:THREE.DoubleSide}));
-      room.position.set(0,centreY,z);room.renderOrder=35;room.userData.operationType='cargoSpace';room.userData.operationData={...sp,visualConstrained:true,visualShape:'Moss sphere'};cargoSpaces3DGroup.add(room);operationPickables.push(room);
+      room.position.set(x,centreY,z);room.renderOrder=35;room.userData.operationType='cargoSpace';room.userData.operationData={...sp,visualConstrained:true,visualShape:'Moss sphere'};cargoSpaces3DGroup.add(room);operationPickables.push(room);
       const edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.SphereGeometry(d*.5,16,12)),makeLineMaterial(color,.68));edge.position.copy(room.position);edge.material.depthTest=false;edge.renderOrder=176;edge.userData.operationType='cargoSpace';edge.userData.operationData=room.userData.operationData;cargoSpaces3DGroup.add(edge);operationPickables.push(edge);
-      if(fill>0){const fd=d*Math.max(.16,Math.cbrt(fill))*.88,inner=new THREE.Mesh(new THREE.SphereGeometry(fd*.5,22,16),makeMaterial(color,{transparent:true,opacity:.34,depthWrite:false}));inner.position.set(0,centreY-d*.18*(1-fill),z);inner.renderOrder=52;cargoSpaces3DGroup.add(inner);}
-      if(i<18){const lbl=operationSprite(`${sp.name||'Moss tank'} · ${fillPercentLabel(raw)}`,raw>100.05?'#fda4af':'#bfdbfe',Math.max(.38,Math.min(.60,B/34)));lbl.position.set(0,centreY+d*.58,z);operationsLabelsGroup.add(lbl);}return;
+      if(fill>0){const fd=d*Math.max(.16,Math.cbrt(fill))*.88,inner=new THREE.Mesh(new THREE.SphereGeometry(fd*.5,22,16),makeMaterial(color,{transparent:true,opacity:.34,depthWrite:false}));inner.position.set(x,centreY-d*.18*(1-fill),z);inner.renderOrder=52;cargoSpaces3DGroup.add(inner);}
+      if(i<18){const lbl=operationSprite(
+                `${sp.name||'Moss tank'} · ${fillPercentLabel(raw)}`,raw>100.05?'#fda4af':'#bfdbfe',Math.max(.38,Math.min(.60,B/34))
+      );lbl.position.set(x,centreY+d*.58,z);operationsLabelsGroup.add(lbl);}return;
     }
     const v=cargoSpaceVisualBox(s,sp),sec=cargoCompartmentSectionWorld(s,sp,v),points=sec.points;
     const room=makeCompartmentMesh(points,sec.length,color,.12);room.position.set(sec.x,sec.y,sec.z);room.userData.operationType='cargoSpace';room.userData.operationData={...sp,visualConstrained:true,visualShape:sp.superstructure?'enclosed deck compartment':'hull-conforming compartment'};cargoSpaces3DGroup.add(room);operationPickables.push(room);
@@ -8116,29 +8373,35 @@ function buildVessel(s){
     addFunnel(shipVisual,B*.11,D*1.55,L*.435,B,D,0x263746,0x111827);
     addRadarMast(shipVisual,0,D*1.68,L*.34,B,D);
     addHullNameSprite(shipVisual,'L N G',0,D*1.46,-L*.02,B*.18,D*.09);
-    const tanks=4;
-    for(let i=0;i<tanks;i++){
-      const z=-L*.25+i*L*.165;
-      // Moss-type spherical tanks recessed roughly halfway into the hull hold.
+    const tankSpaces=loadedLngCargoSphereSpaces(),tankSpecs=tankSpaces.map(sp=>({sp,...lngExteriorTankVisualSpec(s,sp)}));
+    tankSpecs.forEach(({x,z,d,r,visualCentreY,bottom,scaleX,scaleY,scaleZ,supportTop,topY})=>{
       const sphere=new THREE.Mesh(
-        new THREE.SphereGeometry(B*.19,q===0?18:(q===1?28:40),q===0?12:(q===1?18:24)),
+        new THREE.SphereGeometry(r,q===0?18:(q===1?28:40),q===0?12:(q===1?18:24)),
         makeMaterial(0xdce9f2,{roughness:.25,metalness:.08})
       );
-      sphere.scale.set(1,.90,1.06);sphere.position.set(0,D*.93,z);sphere.castShadow=true;shipVisual.add(sphere);
+      sphere.scale.set(scaleX,scaleY,scaleZ);
+      sphere.position.set(x,visualCentreY,z);sphere.castShadow=true;shipVisual.add(sphere);
+      const saddleW=Math.max(B*.12,r*.72),saddleL=Math.max(L*.030,d*.17),saddleH=Math.max(D*.045,d*.08);
+      addRoundedBox(shipVisual,[saddleW,saddleH,saddleL],[x,supportTop-saddleH*.28,z],0xd5dee9,{roughness:.56});
       if(q>=1){
-        const band=new THREE.Mesh(new THREE.TorusGeometry(B*.19,B*.010,8,q===2?40:24),makeMaterial(0x8796a5,{roughness:.48,metalness:.18}));
-        band.rotation.x=Math.PI/2;band.position.set(0,D*.93,z);shipVisual.add(band);
-        addRoundedBox(shipVisual,[B*.18,D*.04,L*.05],[0,D*1.55,z],0xe5edf5,{roughness:.44});
-        addCylinder(shipVisual,B*.010,D*.08,[0,D*1.63,z],0xcbd5e1);
-        addCylinder(shipVisual,B*.010,D*.06,[-B*.04,D*1.58,z],0xcbd5e1);
-        addCylinder(shipVisual,B*.010,D*.06,[ B*.04,D*1.58,z],0xcbd5e1);
+        const band=new THREE.Mesh(new THREE.TorusGeometry(r,Math.max(B*.006,r*.028),8,q===2?40:24),makeMaterial(0x8796a5,{roughness:.48,metalness:.18}));
+        band.rotation.x=Math.PI/2;band.scale.set(1,scaleY,scaleZ);band.position.set(x,visualCentreY,z);shipVisual.add(band);
+        const skirtH=Math.max(D*.05,supportTop-bottom+D*.010);
+        addCylinder(shipVisual,Math.max(B*.022,r*.12),skirtH,[x,bottom+skirtH*.5,z],0xcfd8e3);
+        const domeTop=Math.min(topY+D*.018,D*1.56);
+        addRoundedBox(shipVisual,[Math.max(B*.16,r*.70),D*.04,Math.max(L*.035,d*.18)],[x,domeTop,z],0xe5edf5,{roughness:.44});
+        addCylinder(shipVisual,Math.max(B*.008,r*.045),D*.08,[x,domeTop+D*.08,z],0xcbd5e1);
+        addCylinder(shipVisual,Math.max(B*.007,r*.030),D*.06,[x-r*.24,domeTop+D*.04,z],0xcbd5e1);
+        addCylinder(shipVisual,Math.max(B*.007,r*.030),D*.06,[x+r*.24,domeTop+D*.04,z],0xcbd5e1);
       }
-    }
-    // Central trunking and pipe bridge.
-    addRoundedBox(shipVisual,[B*.22,D*.05,L*.58],[0,D*1.42,-L*.03],0xe8eef5,{roughness:.48});
-    addPipeRun(shipVisual,[-B*.25,D*1.10,-L*.33],[-B*.25,D*1.10,L*.20],B*.008,0xeab308);
-    addPipeRun(shipVisual,[ B*.25,D*1.10,-L*.33],[ B*.25,D*1.10,L*.20],B*.008,0xeab308);
-    addRaisedCatwalk(shipVisual,0,D*1.34,-L*.30,L*.16,B,D,0xf8fafc);
+    });
+    const zMin=tankSpecs.length?Math.min(...tankSpecs.map(t=>t.z-t.r*.42)):-L*.33;
+    const zMax=tankSpecs.length?Math.max(...tankSpecs.map(t=>t.z+t.r*.42)):L*.20;
+    const zMid=(zMin+zMax)*.5,trunkLen=Math.max(L*.30,(zMax-zMin)+L*.06),bridgeY=Math.max(D*1.34, tankSpecs.length?Math.max(...tankSpecs.map(t=>t.topY))+D*.07:D*1.34);
+    addRoundedBox(shipVisual,[B*.22,D*.05,trunkLen],[0,bridgeY+D*.08,zMid],0xe8eef5,{roughness:.48});
+    addPipeRun(shipVisual,[-B*.25,D*1.10,zMin],[-B*.25,D*1.10,zMax],B*.008,0xeab308);
+    addPipeRun(shipVisual,[ B*.25,D*1.10,zMin],[ B*.25,D*1.10,zMax],B*.008,0xeab308);
+    addRaisedCatwalk(shipVisual,0,bridgeY,zMin+(zMax-zMin)*.10,zMax-(zMax-zMin)*.20,B,D,0xf8fafc);
     addLifeboat(shipVisual,-B*.36,D*1.37,L*.39,L,B);
     addLifeboat(shipVisual, B*.36,D*1.37,L*.39,L,B);
 
@@ -9562,7 +9825,7 @@ function setCutawayMode(mode){
   try{localStorage.setItem('amcol_3d_cutaway_mode',cutawayMode);}catch(e){}
   updateCutawayWorldPlane();applyCutawayMaterials();updateCameraStatus();
 }
-function activeScenarioKey(){return document.getElementById('scenarioSelect')?.value||'free';}
+function activeScenarioKey(){return window.activeScenarioKey?.()||document.getElementById('scenarioSelect')?.value||'free';}
 function pickOperationByType(type,preferText=''){
   const candidates=operationPickables.filter(o=>o?.userData?.operationType===type);
   if(!candidates.length)return null;
