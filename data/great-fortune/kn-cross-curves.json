@@ -1,0 +1,5492 @@
+[
+  {
+    "disp": 5000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 5000.0,
+    "angle": 5,
+    "kn": 3.712,
+    "side": "both"
+  },
+  {
+    "disp": 5000.0,
+    "angle": 10,
+    "kn": 6.432,
+    "side": "both"
+  },
+  {
+    "disp": 5000.0,
+    "angle": 20,
+    "kn": 8.853,
+    "side": "both"
+  },
+  {
+    "disp": 5000.0,
+    "angle": 30,
+    "kn": 9.86,
+    "side": "both"
+  },
+  {
+    "disp": 5000.0,
+    "angle": 40,
+    "kn": 10.194,
+    "side": "both"
+  },
+  {
+    "disp": 5000.0,
+    "angle": 50,
+    "kn": 10.122,
+    "side": "both"
+  },
+  {
+    "disp": 5000.0,
+    "angle": 60,
+    "kn": 9.826,
+    "side": "both"
+  },
+  {
+    "disp": 5400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 5400.0,
+    "angle": 5,
+    "kn": 3.505,
+    "side": "both"
+  },
+  {
+    "disp": 5400.0,
+    "angle": 10,
+    "kn": 6.211,
+    "side": "both"
+  },
+  {
+    "disp": 5400.0,
+    "angle": 20,
+    "kn": 8.696,
+    "side": "both"
+  },
+  {
+    "disp": 5400.0,
+    "angle": 30,
+    "kn": 9.769,
+    "side": "both"
+  },
+  {
+    "disp": 5400.0,
+    "angle": 40,
+    "kn": 10.161,
+    "side": "both"
+  },
+  {
+    "disp": 5400.0,
+    "angle": 50,
+    "kn": 10.145,
+    "side": "both"
+  },
+  {
+    "disp": 5400.0,
+    "angle": 60,
+    "kn": 9.907,
+    "side": "both"
+  },
+  {
+    "disp": 5800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 5800.0,
+    "angle": 5,
+    "kn": 3.322,
+    "side": "both"
+  },
+  {
+    "disp": 5800.0,
+    "angle": 10,
+    "kn": 6.002,
+    "side": "both"
+  },
+  {
+    "disp": 5800.0,
+    "angle": 20,
+    "kn": 8.546,
+    "side": "both"
+  },
+  {
+    "disp": 5800.0,
+    "angle": 30,
+    "kn": 9.682,
+    "side": "both"
+  },
+  {
+    "disp": 5800.0,
+    "angle": 40,
+    "kn": 10.129,
+    "side": "both"
+  },
+  {
+    "disp": 5800.0,
+    "angle": 50,
+    "kn": 10.167,
+    "side": "both"
+  },
+  {
+    "disp": 5800.0,
+    "angle": 60,
+    "kn": 9.984,
+    "side": "both"
+  },
+  {
+    "disp": 6200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 6200.0,
+    "angle": 5,
+    "kn": 3.16,
+    "side": "both"
+  },
+  {
+    "disp": 6200.0,
+    "angle": 10,
+    "kn": 5.803,
+    "side": "both"
+  },
+  {
+    "disp": 6200.0,
+    "angle": 20,
+    "kn": 8.404,
+    "side": "both"
+  },
+  {
+    "disp": 6200.0,
+    "angle": 30,
+    "kn": 9.597,
+    "side": "both"
+  },
+  {
+    "disp": 6200.0,
+    "angle": 40,
+    "kn": 10.099,
+    "side": "both"
+  },
+  {
+    "disp": 6200.0,
+    "angle": 50,
+    "kn": 10.189,
+    "side": "both"
+  },
+  {
+    "disp": 6200.0,
+    "angle": 60,
+    "kn": 10.059,
+    "side": "both"
+  },
+  {
+    "disp": 6600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 6600.0,
+    "angle": 5,
+    "kn": 3.015,
+    "side": "both"
+  },
+  {
+    "disp": 6600.0,
+    "angle": 10,
+    "kn": 5.614,
+    "side": "both"
+  },
+  {
+    "disp": 6600.0,
+    "angle": 20,
+    "kn": 8.268,
+    "side": "both"
+  },
+  {
+    "disp": 6600.0,
+    "angle": 30,
+    "kn": 9.515,
+    "side": "both"
+  },
+  {
+    "disp": 6600.0,
+    "angle": 40,
+    "kn": 10.07,
+    "side": "both"
+  },
+  {
+    "disp": 6600.0,
+    "angle": 50,
+    "kn": 10.209,
+    "side": "both"
+  },
+  {
+    "disp": 6600.0,
+    "angle": 60,
+    "kn": 10.131,
+    "side": "both"
+  },
+  {
+    "disp": 7000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 7000.0,
+    "angle": 5,
+    "kn": 2.885,
+    "side": "both"
+  },
+  {
+    "disp": 7000.0,
+    "angle": 10,
+    "kn": 5.434,
+    "side": "both"
+  },
+  {
+    "disp": 7000.0,
+    "angle": 20,
+    "kn": 8.137,
+    "side": "both"
+  },
+  {
+    "disp": 7000.0,
+    "angle": 30,
+    "kn": 9.436,
+    "side": "both"
+  },
+  {
+    "disp": 7000.0,
+    "angle": 40,
+    "kn": 10.041,
+    "side": "both"
+  },
+  {
+    "disp": 7000.0,
+    "angle": 50,
+    "kn": 10.229,
+    "side": "both"
+  },
+  {
+    "disp": 7000.0,
+    "angle": 60,
+    "kn": 10.201,
+    "side": "both"
+  },
+  {
+    "disp": 7400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 7400.0,
+    "angle": 10,
+    "kn": 5.261,
+    "side": "both"
+  },
+  {
+    "disp": 7400.0,
+    "angle": 20,
+    "kn": 8.013,
+    "side": "both"
+  },
+  {
+    "disp": 7400.0,
+    "angle": 30,
+    "kn": 9.359,
+    "side": "both"
+  },
+  {
+    "disp": 7400.0,
+    "angle": 40,
+    "kn": 10.014,
+    "side": "both"
+  },
+  {
+    "disp": 7400.0,
+    "angle": 50,
+    "kn": 10.249,
+    "side": "both"
+  },
+  {
+    "disp": 7400.0,
+    "angle": 60,
+    "kn": 10.268,
+    "side": "both"
+  },
+  {
+    "disp": 7800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 7800.0,
+    "angle": 5,
+    "kn": 2.66,
+    "side": "both"
+  },
+  {
+    "disp": 7800.0,
+    "angle": 10,
+    "kn": 5.096,
+    "side": "both"
+  },
+  {
+    "disp": 7800.0,
+    "angle": 20,
+    "kn": 7.893,
+    "side": "both"
+  },
+  {
+    "disp": 7800.0,
+    "angle": 30,
+    "kn": 9.284,
+    "side": "both"
+  },
+  {
+    "disp": 7800.0,
+    "angle": 40,
+    "kn": 9.986,
+    "side": "both"
+  },
+  {
+    "disp": 7800.0,
+    "angle": 50,
+    "kn": 10.267,
+    "side": "both"
+  },
+  {
+    "disp": 7800.0,
+    "angle": 60,
+    "kn": 10.334,
+    "side": "both"
+  },
+  {
+    "disp": 8200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 8200.0,
+    "angle": 5,
+    "kn": 2.562,
+    "side": "both"
+  },
+  {
+    "disp": 8200.0,
+    "angle": 10,
+    "kn": 4.938,
+    "side": "both"
+  },
+  {
+    "disp": 8200.0,
+    "angle": 20,
+    "kn": 7.799,
+    "side": "both"
+  },
+  {
+    "disp": 8200.0,
+    "angle": 30,
+    "kn": 9.211,
+    "side": "both"
+  },
+  {
+    "disp": 8200.0,
+    "angle": 40,
+    "kn": 9.96,
+    "side": "both"
+  },
+  {
+    "disp": 8200.0,
+    "angle": 50,
+    "kn": 10.286,
+    "side": "both"
+  },
+  {
+    "disp": 8200.0,
+    "angle": 60,
+    "kn": 10.397,
+    "side": "both"
+  },
+  {
+    "disp": 8600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 8600.0,
+    "angle": 5,
+    "kn": 2.472,
+    "side": "both"
+  },
+  {
+    "disp": 8600.0,
+    "angle": 10,
+    "kn": 4.787,
+    "side": "both"
+  },
+  {
+    "disp": 8600.0,
+    "angle": 20,
+    "kn": 7.668,
+    "side": "both"
+  },
+  {
+    "disp": 8600.0,
+    "angle": 30,
+    "kn": 9.14,
+    "side": "both"
+  },
+  {
+    "disp": 8600.0,
+    "angle": 40,
+    "kn": 9.934,
+    "side": "both"
+  },
+  {
+    "disp": 8600.0,
+    "angle": 50,
+    "kn": 10.303,
+    "side": "both"
+  },
+  {
+    "disp": 8600.0,
+    "angle": 60,
+    "kn": 10.459,
+    "side": "both"
+  },
+  {
+    "disp": 9000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 9000.0,
+    "angle": 5,
+    "kn": 2.39,
+    "side": "both"
+  },
+  {
+    "disp": 9000.0,
+    "angle": 10,
+    "kn": 4.646,
+    "side": "both"
+  },
+  {
+    "disp": 9000.0,
+    "angle": 20,
+    "kn": 7.562,
+    "side": "both"
+  },
+  {
+    "disp": 9000.0,
+    "angle": 30,
+    "kn": 9.071,
+    "side": "both"
+  },
+  {
+    "disp": 9000.0,
+    "angle": 40,
+    "kn": 9.908,
+    "side": "both"
+  },
+  {
+    "disp": 9000.0,
+    "angle": 50,
+    "kn": 10.32,
+    "side": "both"
+  },
+  {
+    "disp": 9000.0,
+    "angle": 60,
+    "kn": 10.517,
+    "side": "both"
+  },
+  {
+    "disp": 9400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 9400.0,
+    "angle": 5,
+    "kn": 2.314,
+    "side": "both"
+  },
+  {
+    "disp": 9400.0,
+    "angle": 10,
+    "kn": 4.513,
+    "side": "both"
+  },
+  {
+    "disp": 9400.0,
+    "angle": 20,
+    "kn": 7.459,
+    "side": "both"
+  },
+  {
+    "disp": 9400.0,
+    "angle": 30,
+    "kn": 9.005,
+    "side": "both"
+  },
+  {
+    "disp": 9400.0,
+    "angle": 40,
+    "kn": 9.884,
+    "side": "both"
+  },
+  {
+    "disp": 9400.0,
+    "angle": 50,
+    "kn": 10.337,
+    "side": "both"
+  },
+  {
+    "disp": 9400.0,
+    "angle": 60,
+    "kn": 10.572,
+    "side": "both"
+  },
+  {
+    "disp": 9800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 9800.0,
+    "angle": 5,
+    "kn": 2.243,
+    "side": "both"
+  },
+  {
+    "disp": 9800.0,
+    "angle": 10,
+    "kn": 4.387,
+    "side": "both"
+  },
+  {
+    "disp": 9800.0,
+    "angle": 20,
+    "kn": 7.36,
+    "side": "both"
+  },
+  {
+    "disp": 9800.0,
+    "angle": 30,
+    "kn": 8.94,
+    "side": "both"
+  },
+  {
+    "disp": 9800.0,
+    "angle": 40,
+    "kn": 9.859,
+    "side": "both"
+  },
+  {
+    "disp": 9800.0,
+    "angle": 50,
+    "kn": 10.353,
+    "side": "both"
+  },
+  {
+    "disp": 9800.0,
+    "angle": 60,
+    "kn": 10.619,
+    "side": "both"
+  },
+  {
+    "disp": 10200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 10200.0,
+    "angle": 5,
+    "kn": 2.178,
+    "side": "both"
+  },
+  {
+    "disp": 10200.0,
+    "angle": 10,
+    "kn": 4.271,
+    "side": "both"
+  },
+  {
+    "disp": 10200.0,
+    "angle": 20,
+    "kn": 7.264,
+    "side": "both"
+  },
+  {
+    "disp": 10200.0,
+    "angle": 30,
+    "kn": 8.878,
+    "side": "both"
+  },
+  {
+    "disp": 10200.0,
+    "angle": 40,
+    "kn": 9.835,
+    "side": "both"
+  },
+  {
+    "disp": 10200.0,
+    "angle": 50,
+    "kn": 10.369,
+    "side": "both"
+  },
+  {
+    "disp": 10200.0,
+    "angle": 60,
+    "kn": 10.661,
+    "side": "both"
+  },
+  {
+    "disp": 10600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 10600.0,
+    "angle": 5,
+    "kn": 2.117,
+    "side": "both"
+  },
+  {
+    "disp": 10600.0,
+    "angle": 10,
+    "kn": 4.162,
+    "side": "both"
+  },
+  {
+    "disp": 10600.0,
+    "angle": 20,
+    "kn": 7.172,
+    "side": "both"
+  },
+  {
+    "disp": 10600.0,
+    "angle": 30,
+    "kn": 8.817,
+    "side": "both"
+  },
+  {
+    "disp": 10600.0,
+    "angle": 40,
+    "kn": 9.811,
+    "side": "both"
+  },
+  {
+    "disp": 10600.0,
+    "angle": 50,
+    "kn": 10.384,
+    "side": "both"
+  },
+  {
+    "disp": 10600.0,
+    "angle": 60,
+    "kn": 10.698,
+    "side": "both"
+  },
+  {
+    "disp": 11000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 11000.0,
+    "angle": 5,
+    "kn": 2.061,
+    "side": "both"
+  },
+  {
+    "disp": 11000.0,
+    "angle": 10,
+    "kn": 4.06,
+    "side": "both"
+  },
+  {
+    "disp": 11000.0,
+    "angle": 20,
+    "kn": 7.082,
+    "side": "both"
+  },
+  {
+    "disp": 11000.0,
+    "angle": 30,
+    "kn": 8.758,
+    "side": "both"
+  },
+  {
+    "disp": 11000.0,
+    "angle": 40,
+    "kn": 9.788,
+    "side": "both"
+  },
+  {
+    "disp": 11000.0,
+    "angle": 50,
+    "kn": 10.399,
+    "side": "both"
+  },
+  {
+    "disp": 11000.0,
+    "angle": 60,
+    "kn": 10.73,
+    "side": "both"
+  },
+  {
+    "disp": 11400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 11400.0,
+    "angle": 5,
+    "kn": 2.008,
+    "side": "both"
+  },
+  {
+    "disp": 11400.0,
+    "angle": 10,
+    "kn": 3.964,
+    "side": "both"
+  },
+  {
+    "disp": 11400.0,
+    "angle": 20,
+    "kn": 6.995,
+    "side": "both"
+  },
+  {
+    "disp": 11400.0,
+    "angle": 30,
+    "kn": 8.702,
+    "side": "both"
+  },
+  {
+    "disp": 11400.0,
+    "angle": 40,
+    "kn": 9.766,
+    "side": "both"
+  },
+  {
+    "disp": 11400.0,
+    "angle": 50,
+    "kn": 10.413,
+    "side": "both"
+  },
+  {
+    "disp": 11400.0,
+    "angle": 60,
+    "kn": 10.757,
+    "side": "both"
+  },
+  {
+    "disp": 11800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 11800.0,
+    "angle": 5,
+    "kn": 1.958,
+    "side": "both"
+  },
+  {
+    "disp": 11800.0,
+    "angle": 10,
+    "kn": 3.874,
+    "side": "both"
+  },
+  {
+    "disp": 11800.0,
+    "angle": 20,
+    "kn": 6.91,
+    "side": "both"
+  },
+  {
+    "disp": 11800.0,
+    "angle": 30,
+    "kn": 8.646,
+    "side": "both"
+  },
+  {
+    "disp": 11800.0,
+    "angle": 40,
+    "kn": 9.743,
+    "side": "both"
+  },
+  {
+    "disp": 11800.0,
+    "angle": 50,
+    "kn": 10.428,
+    "side": "both"
+  },
+  {
+    "disp": 11800.0,
+    "angle": 60,
+    "kn": 10.78,
+    "side": "both"
+  },
+  {
+    "disp": 12200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 12200.0,
+    "angle": 5,
+    "kn": 1.912,
+    "side": "both"
+  },
+  {
+    "disp": 12200.0,
+    "angle": 10,
+    "kn": 3.789,
+    "side": "both"
+  },
+  {
+    "disp": 12200.0,
+    "angle": 20,
+    "kn": 6.827,
+    "side": "both"
+  },
+  {
+    "disp": 12200.0,
+    "angle": 30,
+    "kn": 8.593,
+    "side": "both"
+  },
+  {
+    "disp": 12200.0,
+    "angle": 40,
+    "kn": 9.721,
+    "side": "both"
+  },
+  {
+    "disp": 12200.0,
+    "angle": 50,
+    "kn": 10.442,
+    "side": "both"
+  },
+  {
+    "disp": 12200.0,
+    "angle": 60,
+    "kn": 10.8,
+    "side": "both"
+  },
+  {
+    "disp": 12600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 12600.0,
+    "angle": 5,
+    "kn": 1.868,
+    "side": "both"
+  },
+  {
+    "disp": 12600.0,
+    "angle": 10,
+    "kn": 3.709,
+    "side": "both"
+  },
+  {
+    "disp": 12600.0,
+    "angle": 20,
+    "kn": 6.747,
+    "side": "both"
+  },
+  {
+    "disp": 12600.0,
+    "angle": 30,
+    "kn": 8.541,
+    "side": "both"
+  },
+  {
+    "disp": 12600.0,
+    "angle": 40,
+    "kn": 9.7,
+    "side": "both"
+  },
+  {
+    "disp": 12600.0,
+    "angle": 50,
+    "kn": 10.455,
+    "side": "both"
+  },
+  {
+    "disp": 12600.0,
+    "angle": 60,
+    "kn": 10.817,
+    "side": "both"
+  },
+  {
+    "disp": 13000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 13000.0,
+    "angle": 5,
+    "kn": 1.828,
+    "side": "both"
+  },
+  {
+    "disp": 13000.0,
+    "angle": 10,
+    "kn": 3.633,
+    "side": "both"
+  },
+  {
+    "disp": 13000.0,
+    "angle": 20,
+    "kn": 6.668,
+    "side": "both"
+  },
+  {
+    "disp": 13000.0,
+    "angle": 30,
+    "kn": 8.49,
+    "side": "both"
+  },
+  {
+    "disp": 13000.0,
+    "angle": 40,
+    "kn": 9.679,
+    "side": "both"
+  },
+  {
+    "disp": 13000.0,
+    "angle": 50,
+    "kn": 10.468,
+    "side": "both"
+  },
+  {
+    "disp": 13000.0,
+    "angle": 60,
+    "kn": 10.831,
+    "side": "both"
+  },
+  {
+    "disp": 13400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 13400.0,
+    "angle": 5,
+    "kn": 1.789,
+    "side": "both"
+  },
+  {
+    "disp": 13400.0,
+    "angle": 10,
+    "kn": 3.561,
+    "side": "both"
+  },
+  {
+    "disp": 13400.0,
+    "angle": 20,
+    "kn": 6.592,
+    "side": "both"
+  },
+  {
+    "disp": 13400.0,
+    "angle": 30,
+    "kn": 8.441,
+    "side": "both"
+  },
+  {
+    "disp": 13400.0,
+    "angle": 40,
+    "kn": 9.658,
+    "side": "both"
+  },
+  {
+    "disp": 13400.0,
+    "angle": 50,
+    "kn": 10.481,
+    "side": "both"
+  },
+  {
+    "disp": 13400.0,
+    "angle": 60,
+    "kn": 10.843,
+    "side": "both"
+  },
+  {
+    "disp": 13800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 13800.0,
+    "angle": 5,
+    "kn": 1.753,
+    "side": "both"
+  },
+  {
+    "disp": 13800.0,
+    "angle": 10,
+    "kn": 3.493,
+    "side": "both"
+  },
+  {
+    "disp": 13800.0,
+    "angle": 20,
+    "kn": 6.517,
+    "side": "both"
+  },
+  {
+    "disp": 13800.0,
+    "angle": 30,
+    "kn": 8.393,
+    "side": "both"
+  },
+  {
+    "disp": 13800.0,
+    "angle": 40,
+    "kn": 9.638,
+    "side": "both"
+  },
+  {
+    "disp": 13800.0,
+    "angle": 50,
+    "kn": 10.493,
+    "side": "both"
+  },
+  {
+    "disp": 13800.0,
+    "angle": 60,
+    "kn": 10.852,
+    "side": "both"
+  },
+  {
+    "disp": 14200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 14200.0,
+    "angle": 5,
+    "kn": 1.719,
+    "side": "both"
+  },
+  {
+    "disp": 14200.0,
+    "angle": 10,
+    "kn": 3.429,
+    "side": "both"
+  },
+  {
+    "disp": 14200.0,
+    "angle": 20,
+    "kn": 6.445,
+    "side": "both"
+  },
+  {
+    "disp": 14200.0,
+    "angle": 30,
+    "kn": 8.347,
+    "side": "both"
+  },
+  {
+    "disp": 14200.0,
+    "angle": 40,
+    "kn": 9.618,
+    "side": "both"
+  },
+  {
+    "disp": 14200.0,
+    "angle": 50,
+    "kn": 10.503,
+    "side": "both"
+  },
+  {
+    "disp": 14200.0,
+    "angle": 60,
+    "kn": 10.86,
+    "side": "both"
+  },
+  {
+    "disp": 14600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 14600.0,
+    "angle": 5,
+    "kn": 1.686,
+    "side": "both"
+  },
+  {
+    "disp": 14600.0,
+    "angle": 10,
+    "kn": 3.368,
+    "side": "both"
+  },
+  {
+    "disp": 14600.0,
+    "angle": 20,
+    "kn": 6.374,
+    "side": "both"
+  },
+  {
+    "disp": 14600.0,
+    "angle": 30,
+    "kn": 8.301,
+    "side": "both"
+  },
+  {
+    "disp": 14600.0,
+    "angle": 40,
+    "kn": 9.599,
+    "side": "both"
+  },
+  {
+    "disp": 14600.0,
+    "angle": 50,
+    "kn": 10.5,
+    "side": "both"
+  },
+  {
+    "disp": 14600.0,
+    "angle": 60,
+    "kn": 10.866,
+    "side": "both"
+  },
+  {
+    "disp": 15000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 15000.0,
+    "angle": 5,
+    "kn": 1.656,
+    "side": "both"
+  },
+  {
+    "disp": 15000.0,
+    "angle": 10,
+    "kn": 3.31,
+    "side": "both"
+  },
+  {
+    "disp": 15000.0,
+    "angle": 20,
+    "kn": 6.304,
+    "side": "both"
+  },
+  {
+    "disp": 15000.0,
+    "angle": 30,
+    "kn": 8.257,
+    "side": "both"
+  },
+  {
+    "disp": 15000.0,
+    "angle": 40,
+    "kn": 9.581,
+    "side": "both"
+  },
+  {
+    "disp": 15000.0,
+    "angle": 50,
+    "kn": 10.517,
+    "side": "both"
+  },
+  {
+    "disp": 15000.0,
+    "angle": 60,
+    "kn": 10.87,
+    "side": "both"
+  },
+  {
+    "disp": 15400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 15400.0,
+    "angle": 5,
+    "kn": 1.627,
+    "side": "both"
+  },
+  {
+    "disp": 15400.0,
+    "angle": 10,
+    "kn": 3.255,
+    "side": "both"
+  },
+  {
+    "disp": 15400.0,
+    "angle": 20,
+    "kn": 6.236,
+    "side": "both"
+  },
+  {
+    "disp": 15400.0,
+    "angle": 30,
+    "kn": 8.213,
+    "side": "both"
+  },
+  {
+    "disp": 15400.0,
+    "angle": 40,
+    "kn": 9.563,
+    "side": "both"
+  },
+  {
+    "disp": 15400.0,
+    "angle": 50,
+    "kn": 10.521,
+    "side": "both"
+  },
+  {
+    "disp": 15400.0,
+    "angle": 60,
+    "kn": 10.873,
+    "side": "both"
+  },
+  {
+    "disp": 15800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 15800.0,
+    "angle": 5,
+    "kn": 1.6,
+    "side": "both"
+  },
+  {
+    "disp": 15800.0,
+    "angle": 10,
+    "kn": 3.203,
+    "side": "both"
+  },
+  {
+    "disp": 15800.0,
+    "angle": 20,
+    "kn": 6.17,
+    "side": "both"
+  },
+  {
+    "disp": 15800.0,
+    "angle": 30,
+    "kn": 8.171,
+    "side": "both"
+  },
+  {
+    "disp": 15800.0,
+    "angle": 40,
+    "kn": 9.545,
+    "side": "both"
+  },
+  {
+    "disp": 15800.0,
+    "angle": 50,
+    "kn": 10.522,
+    "side": "both"
+  },
+  {
+    "disp": 15800.0,
+    "angle": 60,
+    "kn": 10.876,
+    "side": "both"
+  },
+  {
+    "disp": 16200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 16200.0,
+    "angle": 5,
+    "kn": 1.575,
+    "side": "both"
+  },
+  {
+    "disp": 16200.0,
+    "angle": 10,
+    "kn": 3.153,
+    "side": "both"
+  },
+  {
+    "disp": 16200.0,
+    "angle": 20,
+    "kn": 6.105,
+    "side": "both"
+  },
+  {
+    "disp": 16200.0,
+    "angle": 30,
+    "kn": 8.13,
+    "side": "both"
+  },
+  {
+    "disp": 16200.0,
+    "angle": 40,
+    "kn": 9.528,
+    "side": "both"
+  },
+  {
+    "disp": 16200.0,
+    "angle": 50,
+    "kn": 10.522,
+    "side": "both"
+  },
+  {
+    "disp": 16200.0,
+    "angle": 60,
+    "kn": 10.877,
+    "side": "both"
+  },
+  {
+    "disp": 16600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 16600.0,
+    "angle": 5,
+    "kn": 1.55,
+    "side": "both"
+  },
+  {
+    "disp": 16600.0,
+    "angle": 10,
+    "kn": 3.105,
+    "side": "both"
+  },
+  {
+    "disp": 16600.0,
+    "angle": 20,
+    "kn": 6.041,
+    "side": "both"
+  },
+  {
+    "disp": 16600.0,
+    "angle": 30,
+    "kn": 8.09,
+    "side": "both"
+  },
+  {
+    "disp": 16600.0,
+    "angle": 40,
+    "kn": 9.512,
+    "side": "both"
+  },
+  {
+    "disp": 16600.0,
+    "angle": 50,
+    "kn": 10.519,
+    "side": "both"
+  },
+  {
+    "disp": 16600.0,
+    "angle": 60,
+    "kn": 10.879,
+    "side": "both"
+  },
+  {
+    "disp": 17000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 17000.0,
+    "angle": 5,
+    "kn": 1.527,
+    "side": "both"
+  },
+  {
+    "disp": 17000.0,
+    "angle": 10,
+    "kn": 3.06,
+    "side": "both"
+  },
+  {
+    "disp": 17000.0,
+    "angle": 20,
+    "kn": 5.979,
+    "side": "both"
+  },
+  {
+    "disp": 17000.0,
+    "angle": 30,
+    "kn": 8.051,
+    "side": "both"
+  },
+  {
+    "disp": 17000.0,
+    "angle": 40,
+    "kn": 9.496,
+    "side": "both"
+  },
+  {
+    "disp": 17000.0,
+    "angle": 50,
+    "kn": 10.515,
+    "side": "both"
+  },
+  {
+    "disp": 17000.0,
+    "angle": 60,
+    "kn": 10.88,
+    "side": "both"
+  },
+  {
+    "disp": 17400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 17400.0,
+    "angle": 5,
+    "kn": 1.505,
+    "side": "both"
+  },
+  {
+    "disp": 17400.0,
+    "angle": 10,
+    "kn": 3.017,
+    "side": "both"
+  },
+  {
+    "disp": 17400.0,
+    "angle": 20,
+    "kn": 5.918,
+    "side": "both"
+  },
+  {
+    "disp": 17400.0,
+    "angle": 30,
+    "kn": 8.012,
+    "side": "both"
+  },
+  {
+    "disp": 17400.0,
+    "angle": 40,
+    "kn": 9.481,
+    "side": "both"
+  },
+  {
+    "disp": 17400.0,
+    "angle": 50,
+    "kn": 10.509,
+    "side": "both"
+  },
+  {
+    "disp": 17400.0,
+    "angle": 60,
+    "kn": 10.88,
+    "side": "both"
+  },
+  {
+    "disp": 17800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 17800.0,
+    "angle": 5,
+    "kn": 1.485,
+    "side": "both"
+  },
+  {
+    "disp": 17800.0,
+    "angle": 10,
+    "kn": 2.976,
+    "side": "both"
+  },
+  {
+    "disp": 17800.0,
+    "angle": 20,
+    "kn": 5.858,
+    "side": "both"
+  },
+  {
+    "disp": 17800.0,
+    "angle": 30,
+    "kn": 7.975,
+    "side": "both"
+  },
+  {
+    "disp": 17800.0,
+    "angle": 40,
+    "kn": 9.466,
+    "side": "both"
+  },
+  {
+    "disp": 17800.0,
+    "angle": 50,
+    "kn": 10.502,
+    "side": "both"
+  },
+  {
+    "disp": 17800.0,
+    "angle": 60,
+    "kn": 10.811,
+    "side": "both"
+  },
+  {
+    "disp": 18200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 18200.0,
+    "angle": 5,
+    "kn": 1.465,
+    "side": "both"
+  },
+  {
+    "disp": 18200.0,
+    "angle": 10,
+    "kn": 2.937,
+    "side": "both"
+  },
+  {
+    "disp": 18200.0,
+    "angle": 20,
+    "kn": 5.8,
+    "side": "both"
+  },
+  {
+    "disp": 18200.0,
+    "angle": 30,
+    "kn": 7.938,
+    "side": "both"
+  },
+  {
+    "disp": 18200.0,
+    "angle": 40,
+    "kn": 9.452,
+    "side": "both"
+  },
+  {
+    "disp": 18200.0,
+    "angle": 50,
+    "kn": 10.494,
+    "side": "both"
+  },
+  {
+    "disp": 18200.0,
+    "angle": 60,
+    "kn": 10.811,
+    "side": "both"
+  },
+  {
+    "disp": 18600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 18600.0,
+    "angle": 5,
+    "kn": 1.446,
+    "side": "both"
+  },
+  {
+    "disp": 18600.0,
+    "angle": 10,
+    "kn": 2.9,
+    "side": "both"
+  },
+  {
+    "disp": 18600.0,
+    "angle": 20,
+    "kn": 5.743,
+    "side": "both"
+  },
+  {
+    "disp": 18600.0,
+    "angle": 30,
+    "kn": 7.903,
+    "side": "both"
+  },
+  {
+    "disp": 18600.0,
+    "angle": 40,
+    "kn": 9.438,
+    "side": "both"
+  },
+  {
+    "disp": 18600.0,
+    "angle": 50,
+    "kn": 10.484,
+    "side": "both"
+  },
+  {
+    "disp": 18600.0,
+    "angle": 60,
+    "kn": 10.811,
+    "side": "both"
+  },
+  {
+    "disp": 19000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 19000.0,
+    "angle": 5,
+    "kn": 1.428,
+    "side": "both"
+  },
+  {
+    "disp": 19000.0,
+    "angle": 10,
+    "kn": 2.865,
+    "side": "both"
+  },
+  {
+    "disp": 19000.0,
+    "angle": 20,
+    "kn": 5.687,
+    "side": "both"
+  },
+  {
+    "disp": 19000.0,
+    "angle": 30,
+    "kn": 7.868,
+    "side": "both"
+  },
+  {
+    "disp": 19000.0,
+    "angle": 40,
+    "kn": 9.424,
+    "side": "both"
+  },
+  {
+    "disp": 19000.0,
+    "angle": 50,
+    "kn": 10.474,
+    "side": "both"
+  },
+  {
+    "disp": 19000.0,
+    "angle": 60,
+    "kn": 10.811,
+    "side": "both"
+  },
+  {
+    "disp": 19400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 19400.0,
+    "angle": 5,
+    "kn": 1.411,
+    "side": "both"
+  },
+  {
+    "disp": 19400.0,
+    "angle": 10,
+    "kn": 2.831,
+    "side": "both"
+  },
+  {
+    "disp": 19400.0,
+    "angle": 20,
+    "kn": 5.633,
+    "side": "both"
+  },
+  {
+    "disp": 19400.0,
+    "angle": 30,
+    "kn": 7.833,
+    "side": "both"
+  },
+  {
+    "disp": 19400.0,
+    "angle": 40,
+    "kn": 9.411,
+    "side": "both"
+  },
+  {
+    "disp": 19400.0,
+    "angle": 50,
+    "kn": 10.462,
+    "side": "both"
+  },
+  {
+    "disp": 19400.0,
+    "angle": 60,
+    "kn": 10.811,
+    "side": "both"
+  },
+  {
+    "disp": 19800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 19800.0,
+    "angle": 5,
+    "kn": 1.395,
+    "side": "both"
+  },
+  {
+    "disp": 19800.0,
+    "angle": 10,
+    "kn": 2.799,
+    "side": "both"
+  },
+  {
+    "disp": 19800.0,
+    "angle": 20,
+    "kn": 5.581,
+    "side": "both"
+  },
+  {
+    "disp": 19800.0,
+    "angle": 30,
+    "kn": 7.8,
+    "side": "both"
+  },
+  {
+    "disp": 19800.0,
+    "angle": 40,
+    "kn": 9.399,
+    "side": "both"
+  },
+  {
+    "disp": 19800.0,
+    "angle": 50,
+    "kn": 10.45,
+    "side": "both"
+  },
+  {
+    "disp": 19800.0,
+    "angle": 60,
+    "kn": 10.88,
+    "side": "both"
+  },
+  {
+    "disp": 20000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 20000.0,
+    "angle": 5,
+    "kn": 1.387,
+    "side": "both"
+  },
+  {
+    "disp": 20000.0,
+    "angle": 10,
+    "kn": 2.783,
+    "side": "both"
+  },
+  {
+    "disp": 20000.0,
+    "angle": 20,
+    "kn": 5.555,
+    "side": "both"
+  },
+  {
+    "disp": 20000.0,
+    "angle": 30,
+    "kn": 7.783,
+    "side": "both"
+  },
+  {
+    "disp": 20000.0,
+    "angle": 40,
+    "kn": 9.393,
+    "side": "both"
+  },
+  {
+    "disp": 20000.0,
+    "angle": 50,
+    "kn": 10.443,
+    "side": "both"
+  },
+  {
+    "disp": 20000.0,
+    "angle": 60,
+    "kn": 10.88,
+    "side": "both"
+  },
+  {
+    "disp": 20400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 20400.0,
+    "angle": 5,
+    "kn": 1.372,
+    "side": "both"
+  },
+  {
+    "disp": 20400.0,
+    "angle": 10,
+    "kn": 2.753,
+    "side": "both"
+  },
+  {
+    "disp": 20400.0,
+    "angle": 20,
+    "kn": 5.506,
+    "side": "both"
+  },
+  {
+    "disp": 20400.0,
+    "angle": 30,
+    "kn": 7.751,
+    "side": "both"
+  },
+  {
+    "disp": 20400.0,
+    "angle": 40,
+    "kn": 9.381,
+    "side": "both"
+  },
+  {
+    "disp": 20400.0,
+    "angle": 50,
+    "kn": 10.429,
+    "side": "both"
+  },
+  {
+    "disp": 20400.0,
+    "angle": 60,
+    "kn": 10.878,
+    "side": "both"
+  },
+  {
+    "disp": 20800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 20800.0,
+    "angle": 5,
+    "kn": 1.358,
+    "side": "both"
+  },
+  {
+    "disp": 20800.0,
+    "angle": 10,
+    "kn": 2.725,
+    "side": "both"
+  },
+  {
+    "disp": 20800.0,
+    "angle": 20,
+    "kn": 5.458,
+    "side": "both"
+  },
+  {
+    "disp": 20800.0,
+    "angle": 30,
+    "kn": 7.719,
+    "side": "both"
+  },
+  {
+    "disp": 20800.0,
+    "angle": 40,
+    "kn": 9.369,
+    "side": "both"
+  },
+  {
+    "disp": 20800.0,
+    "angle": 50,
+    "kn": 10.415,
+    "side": "both"
+  },
+  {
+    "disp": 20800.0,
+    "angle": 60,
+    "kn": 10.876,
+    "side": "both"
+  },
+  {
+    "disp": 21200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 21200.0,
+    "angle": 5,
+    "kn": 1.344,
+    "side": "both"
+  },
+  {
+    "disp": 21200.0,
+    "angle": 10,
+    "kn": 2.697,
+    "side": "both"
+  },
+  {
+    "disp": 21200.0,
+    "angle": 20,
+    "kn": 5.411,
+    "side": "both"
+  },
+  {
+    "disp": 21200.0,
+    "angle": 30,
+    "kn": 7.688,
+    "side": "both"
+  },
+  {
+    "disp": 21200.0,
+    "angle": 40,
+    "kn": 9.356,
+    "side": "both"
+  },
+  {
+    "disp": 21200.0,
+    "angle": 50,
+    "kn": 10.4,
+    "side": "both"
+  },
+  {
+    "disp": 21200.0,
+    "angle": 60,
+    "kn": 10.874,
+    "side": "both"
+  },
+  {
+    "disp": 21600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 21600.0,
+    "angle": 5,
+    "kn": 1.331,
+    "side": "both"
+  },
+  {
+    "disp": 21600.0,
+    "angle": 10,
+    "kn": 2.671,
+    "side": "both"
+  },
+  {
+    "disp": 21600.0,
+    "angle": 20,
+    "kn": 5.366,
+    "side": "both"
+  },
+  {
+    "disp": 21600.0,
+    "angle": 30,
+    "kn": 7.658,
+    "side": "both"
+  },
+  {
+    "disp": 21600.0,
+    "angle": 40,
+    "kn": 9.344,
+    "side": "both"
+  },
+  {
+    "disp": 21600.0,
+    "angle": 50,
+    "kn": 10.385,
+    "side": "both"
+  },
+  {
+    "disp": 21600.0,
+    "angle": 60,
+    "kn": 10.871,
+    "side": "both"
+  },
+  {
+    "disp": 22000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 22000.0,
+    "angle": 5,
+    "kn": 1.319,
+    "side": "both"
+  },
+  {
+    "disp": 22000.0,
+    "angle": 10,
+    "kn": 2.646,
+    "side": "both"
+  },
+  {
+    "disp": 22000.0,
+    "angle": 20,
+    "kn": 5.323,
+    "side": "both"
+  },
+  {
+    "disp": 22000.0,
+    "angle": 30,
+    "kn": 7.628,
+    "side": "both"
+  },
+  {
+    "disp": 22000.0,
+    "angle": 40,
+    "kn": 9.331,
+    "side": "both"
+  },
+  {
+    "disp": 22000.0,
+    "angle": 50,
+    "kn": 10.37,
+    "side": "both"
+  },
+  {
+    "disp": 22000.0,
+    "angle": 60,
+    "kn": 10.867,
+    "side": "both"
+  },
+  {
+    "disp": 22400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 22400.0,
+    "angle": 5,
+    "kn": 1.307,
+    "side": "both"
+  },
+  {
+    "disp": 22400.0,
+    "angle": 10,
+    "kn": 2.623,
+    "side": "both"
+  },
+  {
+    "disp": 22400.0,
+    "angle": 20,
+    "kn": 5.281,
+    "side": "both"
+  },
+  {
+    "disp": 22400.0,
+    "angle": 30,
+    "kn": 7.598,
+    "side": "both"
+  },
+  {
+    "disp": 22400.0,
+    "angle": 40,
+    "kn": 9.317,
+    "side": "both"
+  },
+  {
+    "disp": 22400.0,
+    "angle": 50,
+    "kn": 10.355,
+    "side": "both"
+  },
+  {
+    "disp": 22400.0,
+    "angle": 60,
+    "kn": 10.862,
+    "side": "both"
+  },
+  {
+    "disp": 22800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 22800.0,
+    "angle": 10,
+    "kn": 2.6,
+    "side": "both"
+  },
+  {
+    "disp": 22800.0,
+    "angle": 20,
+    "kn": 5.24,
+    "side": "both"
+  },
+  {
+    "disp": 22800.0,
+    "angle": 30,
+    "kn": 7.57,
+    "side": "both"
+  },
+  {
+    "disp": 22800.0,
+    "angle": 40,
+    "kn": 9.303,
+    "side": "both"
+  },
+  {
+    "disp": 22800.0,
+    "angle": 50,
+    "kn": 10.34,
+    "side": "both"
+  },
+  {
+    "disp": 22800.0,
+    "angle": 60,
+    "kn": 10.857,
+    "side": "both"
+  },
+  {
+    "disp": 23200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 23200.0,
+    "angle": 5,
+    "kn": 1.285,
+    "side": "both"
+  },
+  {
+    "disp": 23200.0,
+    "angle": 10,
+    "kn": 2.578,
+    "side": "both"
+  },
+  {
+    "disp": 23200.0,
+    "angle": 20,
+    "kn": 5.201,
+    "side": "both"
+  },
+  {
+    "disp": 23200.0,
+    "angle": 30,
+    "kn": 7.541,
+    "side": "both"
+  },
+  {
+    "disp": 23200.0,
+    "angle": 40,
+    "kn": 9.288,
+    "side": "both"
+  },
+  {
+    "disp": 23200.0,
+    "angle": 50,
+    "kn": 10.326,
+    "side": "both"
+  },
+  {
+    "disp": 23200.0,
+    "angle": 60,
+    "kn": 10.851,
+    "side": "both"
+  },
+  {
+    "disp": 23600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 23600.0,
+    "angle": 5,
+    "kn": 1.274,
+    "side": "both"
+  },
+  {
+    "disp": 23600.0,
+    "angle": 10,
+    "kn": 2.558,
+    "side": "both"
+  },
+  {
+    "disp": 23600.0,
+    "angle": 20,
+    "kn": 5.164,
+    "side": "both"
+  },
+  {
+    "disp": 23600.0,
+    "angle": 30,
+    "kn": 7.514,
+    "side": "both"
+  },
+  {
+    "disp": 23600.0,
+    "angle": 40,
+    "kn": 9.272,
+    "side": "both"
+  },
+  {
+    "disp": 23600.0,
+    "angle": 50,
+    "kn": 10.312,
+    "side": "both"
+  },
+  {
+    "disp": 23600.0,
+    "angle": 60,
+    "kn": 10.845,
+    "side": "both"
+  },
+  {
+    "disp": 24000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 24000.0,
+    "angle": 5,
+    "kn": 1.264,
+    "side": "both"
+  },
+  {
+    "disp": 24000.0,
+    "angle": 10,
+    "kn": 2.538,
+    "side": "both"
+  },
+  {
+    "disp": 24000.0,
+    "angle": 20,
+    "kn": 5.127,
+    "side": "both"
+  },
+  {
+    "disp": 24000.0,
+    "angle": 30,
+    "kn": 7.487,
+    "side": "both"
+  },
+  {
+    "disp": 24000.0,
+    "angle": 40,
+    "kn": 9.256,
+    "side": "both"
+  },
+  {
+    "disp": 24000.0,
+    "angle": 50,
+    "kn": 10.298,
+    "side": "both"
+  },
+  {
+    "disp": 24000.0,
+    "angle": 60,
+    "kn": 10.837,
+    "side": "both"
+  },
+  {
+    "disp": 24400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 24400.0,
+    "angle": 5,
+    "kn": 1.255,
+    "side": "both"
+  },
+  {
+    "disp": 24400.0,
+    "angle": 10,
+    "kn": 2.519,
+    "side": "both"
+  },
+  {
+    "disp": 24400.0,
+    "angle": 20,
+    "kn": 5.092,
+    "side": "both"
+  },
+  {
+    "disp": 24400.0,
+    "angle": 30,
+    "kn": 7.46,
+    "side": "both"
+  },
+  {
+    "disp": 24400.0,
+    "angle": 40,
+    "kn": 9.239,
+    "side": "both"
+  },
+  {
+    "disp": 24400.0,
+    "angle": 50,
+    "kn": 10.284,
+    "side": "both"
+  },
+  {
+    "disp": 24400.0,
+    "angle": 60,
+    "kn": 10.829,
+    "side": "both"
+  },
+  {
+    "disp": 24800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 24800.0,
+    "angle": 5,
+    "kn": 1.246,
+    "side": "both"
+  },
+  {
+    "disp": 24800.0,
+    "angle": 10,
+    "kn": 2.501,
+    "side": "both"
+  },
+  {
+    "disp": 24800.0,
+    "angle": 20,
+    "kn": 5.058,
+    "side": "both"
+  },
+  {
+    "disp": 24800.0,
+    "angle": 30,
+    "kn": 7.434,
+    "side": "both"
+  },
+  {
+    "disp": 24800.0,
+    "angle": 40,
+    "kn": 9.221,
+    "side": "both"
+  },
+  {
+    "disp": 24800.0,
+    "angle": 50,
+    "kn": 10.271,
+    "side": "both"
+  },
+  {
+    "disp": 24800.0,
+    "angle": 60,
+    "kn": 10.82,
+    "side": "both"
+  },
+  {
+    "disp": 25200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 25200.0,
+    "angle": 5,
+    "kn": 1.237,
+    "side": "both"
+  },
+  {
+    "disp": 25200.0,
+    "angle": 10,
+    "kn": 2.483,
+    "side": "both"
+  },
+  {
+    "disp": 25200.0,
+    "angle": 20,
+    "kn": 5.026,
+    "side": "both"
+  },
+  {
+    "disp": 25200.0,
+    "angle": 30,
+    "kn": 7.408,
+    "side": "both"
+  },
+  {
+    "disp": 25200.0,
+    "angle": 40,
+    "kn": 9.203,
+    "side": "both"
+  },
+  {
+    "disp": 25200.0,
+    "angle": 50,
+    "kn": 10.259,
+    "side": "both"
+  },
+  {
+    "disp": 25200.0,
+    "angle": 60,
+    "kn": 10.811,
+    "side": "both"
+  },
+  {
+    "disp": 25600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 25600.0,
+    "angle": 5,
+    "kn": 1.229,
+    "side": "both"
+  },
+  {
+    "disp": 25600.0,
+    "angle": 10,
+    "kn": 2.467,
+    "side": "both"
+  },
+  {
+    "disp": 25600.0,
+    "angle": 20,
+    "kn": 4.994,
+    "side": "both"
+  },
+  {
+    "disp": 25600.0,
+    "angle": 30,
+    "kn": 7.383,
+    "side": "both"
+  },
+  {
+    "disp": 25600.0,
+    "angle": 40,
+    "kn": 9.184,
+    "side": "both"
+  },
+  {
+    "disp": 25600.0,
+    "angle": 50,
+    "kn": 10.246,
+    "side": "both"
+  },
+  {
+    "disp": 25600.0,
+    "angle": 60,
+    "kn": 10.801,
+    "side": "both"
+  },
+  {
+    "disp": 26000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 26000.0,
+    "angle": 5,
+    "kn": 1.221,
+    "side": "both"
+  },
+  {
+    "disp": 26000.0,
+    "angle": 10,
+    "kn": 2.451,
+    "side": "both"
+  },
+  {
+    "disp": 26000.0,
+    "angle": 20,
+    "kn": 4.994,
+    "side": "both"
+  },
+  {
+    "disp": 26000.0,
+    "angle": 30,
+    "kn": 7.359,
+    "side": "both"
+  },
+  {
+    "disp": 26000.0,
+    "angle": 40,
+    "kn": 9.165,
+    "side": "both"
+  },
+  {
+    "disp": 26000.0,
+    "angle": 50,
+    "kn": 10.234,
+    "side": "both"
+  },
+  {
+    "disp": 26000.0,
+    "angle": 60,
+    "kn": 10.79,
+    "side": "both"
+  },
+  {
+    "disp": 26400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 26400.0,
+    "angle": 5,
+    "kn": 1.214,
+    "side": "both"
+  },
+  {
+    "disp": 26400.0,
+    "angle": 10,
+    "kn": 2.436,
+    "side": "both"
+  },
+  {
+    "disp": 26400.0,
+    "angle": 20,
+    "kn": 4.935,
+    "side": "both"
+  },
+  {
+    "disp": 26400.0,
+    "angle": 30,
+    "kn": 7.334,
+    "side": "both"
+  },
+  {
+    "disp": 26400.0,
+    "angle": 40,
+    "kn": 9.145,
+    "side": "both"
+  },
+  {
+    "disp": 26400.0,
+    "angle": 50,
+    "kn": 10.222,
+    "side": "both"
+  },
+  {
+    "disp": 26400.0,
+    "angle": 60,
+    "kn": 10.779,
+    "side": "both"
+  },
+  {
+    "disp": 26800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 26800.0,
+    "angle": 5,
+    "kn": 1.206,
+    "side": "both"
+  },
+  {
+    "disp": 26800.0,
+    "angle": 10,
+    "kn": 2.421,
+    "side": "both"
+  },
+  {
+    "disp": 26800.0,
+    "angle": 20,
+    "kn": 4.907,
+    "side": "both"
+  },
+  {
+    "disp": 26800.0,
+    "angle": 30,
+    "kn": 7.31,
+    "side": "both"
+  },
+  {
+    "disp": 26800.0,
+    "angle": 40,
+    "kn": 9.125,
+    "side": "both"
+  },
+  {
+    "disp": 26800.0,
+    "angle": 50,
+    "kn": 10.21,
+    "side": "both"
+  },
+  {
+    "disp": 26800.0,
+    "angle": 60,
+    "kn": 10.767,
+    "side": "both"
+  },
+  {
+    "disp": 27200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 27200.0,
+    "angle": 5,
+    "kn": 1.2,
+    "side": "both"
+  },
+  {
+    "disp": 27200.0,
+    "angle": 10,
+    "kn": 2.408,
+    "side": "both"
+  },
+  {
+    "disp": 27200.0,
+    "angle": 20,
+    "kn": 4.88,
+    "side": "both"
+  },
+  {
+    "disp": 27200.0,
+    "angle": 30,
+    "kn": 7.287,
+    "side": "both"
+  },
+  {
+    "disp": 27200.0,
+    "angle": 40,
+    "kn": 9.104,
+    "side": "both"
+  },
+  {
+    "disp": 27200.0,
+    "angle": 50,
+    "kn": 10.197,
+    "side": "both"
+  },
+  {
+    "disp": 27200.0,
+    "angle": 60,
+    "kn": 10.755,
+    "side": "both"
+  },
+  {
+    "disp": 27600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 27600.0,
+    "angle": 5,
+    "kn": 1.193,
+    "side": "both"
+  },
+  {
+    "disp": 27600.0,
+    "angle": 10,
+    "kn": 2.394,
+    "side": "both"
+  },
+  {
+    "disp": 27600.0,
+    "angle": 20,
+    "kn": 4.854,
+    "side": "both"
+  },
+  {
+    "disp": 27600.0,
+    "angle": 30,
+    "kn": 7.264,
+    "side": "both"
+  },
+  {
+    "disp": 27600.0,
+    "angle": 40,
+    "kn": 9.083,
+    "side": "both"
+  },
+  {
+    "disp": 27600.0,
+    "angle": 50,
+    "kn": 10.185,
+    "side": "both"
+  },
+  {
+    "disp": 27600.0,
+    "angle": 60,
+    "kn": 10.743,
+    "side": "both"
+  },
+  {
+    "disp": 28000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 28000.0,
+    "angle": 5,
+    "kn": 1.187,
+    "side": "both"
+  },
+  {
+    "disp": 28000.0,
+    "angle": 10,
+    "kn": 2.382,
+    "side": "both"
+  },
+  {
+    "disp": 28000.0,
+    "angle": 20,
+    "kn": 4.829,
+    "side": "both"
+  },
+  {
+    "disp": 28000.0,
+    "angle": 30,
+    "kn": 7.242,
+    "side": "both"
+  },
+  {
+    "disp": 28000.0,
+    "angle": 40,
+    "kn": 9.062,
+    "side": "both"
+  },
+  {
+    "disp": 28000.0,
+    "angle": 50,
+    "kn": 10.172,
+    "side": "both"
+  },
+  {
+    "disp": 28000.0,
+    "angle": 60,
+    "kn": 10.73,
+    "side": "both"
+  },
+  {
+    "disp": 28400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 28400.0,
+    "angle": 5,
+    "kn": 1.181,
+    "side": "both"
+  },
+  {
+    "disp": 28400.0,
+    "angle": 10,
+    "kn": 2.369,
+    "side": "both"
+  },
+  {
+    "disp": 28400.0,
+    "angle": 20,
+    "kn": 4.804,
+    "side": "both"
+  },
+  {
+    "disp": 28400.0,
+    "angle": 30,
+    "kn": 7.22,
+    "side": "both"
+  },
+  {
+    "disp": 28400.0,
+    "angle": 40,
+    "kn": 9.041,
+    "side": "both"
+  },
+  {
+    "disp": 28400.0,
+    "angle": 50,
+    "kn": 10.159,
+    "side": "both"
+  },
+  {
+    "disp": 28400.0,
+    "angle": 60,
+    "kn": 10.717,
+    "side": "both"
+  },
+  {
+    "disp": 28800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 28800.0,
+    "angle": 5,
+    "kn": 1.175,
+    "side": "both"
+  },
+  {
+    "disp": 28800.0,
+    "angle": 10,
+    "kn": 2.358,
+    "side": "both"
+  },
+  {
+    "disp": 28800.0,
+    "angle": 20,
+    "kn": 4.781,
+    "side": "both"
+  },
+  {
+    "disp": 28800.0,
+    "angle": 30,
+    "kn": 7.198,
+    "side": "both"
+  },
+  {
+    "disp": 28800.0,
+    "angle": 40,
+    "kn": 9.019,
+    "side": "both"
+  },
+  {
+    "disp": 28800.0,
+    "angle": 50,
+    "kn": 10.146,
+    "side": "both"
+  },
+  {
+    "disp": 28800.0,
+    "angle": 60,
+    "kn": 10.704,
+    "side": "both"
+  },
+  {
+    "disp": 29200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 29200.0,
+    "angle": 5,
+    "kn": 1.169,
+    "side": "both"
+  },
+  {
+    "disp": 29200.0,
+    "angle": 20,
+    "kn": 4.759,
+    "side": "both"
+  },
+  {
+    "disp": 29200.0,
+    "angle": 30,
+    "kn": 7.176,
+    "side": "both"
+  },
+  {
+    "disp": 29200.0,
+    "angle": 40,
+    "kn": 8.997,
+    "side": "both"
+  },
+  {
+    "disp": 29200.0,
+    "angle": 50,
+    "kn": 10.132,
+    "side": "both"
+  },
+  {
+    "disp": 29200.0,
+    "angle": 60,
+    "kn": 10.69,
+    "side": "both"
+  },
+  {
+    "disp": 29600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 29600.0,
+    "angle": 5,
+    "kn": 1.164,
+    "side": "both"
+  },
+  {
+    "disp": 29600.0,
+    "angle": 10,
+    "kn": 2.336,
+    "side": "both"
+  },
+  {
+    "disp": 29600.0,
+    "angle": 20,
+    "kn": 4.739,
+    "side": "both"
+  },
+  {
+    "disp": 29600.0,
+    "angle": 30,
+    "kn": 7.156,
+    "side": "both"
+  },
+  {
+    "disp": 29600.0,
+    "angle": 40,
+    "kn": 8.976,
+    "side": "both"
+  },
+  {
+    "disp": 29600.0,
+    "angle": 50,
+    "kn": 10.118,
+    "side": "both"
+  },
+  {
+    "disp": 29600.0,
+    "angle": 60,
+    "kn": 10.677,
+    "side": "both"
+  },
+  {
+    "disp": 30000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 30000.0,
+    "angle": 5,
+    "kn": 1.159,
+    "side": "both"
+  },
+  {
+    "disp": 30000.0,
+    "angle": 10,
+    "kn": 2.326,
+    "side": "both"
+  },
+  {
+    "disp": 30000.0,
+    "angle": 20,
+    "kn": 4.717,
+    "side": "both"
+  },
+  {
+    "disp": 30000.0,
+    "angle": 30,
+    "kn": 7.135,
+    "side": "both"
+  },
+  {
+    "disp": 30000.0,
+    "angle": 40,
+    "kn": 8.954,
+    "side": "both"
+  },
+  {
+    "disp": 30000.0,
+    "angle": 50,
+    "kn": 10.104,
+    "side": "both"
+  },
+  {
+    "disp": 30000.0,
+    "angle": 60,
+    "kn": 10.663,
+    "side": "both"
+  },
+  {
+    "disp": 30400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 30400.0,
+    "angle": 5,
+    "kn": 1.154,
+    "side": "both"
+  },
+  {
+    "disp": 30400.0,
+    "angle": 10,
+    "kn": 2.316,
+    "side": "both"
+  },
+  {
+    "disp": 30400.0,
+    "angle": 20,
+    "kn": 4.697,
+    "side": "both"
+  },
+  {
+    "disp": 30400.0,
+    "angle": 30,
+    "kn": 7.115,
+    "side": "both"
+  },
+  {
+    "disp": 30400.0,
+    "angle": 40,
+    "kn": 8.932,
+    "side": "both"
+  },
+  {
+    "disp": 30400.0,
+    "angle": 50,
+    "kn": 10.089,
+    "side": "both"
+  },
+  {
+    "disp": 30400.0,
+    "angle": 60,
+    "kn": 10.649,
+    "side": "both"
+  },
+  {
+    "disp": 30800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 30800.0,
+    "angle": 5,
+    "kn": 1.15,
+    "side": "both"
+  },
+  {
+    "disp": 30800.0,
+    "angle": 10,
+    "kn": 2.307,
+    "side": "both"
+  },
+  {
+    "disp": 30800.0,
+    "angle": 20,
+    "kn": 4.678,
+    "side": "both"
+  },
+  {
+    "disp": 30800.0,
+    "angle": 30,
+    "kn": 7.095,
+    "side": "both"
+  },
+  {
+    "disp": 30800.0,
+    "angle": 40,
+    "kn": 8.911,
+    "side": "both"
+  },
+  {
+    "disp": 30800.0,
+    "angle": 50,
+    "kn": 10.075,
+    "side": "both"
+  },
+  {
+    "disp": 30800.0,
+    "angle": 60,
+    "kn": 10.635,
+    "side": "both"
+  },
+  {
+    "disp": 31200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 31200.0,
+    "angle": 5,
+    "kn": 1.145,
+    "side": "both"
+  },
+  {
+    "disp": 31200.0,
+    "angle": 10,
+    "kn": 2.298,
+    "side": "both"
+  },
+  {
+    "disp": 31200.0,
+    "angle": 20,
+    "kn": 4.66,
+    "side": "both"
+  },
+  {
+    "disp": 31200.0,
+    "angle": 30,
+    "kn": 7.076,
+    "side": "both"
+  },
+  {
+    "disp": 31200.0,
+    "angle": 40,
+    "kn": 8.89,
+    "side": "both"
+  },
+  {
+    "disp": 31200.0,
+    "angle": 50,
+    "kn": 10.059,
+    "side": "both"
+  },
+  {
+    "disp": 31200.0,
+    "angle": 60,
+    "kn": 10.62,
+    "side": "both"
+  },
+  {
+    "disp": 31600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 31600.0,
+    "angle": 5,
+    "kn": 1.141,
+    "side": "both"
+  },
+  {
+    "disp": 31600.0,
+    "angle": 10,
+    "kn": 2.29,
+    "side": "both"
+  },
+  {
+    "disp": 31600.0,
+    "angle": 20,
+    "kn": 4.643,
+    "side": "both"
+  },
+  {
+    "disp": 31600.0,
+    "angle": 30,
+    "kn": 7.057,
+    "side": "both"
+  },
+  {
+    "disp": 31600.0,
+    "angle": 40,
+    "kn": 8.87,
+    "side": "both"
+  },
+  {
+    "disp": 31600.0,
+    "angle": 50,
+    "kn": 10.044,
+    "side": "both"
+  },
+  {
+    "disp": 31600.0,
+    "angle": 60,
+    "kn": 10.605,
+    "side": "both"
+  },
+  {
+    "disp": 32000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 32000.0,
+    "angle": 5,
+    "kn": 1.137,
+    "side": "both"
+  },
+  {
+    "disp": 32000.0,
+    "angle": 10,
+    "kn": 2.282,
+    "side": "both"
+  },
+  {
+    "disp": 32000.0,
+    "angle": 20,
+    "kn": 4.626,
+    "side": "both"
+  },
+  {
+    "disp": 32000.0,
+    "angle": 30,
+    "kn": 7.038,
+    "side": "both"
+  },
+  {
+    "disp": 32000.0,
+    "angle": 40,
+    "kn": 8.849,
+    "side": "both"
+  },
+  {
+    "disp": 32000.0,
+    "angle": 50,
+    "kn": 10.027,
+    "side": "both"
+  },
+  {
+    "disp": 32000.0,
+    "angle": 60,
+    "kn": 10.59,
+    "side": "both"
+  },
+  {
+    "disp": 32400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 32400.0,
+    "angle": 5,
+    "kn": 1.133,
+    "side": "both"
+  },
+  {
+    "disp": 32400.0,
+    "angle": 10,
+    "kn": 2.274,
+    "side": "both"
+  },
+  {
+    "disp": 32400.0,
+    "angle": 20,
+    "kn": 4.61,
+    "side": "both"
+  },
+  {
+    "disp": 32400.0,
+    "angle": 30,
+    "kn": 7.019,
+    "side": "both"
+  },
+  {
+    "disp": 32400.0,
+    "angle": 40,
+    "kn": 8.829,
+    "side": "both"
+  },
+  {
+    "disp": 32400.0,
+    "angle": 50,
+    "kn": 10.011,
+    "side": "both"
+  },
+  {
+    "disp": 32400.0,
+    "angle": 60,
+    "kn": 10.575,
+    "side": "both"
+  },
+  {
+    "disp": 32800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 32800.0,
+    "angle": 5,
+    "kn": 1.13,
+    "side": "both"
+  },
+  {
+    "disp": 32800.0,
+    "angle": 10,
+    "kn": 2.267,
+    "side": "both"
+  },
+  {
+    "disp": 32800.0,
+    "angle": 20,
+    "kn": 4.595,
+    "side": "both"
+  },
+  {
+    "disp": 32800.0,
+    "angle": 30,
+    "kn": 7.0,
+    "side": "both"
+  },
+  {
+    "disp": 32800.0,
+    "angle": 40,
+    "kn": 8.809,
+    "side": "both"
+  },
+  {
+    "disp": 32800.0,
+    "angle": 50,
+    "kn": 9.994,
+    "side": "both"
+  },
+  {
+    "disp": 32800.0,
+    "angle": 60,
+    "kn": 10.56,
+    "side": "both"
+  },
+  {
+    "disp": 33200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 33200.0,
+    "angle": 5,
+    "kn": 1.126,
+    "side": "both"
+  },
+  {
+    "disp": 33200.0,
+    "angle": 10,
+    "kn": 2.26,
+    "side": "both"
+  },
+  {
+    "disp": 33200.0,
+    "angle": 20,
+    "kn": 4.58,
+    "side": "both"
+  },
+  {
+    "disp": 33200.0,
+    "angle": 30,
+    "kn": 6.982,
+    "side": "both"
+  },
+  {
+    "disp": 33200.0,
+    "angle": 40,
+    "kn": 8.79,
+    "side": "both"
+  },
+  {
+    "disp": 33200.0,
+    "angle": 50,
+    "kn": 9.977,
+    "side": "both"
+  },
+  {
+    "disp": 33200.0,
+    "angle": 60,
+    "kn": 10.545,
+    "side": "both"
+  },
+  {
+    "disp": 33600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 33600.0,
+    "angle": 5,
+    "kn": 1.123,
+    "side": "both"
+  },
+  {
+    "disp": 33600.0,
+    "angle": 10,
+    "kn": 2.253,
+    "side": "both"
+  },
+  {
+    "disp": 33600.0,
+    "angle": 20,
+    "kn": 4.567,
+    "side": "both"
+  },
+  {
+    "disp": 33600.0,
+    "angle": 30,
+    "kn": 6.963,
+    "side": "both"
+  },
+  {
+    "disp": 33600.0,
+    "angle": 40,
+    "kn": 8.771,
+    "side": "both"
+  },
+  {
+    "disp": 33600.0,
+    "angle": 50,
+    "kn": 9.96,
+    "side": "both"
+  },
+  {
+    "disp": 33600.0,
+    "angle": 60,
+    "kn": 10.53,
+    "side": "both"
+  },
+  {
+    "disp": 34000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 34000.0,
+    "angle": 5,
+    "kn": 1.12,
+    "side": "both"
+  },
+  {
+    "disp": 34000.0,
+    "angle": 10,
+    "kn": 2.247,
+    "side": "both"
+  },
+  {
+    "disp": 34000.0,
+    "angle": 20,
+    "kn": 4.553,
+    "side": "both"
+  },
+  {
+    "disp": 34000.0,
+    "angle": 30,
+    "kn": 6.944,
+    "side": "both"
+  },
+  {
+    "disp": 34000.0,
+    "angle": 40,
+    "kn": 8.752,
+    "side": "both"
+  },
+  {
+    "disp": 34000.0,
+    "angle": 50,
+    "kn": 9.942,
+    "side": "both"
+  },
+  {
+    "disp": 34000.0,
+    "angle": 60,
+    "kn": 10.515,
+    "side": "both"
+  },
+  {
+    "disp": 34400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 34400.0,
+    "angle": 5,
+    "kn": 1.117,
+    "side": "both"
+  },
+  {
+    "disp": 34400.0,
+    "angle": 10,
+    "kn": 2.241,
+    "side": "both"
+  },
+  {
+    "disp": 34400.0,
+    "angle": 20,
+    "kn": 4.541,
+    "side": "both"
+  },
+  {
+    "disp": 34400.0,
+    "angle": 30,
+    "kn": 6.924,
+    "side": "both"
+  },
+  {
+    "disp": 34400.0,
+    "angle": 40,
+    "kn": 8.734,
+    "side": "both"
+  },
+  {
+    "disp": 34400.0,
+    "angle": 50,
+    "kn": 9.924,
+    "side": "both"
+  },
+  {
+    "disp": 34400.0,
+    "angle": 60,
+    "kn": 10.5,
+    "side": "both"
+  },
+  {
+    "disp": 34800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 34800.0,
+    "angle": 5,
+    "kn": 1.114,
+    "side": "both"
+  },
+  {
+    "disp": 34800.0,
+    "angle": 10,
+    "kn": 2.235,
+    "side": "both"
+  },
+  {
+    "disp": 34800.0,
+    "angle": 20,
+    "kn": 4.529,
+    "side": "both"
+  },
+  {
+    "disp": 34800.0,
+    "angle": 30,
+    "kn": 6.905,
+    "side": "both"
+  },
+  {
+    "disp": 34800.0,
+    "angle": 40,
+    "kn": 8.716,
+    "side": "both"
+  },
+  {
+    "disp": 34800.0,
+    "angle": 50,
+    "kn": 9.906,
+    "side": "both"
+  },
+  {
+    "disp": 34800.0,
+    "angle": 60,
+    "kn": 10.485,
+    "side": "both"
+  },
+  {
+    "disp": 35000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 35000.0,
+    "angle": 5,
+    "kn": 1.113,
+    "side": "both"
+  },
+  {
+    "disp": 35000.0,
+    "angle": 10,
+    "kn": 2.232,
+    "side": "both"
+  },
+  {
+    "disp": 35000.0,
+    "angle": 20,
+    "kn": 4.523,
+    "side": "both"
+  },
+  {
+    "disp": 35000.0,
+    "angle": 30,
+    "kn": 6.895,
+    "side": "both"
+  },
+  {
+    "disp": 35000.0,
+    "angle": 40,
+    "kn": 8.707,
+    "side": "both"
+  },
+  {
+    "disp": 35000.0,
+    "angle": 50,
+    "kn": 9.897,
+    "side": "both"
+  },
+  {
+    "disp": 35000.0,
+    "angle": 60,
+    "kn": 10.477,
+    "side": "both"
+  },
+  {
+    "disp": 35400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 35400.0,
+    "angle": 5,
+    "kn": 1.11,
+    "side": "both"
+  },
+  {
+    "disp": 35400.0,
+    "angle": 10,
+    "kn": 2.227,
+    "side": "both"
+  },
+  {
+    "disp": 35400.0,
+    "angle": 20,
+    "kn": 4.512,
+    "side": "both"
+  },
+  {
+    "disp": 35400.0,
+    "angle": 30,
+    "kn": 6.875,
+    "side": "both"
+  },
+  {
+    "disp": 35400.0,
+    "angle": 40,
+    "kn": 8.689,
+    "side": "both"
+  },
+  {
+    "disp": 35400.0,
+    "angle": 50,
+    "kn": 9.879,
+    "side": "both"
+  },
+  {
+    "disp": 35400.0,
+    "angle": 60,
+    "kn": 10.462,
+    "side": "both"
+  },
+  {
+    "disp": 35800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 35800.0,
+    "angle": 5,
+    "kn": 1.108,
+    "side": "both"
+  },
+  {
+    "disp": 35800.0,
+    "angle": 10,
+    "kn": 2.222,
+    "side": "both"
+  },
+  {
+    "disp": 35800.0,
+    "angle": 20,
+    "kn": 4.501,
+    "side": "both"
+  },
+  {
+    "disp": 35800.0,
+    "angle": 30,
+    "kn": 6.856,
+    "side": "both"
+  },
+  {
+    "disp": 35800.0,
+    "angle": 40,
+    "kn": 8.672,
+    "side": "both"
+  },
+  {
+    "disp": 35800.0,
+    "angle": 50,
+    "kn": 9.861,
+    "side": "both"
+  },
+  {
+    "disp": 35800.0,
+    "angle": 60,
+    "kn": 10.446,
+    "side": "both"
+  },
+  {
+    "disp": 36200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 36200.0,
+    "angle": 5,
+    "kn": 1.106,
+    "side": "both"
+  },
+  {
+    "disp": 36200.0,
+    "angle": 10,
+    "kn": 2.218,
+    "side": "both"
+  },
+  {
+    "disp": 36200.0,
+    "angle": 20,
+    "kn": 4.491,
+    "side": "both"
+  },
+  {
+    "disp": 36200.0,
+    "angle": 30,
+    "kn": 6.836,
+    "side": "both"
+  },
+  {
+    "disp": 36200.0,
+    "angle": 40,
+    "kn": 8.654,
+    "side": "both"
+  },
+  {
+    "disp": 36200.0,
+    "angle": 50,
+    "kn": 9.843,
+    "side": "both"
+  },
+  {
+    "disp": 36200.0,
+    "angle": 60,
+    "kn": 10.431,
+    "side": "both"
+  },
+  {
+    "disp": 36600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 36600.0,
+    "angle": 5,
+    "kn": 1.103,
+    "side": "both"
+  },
+  {
+    "disp": 36600.0,
+    "angle": 10,
+    "kn": 2.213,
+    "side": "both"
+  },
+  {
+    "disp": 36600.0,
+    "angle": 20,
+    "kn": 4.482,
+    "side": "both"
+  },
+  {
+    "disp": 36600.0,
+    "angle": 30,
+    "kn": 6.816,
+    "side": "both"
+  },
+  {
+    "disp": 36600.0,
+    "angle": 40,
+    "kn": 8.637,
+    "side": "both"
+  },
+  {
+    "disp": 36600.0,
+    "angle": 50,
+    "kn": 9.824,
+    "side": "both"
+  },
+  {
+    "disp": 36600.0,
+    "angle": 60,
+    "kn": 10.416,
+    "side": "both"
+  },
+  {
+    "disp": 37000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 37000.0,
+    "angle": 5,
+    "kn": 1.101,
+    "side": "both"
+  },
+  {
+    "disp": 37000.0,
+    "angle": 10,
+    "kn": 2.209,
+    "side": "both"
+  },
+  {
+    "disp": 37000.0,
+    "angle": 20,
+    "kn": 4.473,
+    "side": "both"
+  },
+  {
+    "disp": 37000.0,
+    "angle": 30,
+    "kn": 6.796,
+    "side": "both"
+  },
+  {
+    "disp": 37000.0,
+    "angle": 40,
+    "kn": 8.62,
+    "side": "both"
+  },
+  {
+    "disp": 37000.0,
+    "angle": 50,
+    "kn": 9.805,
+    "side": "both"
+  },
+  {
+    "disp": 37000.0,
+    "angle": 60,
+    "kn": 10.401,
+    "side": "both"
+  },
+  {
+    "disp": 37400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 37400.0,
+    "angle": 5,
+    "kn": 1.099,
+    "side": "both"
+  },
+  {
+    "disp": 37400.0,
+    "angle": 10,
+    "kn": 2.205,
+    "side": "both"
+  },
+  {
+    "disp": 37400.0,
+    "angle": 20,
+    "kn": 4.465,
+    "side": "both"
+  },
+  {
+    "disp": 37400.0,
+    "angle": 30,
+    "kn": 6.776,
+    "side": "both"
+  },
+  {
+    "disp": 37400.0,
+    "angle": 40,
+    "kn": 8.602,
+    "side": "both"
+  },
+  {
+    "disp": 37400.0,
+    "angle": 50,
+    "kn": 9.786,
+    "side": "both"
+  },
+  {
+    "disp": 37400.0,
+    "angle": 60,
+    "kn": 10.386,
+    "side": "both"
+  },
+  {
+    "disp": 37800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 37800.0,
+    "angle": 5,
+    "kn": 1.098,
+    "side": "both"
+  },
+  {
+    "disp": 37800.0,
+    "angle": 10,
+    "kn": 2.201,
+    "side": "both"
+  },
+  {
+    "disp": 37800.0,
+    "angle": 20,
+    "kn": 4.457,
+    "side": "both"
+  },
+  {
+    "disp": 37800.0,
+    "angle": 30,
+    "kn": 6.755,
+    "side": "both"
+  },
+  {
+    "disp": 37800.0,
+    "angle": 40,
+    "kn": 8.584,
+    "side": "both"
+  },
+  {
+    "disp": 37800.0,
+    "angle": 50,
+    "kn": 9.768,
+    "side": "both"
+  },
+  {
+    "disp": 37800.0,
+    "angle": 60,
+    "kn": 10.371,
+    "side": "both"
+  },
+  {
+    "disp": 38200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 38200.0,
+    "angle": 5,
+    "kn": 1.096,
+    "side": "both"
+  },
+  {
+    "disp": 38200.0,
+    "angle": 10,
+    "kn": 2.198,
+    "side": "both"
+  },
+  {
+    "disp": 38200.0,
+    "angle": 20,
+    "kn": 4.449,
+    "side": "both"
+  },
+  {
+    "disp": 38200.0,
+    "angle": 30,
+    "kn": 6.735,
+    "side": "both"
+  },
+  {
+    "disp": 38200.0,
+    "angle": 40,
+    "kn": 8.566,
+    "side": "both"
+  },
+  {
+    "disp": 38200.0,
+    "angle": 50,
+    "kn": 9.749,
+    "side": "both"
+  },
+  {
+    "disp": 38200.0,
+    "angle": 60,
+    "kn": 10.356,
+    "side": "both"
+  },
+  {
+    "disp": 38600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 38600.0,
+    "angle": 5,
+    "kn": 1.094,
+    "side": "both"
+  },
+  {
+    "disp": 38600.0,
+    "angle": 10,
+    "kn": 2.195,
+    "side": "both"
+  },
+  {
+    "disp": 38600.0,
+    "angle": 20,
+    "kn": 4.442,
+    "side": "both"
+  },
+  {
+    "disp": 38600.0,
+    "angle": 30,
+    "kn": 6.715,
+    "side": "both"
+  },
+  {
+    "disp": 38600.0,
+    "angle": 40,
+    "kn": 8.548,
+    "side": "both"
+  },
+  {
+    "disp": 38600.0,
+    "angle": 50,
+    "kn": 9.729,
+    "side": "both"
+  },
+  {
+    "disp": 38600.0,
+    "angle": 60,
+    "kn": 10.341,
+    "side": "both"
+  },
+  {
+    "disp": 39000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 39000.0,
+    "angle": 5,
+    "kn": 1.093,
+    "side": "both"
+  },
+  {
+    "disp": 39000.0,
+    "angle": 20,
+    "kn": 4.435,
+    "side": "both"
+  },
+  {
+    "disp": 39000.0,
+    "angle": 30,
+    "kn": 6.694,
+    "side": "both"
+  },
+  {
+    "disp": 39000.0,
+    "angle": 40,
+    "kn": 8.529,
+    "side": "both"
+  },
+  {
+    "disp": 39000.0,
+    "angle": 50,
+    "kn": 9.709,
+    "side": "both"
+  },
+  {
+    "disp": 39000.0,
+    "angle": 60,
+    "kn": 10.326,
+    "side": "both"
+  },
+  {
+    "disp": 39400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 39400.0,
+    "angle": 5,
+    "kn": 1.091,
+    "side": "both"
+  },
+  {
+    "disp": 39400.0,
+    "angle": 10,
+    "kn": 2.189,
+    "side": "both"
+  },
+  {
+    "disp": 39400.0,
+    "angle": 20,
+    "kn": 4.429,
+    "side": "both"
+  },
+  {
+    "disp": 39400.0,
+    "angle": 30,
+    "kn": 6.674,
+    "side": "both"
+  },
+  {
+    "disp": 39400.0,
+    "angle": 40,
+    "kn": 8.51,
+    "side": "both"
+  },
+  {
+    "disp": 39400.0,
+    "angle": 60,
+    "kn": 10.311,
+    "side": "both"
+  },
+  {
+    "disp": 39800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 39800.0,
+    "angle": 5,
+    "kn": 1.09,
+    "side": "both"
+  },
+  {
+    "disp": 39800.0,
+    "angle": 10,
+    "kn": 2.186,
+    "side": "both"
+  },
+  {
+    "disp": 39800.0,
+    "angle": 20,
+    "kn": 4.423,
+    "side": "both"
+  },
+  {
+    "disp": 39800.0,
+    "angle": 30,
+    "kn": 6.654,
+    "side": "both"
+  },
+  {
+    "disp": 39800.0,
+    "angle": 40,
+    "kn": 8.491,
+    "side": "both"
+  },
+  {
+    "disp": 39800.0,
+    "angle": 50,
+    "kn": 9.67,
+    "side": "both"
+  },
+  {
+    "disp": 39800.0,
+    "angle": 60,
+    "kn": 10.296,
+    "side": "both"
+  },
+  {
+    "disp": 40200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 40200.0,
+    "angle": 5,
+    "kn": 1.089,
+    "side": "both"
+  },
+  {
+    "disp": 40200.0,
+    "angle": 10,
+    "kn": 2.184,
+    "side": "both"
+  },
+  {
+    "disp": 40200.0,
+    "angle": 20,
+    "kn": 4.418,
+    "side": "both"
+  },
+  {
+    "disp": 40200.0,
+    "angle": 30,
+    "kn": 6.634,
+    "side": "both"
+  },
+  {
+    "disp": 40200.0,
+    "angle": 40,
+    "kn": 8.472,
+    "side": "both"
+  },
+  {
+    "disp": 40200.0,
+    "angle": 50,
+    "kn": 9.649,
+    "side": "both"
+  },
+  {
+    "disp": 40200.0,
+    "angle": 60,
+    "kn": 10.28,
+    "side": "both"
+  },
+  {
+    "disp": 40600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 40600.0,
+    "angle": 5,
+    "kn": 1.088,
+    "side": "both"
+  },
+  {
+    "disp": 40600.0,
+    "angle": 10,
+    "kn": 2.181,
+    "side": "both"
+  },
+  {
+    "disp": 40600.0,
+    "angle": 20,
+    "kn": 4.413,
+    "side": "both"
+  },
+  {
+    "disp": 40600.0,
+    "angle": 30,
+    "kn": 6.614,
+    "side": "both"
+  },
+  {
+    "disp": 40600.0,
+    "angle": 40,
+    "kn": 8.452,
+    "side": "both"
+  },
+  {
+    "disp": 40600.0,
+    "angle": 50,
+    "kn": 9.629,
+    "side": "both"
+  },
+  {
+    "disp": 40600.0,
+    "angle": 60,
+    "kn": 10.265,
+    "side": "both"
+  },
+  {
+    "disp": 41000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 41000.0,
+    "angle": 5,
+    "kn": 1.087,
+    "side": "both"
+  },
+  {
+    "disp": 41000.0,
+    "angle": 10,
+    "kn": 2.179,
+    "side": "both"
+  },
+  {
+    "disp": 41000.0,
+    "angle": 20,
+    "kn": 4.408,
+    "side": "both"
+  },
+  {
+    "disp": 41000.0,
+    "angle": 30,
+    "kn": 6.595,
+    "side": "both"
+  },
+  {
+    "disp": 41000.0,
+    "angle": 40,
+    "kn": 8.432,
+    "side": "both"
+  },
+  {
+    "disp": 41000.0,
+    "angle": 50,
+    "kn": 9.609,
+    "side": "both"
+  },
+  {
+    "disp": 41000.0,
+    "angle": 60,
+    "kn": 10.25,
+    "side": "both"
+  },
+  {
+    "disp": 41400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 41400.0,
+    "angle": 5,
+    "kn": 1.086,
+    "side": "both"
+  },
+  {
+    "disp": 41400.0,
+    "angle": 10,
+    "kn": 2.177,
+    "side": "both"
+  },
+  {
+    "disp": 41400.0,
+    "angle": 20,
+    "kn": 4.404,
+    "side": "both"
+  },
+  {
+    "disp": 41400.0,
+    "angle": 30,
+    "kn": 6.576,
+    "side": "both"
+  },
+  {
+    "disp": 41400.0,
+    "angle": 40,
+    "kn": 8.412,
+    "side": "both"
+  },
+  {
+    "disp": 41400.0,
+    "angle": 50,
+    "kn": 9.589,
+    "side": "both"
+  },
+  {
+    "disp": 41400.0,
+    "angle": 60,
+    "kn": 10.235,
+    "side": "both"
+  },
+  {
+    "disp": 41800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 41800.0,
+    "angle": 5,
+    "kn": 1.085,
+    "side": "both"
+  },
+  {
+    "disp": 41800.0,
+    "angle": 10,
+    "kn": 2.176,
+    "side": "both"
+  },
+  {
+    "disp": 41800.0,
+    "angle": 20,
+    "kn": 4.4,
+    "side": "both"
+  },
+  {
+    "disp": 41800.0,
+    "angle": 30,
+    "kn": 6.557,
+    "side": "both"
+  },
+  {
+    "disp": 41800.0,
+    "angle": 40,
+    "kn": 8.391,
+    "side": "both"
+  },
+  {
+    "disp": 41800.0,
+    "angle": 50,
+    "kn": 9.569,
+    "side": "both"
+  },
+  {
+    "disp": 41800.0,
+    "angle": 60,
+    "kn": 10.22,
+    "side": "both"
+  },
+  {
+    "disp": 42200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 42200.0,
+    "angle": 5,
+    "kn": 1.085,
+    "side": "both"
+  },
+  {
+    "disp": 42200.0,
+    "angle": 10,
+    "kn": 2.174,
+    "side": "both"
+  },
+  {
+    "disp": 42200.0,
+    "angle": 20,
+    "kn": 4.396,
+    "side": "both"
+  },
+  {
+    "disp": 42200.0,
+    "angle": 30,
+    "kn": 6.539,
+    "side": "both"
+  },
+  {
+    "disp": 42200.0,
+    "angle": 40,
+    "kn": 8.37,
+    "side": "both"
+  },
+  {
+    "disp": 42200.0,
+    "angle": 50,
+    "kn": 9.548,
+    "side": "both"
+  },
+  {
+    "disp": 42200.0,
+    "angle": 60,
+    "kn": 10.204,
+    "side": "both"
+  },
+  {
+    "disp": 42600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 42600.0,
+    "angle": 5,
+    "kn": 1.084,
+    "side": "both"
+  },
+  {
+    "disp": 42600.0,
+    "angle": 10,
+    "kn": 2.173,
+    "side": "both"
+  },
+  {
+    "disp": 42600.0,
+    "angle": 20,
+    "kn": 4.393,
+    "side": "both"
+  },
+  {
+    "disp": 42600.0,
+    "angle": 30,
+    "kn": 6.521,
+    "side": "both"
+  },
+  {
+    "disp": 42600.0,
+    "angle": 40,
+    "kn": 8.349,
+    "side": "both"
+  },
+  {
+    "disp": 42600.0,
+    "angle": 50,
+    "kn": 9.528,
+    "side": "both"
+  },
+  {
+    "disp": 42600.0,
+    "angle": 60,
+    "kn": 10.189,
+    "side": "both"
+  },
+  {
+    "disp": 43000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 43000.0,
+    "angle": 5,
+    "kn": 1.083,
+    "side": "both"
+  },
+  {
+    "disp": 43000.0,
+    "angle": 10,
+    "kn": 2.172,
+    "side": "both"
+  },
+  {
+    "disp": 43000.0,
+    "angle": 20,
+    "kn": 4.39,
+    "side": "both"
+  },
+  {
+    "disp": 43000.0,
+    "angle": 30,
+    "kn": 6.504,
+    "side": "both"
+  },
+  {
+    "disp": 43000.0,
+    "angle": 40,
+    "kn": 8.328,
+    "side": "both"
+  },
+  {
+    "disp": 43000.0,
+    "angle": 50,
+    "kn": 9.507,
+    "side": "both"
+  },
+  {
+    "disp": 43000.0,
+    "angle": 60,
+    "kn": 10.174,
+    "side": "both"
+  },
+  {
+    "disp": 43400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 43400.0,
+    "angle": 5,
+    "kn": 1.083,
+    "side": "both"
+  },
+  {
+    "disp": 43400.0,
+    "angle": 10,
+    "kn": 2.171,
+    "side": "both"
+  },
+  {
+    "disp": 43400.0,
+    "angle": 20,
+    "kn": 4.387,
+    "side": "both"
+  },
+  {
+    "disp": 43400.0,
+    "angle": 30,
+    "kn": 6.487,
+    "side": "both"
+  },
+  {
+    "disp": 43400.0,
+    "angle": 40,
+    "kn": 8.306,
+    "side": "both"
+  },
+  {
+    "disp": 43400.0,
+    "angle": 50,
+    "kn": 9.487,
+    "side": "both"
+  },
+  {
+    "disp": 43400.0,
+    "angle": 60,
+    "kn": 10.159,
+    "side": "both"
+  },
+  {
+    "disp": 43800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 43800.0,
+    "angle": 5,
+    "kn": 1.082,
+    "side": "both"
+  },
+  {
+    "disp": 43800.0,
+    "angle": 10,
+    "kn": 2.17,
+    "side": "both"
+  },
+  {
+    "disp": 43800.0,
+    "angle": 20,
+    "kn": 4.385,
+    "side": "both"
+  },
+  {
+    "disp": 43800.0,
+    "angle": 30,
+    "kn": 6.471,
+    "side": "both"
+  },
+  {
+    "disp": 43800.0,
+    "angle": 40,
+    "kn": 8.285,
+    "side": "both"
+  },
+  {
+    "disp": 43800.0,
+    "angle": 50,
+    "kn": 9.467,
+    "side": "both"
+  },
+  {
+    "disp": 43800.0,
+    "angle": 60,
+    "kn": 10.144,
+    "side": "both"
+  },
+  {
+    "disp": 44000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 44000.0,
+    "angle": 5,
+    "kn": 1.082,
+    "side": "both"
+  },
+  {
+    "disp": 44000.0,
+    "angle": 10,
+    "kn": 2.16,
+    "side": "both"
+  },
+  {
+    "disp": 44000.0,
+    "angle": 20,
+    "kn": 4.384,
+    "side": "both"
+  },
+  {
+    "disp": 44000.0,
+    "angle": 30,
+    "kn": 6.463,
+    "side": "both"
+  },
+  {
+    "disp": 44000.0,
+    "angle": 40,
+    "kn": 8.274,
+    "side": "both"
+  },
+  {
+    "disp": 44000.0,
+    "angle": 50,
+    "kn": 9.457,
+    "side": "both"
+  },
+  {
+    "disp": 44000.0,
+    "angle": 60,
+    "kn": 10.136,
+    "side": "both"
+  },
+  {
+    "disp": 44400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 44400.0,
+    "angle": 5,
+    "kn": 1.082,
+    "side": "both"
+  },
+  {
+    "disp": 44400.0,
+    "angle": 10,
+    "kn": 2.169,
+    "side": "both"
+  },
+  {
+    "disp": 44400.0,
+    "angle": 20,
+    "kn": 4.382,
+    "side": "both"
+  },
+  {
+    "disp": 44400.0,
+    "angle": 30,
+    "kn": 6.447,
+    "side": "both"
+  },
+  {
+    "disp": 44400.0,
+    "angle": 40,
+    "kn": 8.252,
+    "side": "both"
+  },
+  {
+    "disp": 44400.0,
+    "angle": 50,
+    "kn": 9.437,
+    "side": "both"
+  },
+  {
+    "disp": 44400.0,
+    "angle": 60,
+    "kn": 10.121,
+    "side": "both"
+  },
+  {
+    "disp": 44800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 44800.0,
+    "angle": 5,
+    "kn": 1.082,
+    "side": "both"
+  },
+  {
+    "disp": 44800.0,
+    "angle": 10,
+    "kn": 2.168,
+    "side": "both"
+  },
+  {
+    "disp": 44800.0,
+    "angle": 20,
+    "kn": 4.38,
+    "side": "both"
+  },
+  {
+    "disp": 44800.0,
+    "angle": 30,
+    "kn": 6.432,
+    "side": "both"
+  },
+  {
+    "disp": 44800.0,
+    "angle": 40,
+    "kn": 8.23,
+    "side": "both"
+  },
+  {
+    "disp": 44800.0,
+    "angle": 50,
+    "kn": 9.416,
+    "side": "both"
+  },
+  {
+    "disp": 44800.0,
+    "angle": 60,
+    "kn": 10.106,
+    "side": "both"
+  },
+  {
+    "disp": 45200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 45200.0,
+    "angle": 5,
+    "kn": 1.082,
+    "side": "both"
+  },
+  {
+    "disp": 45200.0,
+    "angle": 10,
+    "kn": 2.168,
+    "side": "both"
+  },
+  {
+    "disp": 45200.0,
+    "angle": 20,
+    "kn": 4.379,
+    "side": "both"
+  },
+  {
+    "disp": 45200.0,
+    "angle": 30,
+    "kn": 6.417,
+    "side": "both"
+  },
+  {
+    "disp": 45200.0,
+    "angle": 40,
+    "kn": 8.208,
+    "side": "both"
+  },
+  {
+    "disp": 45200.0,
+    "angle": 50,
+    "kn": 9.395,
+    "side": "both"
+  },
+  {
+    "disp": 45200.0,
+    "angle": 60,
+    "kn": 10.091,
+    "side": "both"
+  },
+  {
+    "disp": 45600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 45600.0,
+    "angle": 5,
+    "kn": 1.082,
+    "side": "both"
+  },
+  {
+    "disp": 45600.0,
+    "angle": 10,
+    "kn": 2.168,
+    "side": "both"
+  },
+  {
+    "disp": 45600.0,
+    "angle": 20,
+    "kn": 4.378,
+    "side": "both"
+  },
+  {
+    "disp": 45600.0,
+    "angle": 30,
+    "kn": 6.403,
+    "side": "both"
+  },
+  {
+    "disp": 45600.0,
+    "angle": 40,
+    "kn": 8.185,
+    "side": "both"
+  },
+  {
+    "disp": 45600.0,
+    "angle": 50,
+    "kn": 9.375,
+    "side": "both"
+  },
+  {
+    "disp": 45600.0,
+    "angle": 60,
+    "kn": 10.075,
+    "side": "both"
+  },
+  {
+    "disp": 46000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 46000.0,
+    "angle": 5,
+    "kn": 1.081,
+    "side": "both"
+  },
+  {
+    "disp": 46000.0,
+    "angle": 10,
+    "kn": 2.168,
+    "side": "both"
+  },
+  {
+    "disp": 46000.0,
+    "angle": 20,
+    "kn": 4.376,
+    "side": "both"
+  },
+  {
+    "disp": 46000.0,
+    "angle": 30,
+    "kn": 6.39,
+    "side": "both"
+  },
+  {
+    "disp": 46000.0,
+    "angle": 40,
+    "kn": 8.13,
+    "side": "both"
+  },
+  {
+    "disp": 46000.0,
+    "angle": 50,
+    "kn": 9.354,
+    "side": "both"
+  },
+  {
+    "disp": 46000.0,
+    "angle": 60,
+    "kn": 10.06,
+    "side": "both"
+  },
+  {
+    "disp": 46400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 46400.0,
+    "angle": 5,
+    "kn": 1.082,
+    "side": "both"
+  },
+  {
+    "disp": 46400.0,
+    "angle": 10,
+    "kn": 2.168,
+    "side": "both"
+  },
+  {
+    "disp": 46400.0,
+    "angle": 20,
+    "kn": 4.374,
+    "side": "both"
+  },
+  {
+    "disp": 46400.0,
+    "angle": 30,
+    "kn": 6.376,
+    "side": "both"
+  },
+  {
+    "disp": 46400.0,
+    "angle": 40,
+    "kn": 8.14,
+    "side": "both"
+  },
+  {
+    "disp": 46400.0,
+    "angle": 50,
+    "kn": 9.334,
+    "side": "both"
+  },
+  {
+    "disp": 46400.0,
+    "angle": 60,
+    "kn": 10.045,
+    "side": "both"
+  },
+  {
+    "disp": 46800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 46800.0,
+    "angle": 5,
+    "kn": 1.082,
+    "side": "both"
+  },
+  {
+    "disp": 46800.0,
+    "angle": 10,
+    "kn": 2.168,
+    "side": "both"
+  },
+  {
+    "disp": 46800.0,
+    "angle": 20,
+    "kn": 4.372,
+    "side": "both"
+  },
+  {
+    "disp": 46800.0,
+    "angle": 30,
+    "kn": 6.363,
+    "side": "both"
+  },
+  {
+    "disp": 46800.0,
+    "angle": 40,
+    "kn": 8.118,
+    "side": "both"
+  },
+  {
+    "disp": 46800.0,
+    "angle": 50,
+    "kn": 9.313,
+    "side": "both"
+  },
+  {
+    "disp": 46800.0,
+    "angle": 60,
+    "kn": 10.03,
+    "side": "both"
+  },
+  {
+    "disp": 47200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 47200.0,
+    "angle": 5,
+    "kn": 1.082,
+    "side": "both"
+  },
+  {
+    "disp": 47200.0,
+    "angle": 10,
+    "kn": 2.168,
+    "side": "both"
+  },
+  {
+    "disp": 47200.0,
+    "angle": 20,
+    "kn": 4.369,
+    "side": "both"
+  },
+  {
+    "disp": 47200.0,
+    "angle": 30,
+    "kn": 6.351,
+    "side": "both"
+  },
+  {
+    "disp": 47200.0,
+    "angle": 40,
+    "kn": 8.095,
+    "side": "both"
+  },
+  {
+    "disp": 47200.0,
+    "angle": 50,
+    "kn": 9.293,
+    "side": "both"
+  },
+  {
+    "disp": 47200.0,
+    "angle": 60,
+    "kn": 10.015,
+    "side": "both"
+  },
+  {
+    "disp": 47600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 47600.0,
+    "angle": 5,
+    "kn": 1.082,
+    "side": "both"
+  },
+  {
+    "disp": 47600.0,
+    "angle": 10,
+    "kn": 2.168,
+    "side": "both"
+  },
+  {
+    "disp": 47600.0,
+    "angle": 20,
+    "kn": 4.366,
+    "side": "both"
+  },
+  {
+    "disp": 47600.0,
+    "angle": 30,
+    "kn": 6.339,
+    "side": "both"
+  },
+  {
+    "disp": 47600.0,
+    "angle": 40,
+    "kn": 8.072,
+    "side": "both"
+  },
+  {
+    "disp": 47600.0,
+    "angle": 50,
+    "kn": 9.272,
+    "side": "both"
+  },
+  {
+    "disp": 47600.0,
+    "angle": 60,
+    "kn": 10.0,
+    "side": "both"
+  },
+  {
+    "disp": 48000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 48000.0,
+    "angle": 5,
+    "kn": 1.082,
+    "side": "both"
+  },
+  {
+    "disp": 48000.0,
+    "angle": 10,
+    "kn": 2.169,
+    "side": "both"
+  },
+  {
+    "disp": 48000.0,
+    "angle": 20,
+    "kn": 4.362,
+    "side": "both"
+  },
+  {
+    "disp": 48000.0,
+    "angle": 30,
+    "kn": 6.327,
+    "side": "both"
+  },
+  {
+    "disp": 48000.0,
+    "angle": 40,
+    "kn": 8.049,
+    "side": "both"
+  },
+  {
+    "disp": 48000.0,
+    "angle": 50,
+    "kn": 9.251,
+    "side": "both"
+  },
+  {
+    "disp": 48000.0,
+    "angle": 60,
+    "kn": 9.985,
+    "side": "both"
+  },
+  {
+    "disp": 48400.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 48400.0,
+    "angle": 5,
+    "kn": 1.083,
+    "side": "both"
+  },
+  {
+    "disp": 48400.0,
+    "angle": 10,
+    "kn": 2.169,
+    "side": "both"
+  },
+  {
+    "disp": 48400.0,
+    "angle": 20,
+    "kn": 4.358,
+    "side": "both"
+  },
+  {
+    "disp": 48400.0,
+    "angle": 30,
+    "kn": 6.316,
+    "side": "both"
+  },
+  {
+    "disp": 48400.0,
+    "angle": 40,
+    "kn": 8.026,
+    "side": "both"
+  },
+  {
+    "disp": 48400.0,
+    "angle": 50,
+    "kn": 9.23,
+    "side": "both"
+  },
+  {
+    "disp": 48400.0,
+    "angle": 60,
+    "kn": 9.97,
+    "side": "both"
+  },
+  {
+    "disp": 48800.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 48800.0,
+    "angle": 5,
+    "kn": 1.083,
+    "side": "both"
+  },
+  {
+    "disp": 48800.0,
+    "angle": 10,
+    "kn": 2.17,
+    "side": "both"
+  },
+  {
+    "disp": 48800.0,
+    "angle": 20,
+    "kn": 4.354,
+    "side": "both"
+  },
+  {
+    "disp": 48800.0,
+    "angle": 30,
+    "kn": 6.305,
+    "side": "both"
+  },
+  {
+    "disp": 48800.0,
+    "angle": 40,
+    "kn": 8.003,
+    "side": "both"
+  },
+  {
+    "disp": 48800.0,
+    "angle": 50,
+    "kn": 9.209,
+    "side": "both"
+  },
+  {
+    "disp": 48800.0,
+    "angle": 60,
+    "kn": 9.954,
+    "side": "both"
+  },
+  {
+    "disp": 49200.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 49200.0,
+    "angle": 5,
+    "kn": 1.083,
+    "side": "both"
+  },
+  {
+    "disp": 49200.0,
+    "angle": 10,
+    "kn": 2.171,
+    "side": "both"
+  },
+  {
+    "disp": 49200.0,
+    "angle": 20,
+    "kn": 4.349,
+    "side": "both"
+  },
+  {
+    "disp": 49200.0,
+    "angle": 30,
+    "kn": 6.294,
+    "side": "both"
+  },
+  {
+    "disp": 49200.0,
+    "angle": 40,
+    "kn": 7.98,
+    "side": "both"
+  },
+  {
+    "disp": 49200.0,
+    "angle": 50,
+    "kn": 9.188,
+    "side": "both"
+  },
+  {
+    "disp": 49200.0,
+    "angle": 60,
+    "kn": 9.939,
+    "side": "both"
+  },
+  {
+    "disp": 49600.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 49600.0,
+    "angle": 5,
+    "kn": 1.084,
+    "side": "both"
+  },
+  {
+    "disp": 49600.0,
+    "angle": 10,
+    "kn": 2.172,
+    "side": "both"
+  },
+  {
+    "disp": 49600.0,
+    "angle": 20,
+    "kn": 4.344,
+    "side": "both"
+  },
+  {
+    "disp": 49600.0,
+    "angle": 30,
+    "kn": 6.283,
+    "side": "both"
+  },
+  {
+    "disp": 49600.0,
+    "angle": 40,
+    "kn": 7.957,
+    "side": "both"
+  },
+  {
+    "disp": 49600.0,
+    "angle": 50,
+    "kn": 9.167,
+    "side": "both"
+  },
+  {
+    "disp": 49600.0,
+    "angle": 60,
+    "kn": 9.924,
+    "side": "both"
+  },
+  {
+    "disp": 50000.0,
+    "angle": 0,
+    "kn": 0.0,
+    "side": "both"
+  },
+  {
+    "disp": 50000.0,
+    "angle": 5,
+    "kn": 1.084,
+    "side": "both"
+  },
+  {
+    "disp": 50000.0,
+    "angle": 10,
+    "kn": 2.173,
+    "side": "both"
+  },
+  {
+    "disp": 50000.0,
+    "angle": 20,
+    "kn": 4.338,
+    "side": "both"
+  },
+  {
+    "disp": 50000.0,
+    "angle": 30,
+    "kn": 6.272,
+    "side": "both"
+  },
+  {
+    "disp": 50000.0,
+    "angle": 40,
+    "kn": 7.934,
+    "side": "both"
+  },
+  {
+    "disp": 50000.0,
+    "angle": 50,
+    "kn": 9.145,
+    "side": "both"
+  },
+  {
+    "disp": 50000.0,
+    "angle": 60,
+    "kn": 9.908,
+    "side": "both"
+  }
+]

@@ -1,0 +1,635 @@
+{
+  "sourceFile": "MV. GREAT FORTUNE Loading program - แก้ไข 16มี.ค.2569.xlsx",
+  "sourceRevision": "16 Mar 2026 (filename revision)",
+  "planerStoredDate": "01 Jan 2021",
+  "hydroRawCount": 873,
+  "hydroOperationalCount": 853,
+  "hydroExcludedCount": 20,
+  "knRawLevels": 115,
+  "knOperationalRows": 915,
+  "knExcluded": [
+    {
+      "disp": 7400.0,
+      "angle": 5
+    },
+    {
+      "disp": 22800.0,
+      "angle": 5
+    },
+    {
+      "disp": 29200.0,
+      "angle": 10
+    },
+    {
+      "disp": 39000.0,
+      "angle": 10
+    },
+    {
+      "disp": 39400.0,
+      "angle": 50
+    }
+  ],
+  "holds": [
+    {
+      "id": "gf_hold_1",
+      "name": "No.1 Cargo Hold",
+      "type": "Bulk Cargo Hold",
+      "lcg": 64.417,
+      "length": 25.911,
+      "breadth": 23.5,
+      "bottom": 1.9,
+      "height": 10.8,
+      "tcg": 0,
+      "capacityVolume": 4990,
+      "grainCapacity": 4990,
+      "hatch": true,
+      "hopper": true,
+      "source": "GREAT FORTUNE workbook",
+      "sourceRow": 8
+    },
+    {
+      "id": "gf_hold_2",
+      "name": "No.2 Cargo Hold",
+      "type": "Bulk Cargo Hold",
+      "lcg": 38.506,
+      "length": 27.206,
+      "breadth": 26.0,
+      "bottom": 1.7,
+      "height": 11.7,
+      "tcg": 0,
+      "capacityVolume": 10198,
+      "grainCapacity": 10198,
+      "hatch": true,
+      "hopper": true,
+      "source": "GREAT FORTUNE workbook",
+      "sourceRow": 9
+    },
+    {
+      "id": "gf_hold_3",
+      "name": "No.3 Cargo Hold",
+      "type": "Bulk Cargo Hold",
+      "lcg": 10.006,
+      "length": 28.5,
+      "breadth": 26.0,
+      "bottom": 1.7,
+      "height": 11.7,
+      "tcg": 0,
+      "capacityVolume": 10198,
+      "grainCapacity": 10198,
+      "hatch": true,
+      "hopper": true,
+      "source": "GREAT FORTUNE workbook",
+      "sourceRow": 10
+    },
+    {
+      "id": "gf_hold_4",
+      "name": "No.4 Cargo Hold",
+      "type": "Bulk Cargo Hold",
+      "lcg": -18.494,
+      "length": 28.263,
+      "breadth": 26.0,
+      "bottom": 1.7,
+      "height": 11.7,
+      "tcg": 0,
+      "capacityVolume": 10198,
+      "grainCapacity": 10198,
+      "hatch": true,
+      "hopper": true,
+      "source": "GREAT FORTUNE workbook",
+      "sourceRow": 11
+    },
+    {
+      "id": "gf_hold_5",
+      "name": "No.5 Cargo Hold",
+      "type": "Bulk Cargo Hold",
+      "lcg": -46.52,
+      "length": 28.026,
+      "breadth": 26.0,
+      "bottom": 1.7,
+      "height": 11.7,
+      "tcg": 0,
+      "capacityVolume": 9481,
+      "grainCapacity": 9481,
+      "hatch": true,
+      "hopper": true,
+      "source": "GREAT FORTUNE workbook",
+      "sourceRow": 12
+    }
+  ],
+  "sourceItems": [
+    {
+      "row": 3,
+      "name": "LIGHT SHIP",
+      "content": " -",
+      "mass": 10138.0,
+      "vcg": 9.87,
+      "lcg": -14.5,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 4,
+      "name": "CREW & EFFECTs",
+      "content": " -",
+      "mass": 10.0,
+      "vcg": 22.9,
+      "lcg": -67.5,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 5,
+      "name": "STORE-AFT",
+      "content": " -",
+      "mass": 40.0,
+      "vcg": 17.6,
+      "lcg": -89.1,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 6,
+      "name": "STORE-FWD",
+      "content": " -",
+      "mass": 200.0,
+      "vcg": 17.6,
+      "lcg": 79.5,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 7,
+      "name": "PROVISION STR.",
+      "content": " -",
+      "mass": 0.0,
+      "vcg": 17.6,
+      "lcg": 87.3,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 8,
+      "name": "NO.1 HOLD",
+      "content": "wheat",
+      "mass": 3000.0,
+      "vcg": 8.56,
+      "lcg": 64.417,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 9,
+      "name": "NO.2 HOLD",
+      "content": "wheat",
+      "mass": 6200.0,
+      "vcg": 9.564,
+      "lcg": 38.506,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 10,
+      "name": "NO.3 HOLD",
+      "content": "wheat",
+      "mass": 4600.0,
+      "vcg": 9.564,
+      "lcg": 10.006,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 11,
+      "name": "NO.4 HOLD",
+      "content": "wheat",
+      "mass": 3000.0,
+      "vcg": 9.564,
+      "lcg": -18.494,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 12,
+      "name": "NO.5 HOLD",
+      "content": "wheat",
+      "mass": 4000.0,
+      "vcg": 10.093,
+      "lcg": -46.52,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 13,
+      "name": "NO.4HFO.P",
+      "content": "H.F.O.",
+      "mass": 100.0,
+      "vcg": 0.811,
+      "lcg": -18.569,
+      "tcg": -7.805,
+      "fsm": 0.0
+    },
+    {
+      "row": 14,
+      "name": "NO.4HFO.S",
+      "content": "H.F.O.",
+      "mass": 100.0,
+      "vcg": 0.811,
+      "lcg": -18.569,
+      "tcg": 7.805,
+      "fsm": 0.0
+    },
+    {
+      "row": 15,
+      "name": "NO.5HFO.P",
+      "content": "H.F.O.",
+      "mass": 100.0,
+      "vcg": 0.848,
+      "lcg": -44.397,
+      "tcg": -6.09,
+      "fsm": 2031.39
+    },
+    {
+      "row": 16,
+      "name": "NO.5HFO.S",
+      "content": "H.F.O.",
+      "mass": 100.0,
+      "vcg": 0.848,
+      "lcg": -44.397,
+      "tcg": 6.09,
+      "fsm": 2031.39
+    },
+    {
+      "row": 17,
+      "name": "HFO SETT.S",
+      "content": "H.F.O.",
+      "mass": 25.0,
+      "vcg": 14.078,
+      "lcg": -72.0,
+      "tcg": 10.646,
+      "fsm": 0.0
+    },
+    {
+      "row": 18,
+      "name": "HFO SERVICE.S",
+      "content": "H.F.O.",
+      "mass": 25.0,
+      "vcg": 14.078,
+      "lcg": -67.875,
+      "tcg": 10.646,
+      "fsm": 0.0
+    },
+    {
+      "row": 19,
+      "name": "HFO DRAINTK.S",
+      "content": "H.F.O.",
+      "mass": 25.0,
+      "vcg": 1.149,
+      "lcg": -62.338,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 20,
+      "name": "HFO DRAINTK.P",
+      "content": "H.F.O.",
+      "mass": 25.0,
+      "vcg": 1.149,
+      "lcg": -62.338,
+      "tcg": -0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 21,
+      "name": "DO TK.S",
+      "content": "D.O.",
+      "mass": 33.0,
+      "vcg": 6.204,
+      "lcg": -62.798,
+      "tcg": 9.27,
+      "fsm": 35.15
+    },
+    {
+      "row": 22,
+      "name": "DO TK.P",
+      "content": "D.O.",
+      "mass": 33.0,
+      "vcg": 6.311,
+      "lcg": -63.966,
+      "tcg": -9.14,
+      "fsm": 49.82
+    },
+    {
+      "row": 23,
+      "name": "DO SERVICE .S",
+      "content": "D.O.",
+      "mass": 33.0,
+      "vcg": 14.078,
+      "lcg": -63.75,
+      "tcg": 10.554,
+      "fsm": 0.0
+    },
+    {
+      "row": 24,
+      "name": "FW TK.S",
+      "content": "F.W.",
+      "mass": 50.0,
+      "vcg": 13.763,
+      "lcg": -87.583,
+      "tcg": 7.373,
+      "fsm": 81.8
+    },
+    {
+      "row": 25,
+      "name": "FW TK.P",
+      "content": "F.W.",
+      "mass": 50.0,
+      "vcg": 13.763,
+      "lcg": -87.583,
+      "tcg": -7.373,
+      "fsm": 81.8
+    },
+    {
+      "row": 26,
+      "name": "LO SETT.P",
+      "content": "L.O.",
+      "mass": 0.0,
+      "vcg": 14.519,
+      "lcg": -61.5,
+      "tcg": -7.041,
+      "fsm": 0.0
+    },
+    {
+      "row": 27,
+      "name": "LO STOR.P",
+      "content": "L.O.",
+      "mass": 0.0,
+      "vcg": 14.519,
+      "lcg": -61.5,
+      "tcg": -10.421,
+      "fsm": 0.0
+    },
+    {
+      "row": 28,
+      "name": "LO SUMP TK.C",
+      "content": "L.O.",
+      "mass": 0.0,
+      "vcg": 0.467,
+      "lcg": -69.366,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 29,
+      "name": "CYLOILSTOR.S",
+      "content": "L.O.",
+      "mass": 0.0,
+      "vcg": 14.127,
+      "lcg": -78.375,
+      "tcg": 9.24,
+      "fsm": 0.0
+    },
+    {
+      "row": 30,
+      "name": "GELOSTOR.P",
+      "content": "L.O.",
+      "mass": 0.0,
+      "vcg": 14.47,
+      "lcg": -61.5,
+      "tcg": -1.89,
+      "fsm": 0.0
+    },
+    {
+      "row": 31,
+      "name": "LORENOVATETK.P",
+      "content": "L.O.",
+      "mass": 0.0,
+      "vcg": 1.37,
+      "lcg": -72.236,
+      "tcg": -2.434,
+      "fsm": 0.0
+    },
+    {
+      "row": 32,
+      "name": "LODRAINTK.P",
+      "content": "L.O.",
+      "mass": 0.0,
+      "vcg": 1.213,
+      "lcg": -66.644,
+      "tcg": -3.032,
+      "fsm": 12.95
+    },
+    {
+      "row": 33,
+      "name": "FOREPEAK.C",
+      "content": "B.W.",
+      "mass": 0.0,
+      "vcg": 8.817,
+      "lcg": 85.12,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 34,
+      "name": "FWDBAL.S",
+      "content": "B.W.",
+      "mass": 50.0,
+      "vcg": 5.826,
+      "lcg": 78.211,
+      "tcg": 6.022,
+      "fsm": 0.0
+    },
+    {
+      "row": 35,
+      "name": "FWDBAL.P",
+      "content": "B.W.",
+      "mass": 50.0,
+      "vcg": 5.826,
+      "lcg": 78.211,
+      "tcg": -6.022,
+      "fsm": 0.0
+    },
+    {
+      "row": 36,
+      "name": "NO.1 WBTK.P",
+      "content": "B.W.",
+      "mass": 200.0,
+      "vcg": 7.531,
+      "lcg": 62.49,
+      "tcg": -9.239,
+      "fsm": 0.0
+    },
+    {
+      "row": 37,
+      "name": "NO.1 WBTK.S",
+      "content": "B.W.",
+      "mass": 200.0,
+      "vcg": 7.531,
+      "lcg": 62.49,
+      "tcg": 9.239,
+      "fsm": 0.0
+    },
+    {
+      "row": 38,
+      "name": "NO.2 WBTK.P",
+      "content": "B.W.",
+      "mass": 200.0,
+      "vcg": 4.445,
+      "lcg": 38.061,
+      "tcg": -11.003,
+      "fsm": 0.0
+    },
+    {
+      "row": 39,
+      "name": "NO.2 WBTK.S",
+      "content": "B.W.",
+      "mass": 200.0,
+      "vcg": 4.445,
+      "lcg": 38.061,
+      "tcg": 11.003,
+      "fsm": 0.0
+    },
+    {
+      "row": 40,
+      "name": "NO.3 WBTK.P",
+      "content": "B.W.",
+      "mass": 0.0,
+      "vcg": 4.382,
+      "lcg": 9.755,
+      "tcg": -11.046,
+      "fsm": 0.0
+    },
+    {
+      "row": 41,
+      "name": "NO.3 WBTK.S",
+      "content": "B.W.",
+      "mass": 0.0,
+      "vcg": 4.382,
+      "lcg": 9.755,
+      "tcg": 11.046,
+      "fsm": 0.0
+    },
+    {
+      "row": 42,
+      "name": "NO.4 WBTK.P",
+      "content": "B.W.",
+      "mass": 0.0,
+      "vcg": 6.709,
+      "lcg": -18.691,
+      "tcg": -12.994,
+      "fsm": 64.09
+    },
+    {
+      "row": 43,
+      "name": "NO.4 WBTK.S",
+      "content": "B.W.",
+      "mass": 0.0,
+      "vcg": 6.709,
+      "lcg": -18.691,
+      "tcg": 12.994,
+      "fsm": 64.09
+    },
+    {
+      "row": 44,
+      "name": "NO.5 WBTK.P",
+      "content": "B.W.",
+      "mass": 0.0,
+      "vcg": 6.437,
+      "lcg": -46.939,
+      "tcg": -11.8,
+      "fsm": 0.0
+    },
+    {
+      "row": 45,
+      "name": "NO.5 WBTK.S",
+      "content": "B.W.",
+      "mass": 0.0,
+      "vcg": 6.437,
+      "lcg": -46.939,
+      "tcg": 11.8,
+      "fsm": 0.0
+    },
+    {
+      "row": 46,
+      "name": "STERNTUBE.C",
+      "content": "B.W.",
+      "mass": 0.0,
+      "vcg": 4.828,
+      "lcg": -81.003,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 47,
+      "name": "AFTPEAK.C",
+      "content": "B.W.",
+      "mass": 0.0,
+      "vcg": 10.371,
+      "lcg": -84.104,
+      "tcg": 0.0,
+      "fsm": 0.0
+    },
+    {
+      "row": 48,
+      "name": "BILGEWATER.C",
+      "content": "MISC.",
+      "mass": 0.0,
+      "vcg": 0.3,
+      "lcg": -76.657,
+      "tcg": 0.0,
+      "fsm": 5.06
+    },
+    {
+      "row": 49,
+      "name": "OILYBIGE.S",
+      "content": "",
+      "mass": 0.0,
+      "vcg": 0.531,
+      "lcg": -71.744,
+      "tcg": 2.434,
+      "fsm": 0.0
+    },
+    {
+      "row": 50,
+      "name": "STUFFDRAINTK.P",
+      "content": "MISC.",
+      "mass": 0.0,
+      "vcg": 2.163,
+      "lcg": -68.977,
+      "tcg": -3.745,
+      "fsm": 0.0
+    },
+    {
+      "row": 51,
+      "name": "SLUDGETK.P",
+      "content": "MISC.",
+      "mass": 0.0,
+      "vcg": 0.292,
+      "lcg": -66.266,
+      "tcg": -0.0,
+      "fsm": 0.0
+    }
+  ],
+  "target": {
+    "disp": 32787.0,
+    "kgSolid": 9.493710281514014,
+    "fsc": 0.13595449415927047,
+    "kgCorr": 9.629664775673284,
+    "lcg": 3.504531155640956,
+    "tcg": 0.02698850154024459,
+    "draft": 7.939263428887652,
+    "draftFwd": 7.2014387486890366,
+    "draftAft": 8.637491741345388,
+    "trimByStern": 1.436052992656351,
+    "listStarboard": 0.46782591927403594,
+    "kmt": 12.934938822708032,
+    "mctc": 540.788,
+    "tpc": 45.82,
+    "lcb": 5.873153554130122,
+    "lcf": 2.4402153423222925,
+    "gmCondition": 3.305274047034748,
+    "gmGZSheet": 3.3095352243267153,
+    "fsm": 4457.54,
+    "cargoMass": 20800.0,
+    "shipConditionMass": 11987.0,
+    "stowageFactor": 1.63
+  }
+}

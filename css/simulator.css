@@ -1,0 +1,385 @@
+body{
+  font-family:"Liberation Sans","DejaVu Sans",Arial,Helvetica,sans-serif;
+}
+.font-mono, code, pre{
+  font-family:"Liberation Mono","DejaVu Sans Mono","Courier New",monospace !important;
+}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:#0f172a}::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+canvas{touch-action:none}.tiny{font-size:10px}.scenario-active{box-shadow:0 0 0 1px rgba(245,158,11,.8),0 0 18px rgba(245,158,11,.12)}
+.primary-test-btn{box-shadow:0 0 0 1px rgba(34,211,238,.28),0 8px 24px rgba(8,145,178,.18)}
+.status-toast{transition:opacity .2s ease,transform .2s ease}
+.status-toast.hidden-toast{opacity:0;transform:translateY(10px);pointer-events:none}
+.compact-card{border-radius:.75rem}
+.zoom-control{background:rgba(15,23,42,.90);backdrop-filter:blur(10px);border:1px solid rgba(51,65,85,.95);box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.zoom-control button{min-width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center}
+.zoom-control button.active{background:rgba(34,211,238,.14);border-color:rgba(34,211,238,.45);color:#67e8f9}
+#shipCanvas.pan-active{cursor:grab!important}
+#shipCanvas.pan-active:active{cursor:grabbing!important}
+.display-mode-btn{padding:.28rem .55rem;border-radius:.45rem;border:1px solid transparent;font-size:10px;font-weight:900;letter-spacing:.03em;white-space:nowrap}
+.display-mode-btn.active{background:rgba(34,211,238,.14);border-color:rgba(34,211,238,.42);color:#67e8f9}
+#threeDContainer{transition:opacity .22s ease}
+#threeDContainer canvas{display:block;width:100%;height:100%;outline:none}
+.interaction-mode-btn.active,.interaction-axis-btn.active{box-shadow:0 0 0 1px rgba(52,211,153,.22) inset}
+#threeDContainer.direct-manipulation{cursor:crosshair}
+#interactionReadout .ok{color:#86efac}
+#interactionReadout .warn{color:#fcd34d}
+#threeDBallastLabPanel[open] summary .fa-chevron-up{transform:rotate(180deg)}
+#threeDBallastLabPanel summary::-webkit-details-marker{display:none}
+#ballastProgress{transition:width .18s linear}
+#operationalMissionPanel[open] summary .fa-chevron-up{transform:rotate(180deg)}
+#operationalMissionPanel summary::-webkit-details-marker{display:none}
+#operationalMissionTimerChip.urgent{border-color:rgba(244,63,94,.55);background:rgba(244,63,94,.10);color:#fda4af}
+#operationalMissionTimerChip.expired{border-color:rgba(244,63,94,.8);background:rgba(127,29,29,.35);color:#fecdd3}
+
+.ballast-tank-active{filter:drop-shadow(0 0 5px rgba(56,189,248,.55))}
+.three-d-control{background:rgba(2,6,23,.86);backdrop-filter:blur(10px);border:1px solid rgba(51,65,85,.9)}
+@media(max-width:1023px){.desktop-only-test{display:none}.mobile-test-fab{display:flex}}
+@media(min-width:1024px){.mobile-test-fab{display:none}}
+
+/* Phase 10 · cleaner workspace */
+#appShell{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:0}
+#controlSidebar{min-width:0;transition:opacity .22s ease,transform .22s ease}
+#simulatorMain{min-width:0;transition:opacity .22s ease,transform .22s ease}
+/* Visual Focus: maximise simulator and temporarily hide the control sidebar. */
+#appShell.sidebar-collapsed{grid-template-columns:0 minmax(0,1fr)}
+#appShell.sidebar-collapsed #controlSidebar{opacity:0;transform:translateX(-18px);pointer-events:none;overflow:hidden}
+/* Controls Focus: mirror Visual Focus and temporarily hide the simulator. */
+#appShell.controls-maximized{grid-template-columns:minmax(0,1fr) 0}
+#appShell.controls-maximized #simulatorMain{opacity:0;transform:translateX(18px);pointer-events:none;overflow:hidden}
+.workspace-focus-btn.active{background:rgba(34,211,238,.14);border-color:rgba(34,211,238,.5);color:#67e8f9}
+#simulatorViewport{isolation:isolate}
+#stateHud{min-width:190px!important;padding:.55rem!important;background:rgba(2,6,23,.72)!important}
+#stateHud>div:nth-child(n+7){display:none}
+#stateHud:hover>div{display:flex}
+#stateHud:hover{min-width:230px!important;background:rgba(2,6,23,.90)!important}
+
+/* Float the nonlinear GZ curve over the simulator instead of reserving 256 px below it. */
+#gzFloatingPanel{
+  position:absolute;right:12px;bottom:12px;z-index:58;
+  width:500px;height:282px;max-width:calc(100% - 24px);
+  border:1px solid rgba(71,85,105,.92);border-radius:14px;
+  background:rgba(2,6,23,.91);backdrop-filter:blur(14px);
+  box-shadow:0 18px 45px rgba(0,0,0,.36);overflow:hidden;
+  transition:width .18s ease,height .18s ease,opacity .18s ease,transform .18s ease;
+}
+#gzFloatingPanel.gz-expanded{width:760px;height:470px}
+#gzFloatingPanel.gz-collapsed{height:42px;width:350px}
+#gzFloatingPanel.gz-hidden{display:none}
+#gzFloatingHeader{min-height:42px;cursor:move;user-select:none}
+#gzFloatingPanel.gz-collapsed #gzChartBody{display:none}
+#gzChartBody{height:calc(100% - 42px);display:flex;flex-direction:column;min-height:0}
+#gzMetricStrip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px;padding:5px 7px 4px;border-bottom:1px solid rgba(30,41,59,.9)}
+.gz-metric{background:rgba(15,23,42,.88);border:1px solid rgba(51,65,85,.72);border-radius:7px;padding:3px 5px;min-width:0}
+.gz-metric .k{font-size:6.5px;color:#64748b;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.gz-metric .v{font-size:8px;color:#e2e8f0;font-family:"Liberation Mono","DejaVu Sans Mono",monospace;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#gzChartWrap{position:relative;flex:1;min-height:0;padding:3px 7px 6px}
+#gzDataDrawer{max-height:44%;overflow:auto;border-top:1px solid rgba(30,41,59,.95);background:rgba(2,6,23,.96);padding:6px 8px;font-size:8px}
+#gzDataDrawer.hidden{display:none}
+#gzDataDrawer table{width:100%;border-collapse:collapse;font-size:7.5px}
+#gzDataDrawer th,#gzDataDrawer td{padding:3px 4px;border-bottom:1px solid rgba(30,41,59,.8);text-align:right;white-space:nowrap}
+#gzDataDrawer th:first-child,#gzDataDrawer td:first-child{text-align:left}
+#gzSourceBadge{font-size:6.5px;padding:2px 5px;border-radius:999px;border:1px solid rgba(34,211,238,.26);background:rgba(8,145,178,.09);color:#67e8f9;white-space:nowrap}
+#gzFloatingPanel button{width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center}
+#gzMomentBtn.active,#gzConstructionBtn.active,#gzDataBtn.active{background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.42);color:#67e8f9}
+#gzRestoreBtn{display:none}
+#gzRestoreBtn.visible{display:inline-flex}
+
+/* One compact dock controls the advanced Phase 2–9 panels. */
+#cleanToolDock{
+  position:absolute;left:12px;bottom:12px;z-index:60;
+  display:flex;gap:5px;padding:5px;border-radius:12px;
+  background:rgba(2,6,23,.82);backdrop-filter:blur(10px);
+  border:1px solid rgba(51,65,85,.86);box-shadow:0 12px 30px rgba(0,0,0,.24)
+}
+#cleanToolDock button{
+  min-width:32px;height:30px;padding:0 8px;border-radius:8px;
+  border:1px solid rgba(71,85,105,.75);background:rgba(15,23,42,.86);
+  color:#94a3b8;font-size:9px;font-weight:800
+}
+#cleanToolDock button.active{border-color:rgba(34,211,238,.55);color:#67e8f9;background:rgba(8,145,178,.12)}
+#threeDContainer.clean-layout #threeDHydroPanel:not(.clean-panel-open),
+#threeDContainer.clean-layout #threeDOperationsPanel:not(.clean-panel-open),
+#threeDContainer.clean-layout #threeDEnvironmentPanel:not(.clean-panel-open),
+#threeDContainer.clean-layout #threeDInteractionPanel:not(.clean-panel-open),
+#threeDContainer.clean-layout #operationalMissionPanel:not(.clean-panel-open),
+#threeDContainer.clean-layout #threeDBallastLabPanel:not(.clean-panel-open){display:none!important}
+
+/* All advanced tools share one predictable workspace instead of their legacy positions. */
+#threeDContainer.clean-layout #threeDHydroPanel.clean-panel-open,
+#threeDContainer.clean-layout #threeDOperationsPanel.clean-panel-open,
+#threeDContainer.clean-layout #threeDEnvironmentPanel.clean-panel-open,
+#threeDContainer.clean-layout #threeDInteractionPanel.clean-panel-open,
+#threeDContainer.clean-layout #operationalMissionPanel.clean-panel-open,
+#threeDContainer.clean-layout #threeDBallastLabPanel.clean-panel-open{
+  position:absolute!important;left:12px!important;right:auto!important;top:12px!important;bottom:auto!important;
+  transform:none!important;width:min(410px,calc(100% - 24px))!important;max-width:410px!important;
+  max-height:calc(100% - 64px)!important;overflow:auto!important;z-index:75!important;
+  border-radius:14px!important;box-shadow:0 18px 42px rgba(0,0,0,.34)!important;
+}
+#threeDContainer.clean-layout #operationalMissionPanel.clean-panel-open,
+#threeDContainer.clean-layout #threeDBallastLabPanel.clean-panel-open{width:min(520px,calc(100% - 24px))!important;max-width:520px!important}
+
+/* Inspector gets its own non-conflicting desktop corner. */
+#threeDInspector{
+  position:absolute!important;left:auto!important;right:12px!important;top:150px!important;bottom:auto!important;
+  width:min(300px,calc(100% - 24px))!important;max-width:300px!important;max-height:38%!important;
+  overflow:auto!important;z-index:78!important;box-shadow:0 16px 38px rgba(0,0,0,.30)!important;
+}
+
+/* Teacher dashboard */
+#teacherDashboardBackdrop{background:rgba(2,6,23,.56);backdrop-filter:blur(2px)}
+#teacherDashboardDrawer{
+  width:min(440px,94vw);transform:translateX(105%);
+  transition:transform .22s ease;box-shadow:-20px 0 55px rgba(0,0,0,.42)
+}
+#teacherDashboardDrawer.open{transform:translateX(0)}
+.teacher-card{border:1px solid #1e293b;background:rgba(2,6,23,.72);border-radius:12px;padding:12px}
+.teacher-mini-table{width:100%;border-collapse:collapse;font-size:9px}
+.teacher-mini-table th,.teacher-mini-table td{padding:6px;border-bottom:1px solid #1e293b;text-align:left;vertical-align:top}
+.teacher-mini-table th{color:#64748b;text-transform:uppercase;font-size:8px}
+body.exam-mode #showReferenceSolutionBtn,
+body.exam-mode #referenceSolutionPanel,
+body.exam-mode .mission-hint-control{display:none!important}
+body.exam-mode #teacherExamBadge{display:inline-flex!important}
+#challengeBriefingBackdrop{
+  background:rgba(2,6,23,.72);
+  backdrop-filter:blur(6px);
+}
+#challengeBriefingModal{
+  width:min(720px,94vw);
+  max-height:min(82vh,760px);
+  overflow:auto;
+  box-shadow:0 28px 90px rgba(0,0,0,.52);
+}
+#challengeBriefingModal .brief-step{
+  display:grid;
+  grid-template-columns:26px minmax(0,1fr);
+  gap:8px;
+  align-items:start;
+}
+#challengeBriefingModal .brief-step-num{
+  width:24px;height:24px;border-radius:999px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:10px;
+  background:rgba(34,211,238,.10);
+  color:#67e8f9;border:1px solid rgba(34,211,238,.28);
+}
+
+
+@media(max-width:1023px){
+  #appShell{display:block}
+  #controlSidebar{height:42%;border-right:0;border-bottom:1px solid #1e293b}
+  #simulatorMain{height:58%}
+  #appShell.sidebar-collapsed #controlSidebar{display:none}
+  #appShell.sidebar-collapsed #simulatorMain{height:100%}
+  #appShell.controls-maximized #simulatorMain{display:none}
+  #appShell.controls-maximized #controlSidebar{height:100%;border-bottom:0}
+  #gzFloatingPanel{width:min(470px,calc(100% - 20px));height:250px;right:10px;bottom:10px} #gzMetricStrip{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #cleanToolDock{left:8px;bottom:8px;max-width:calc(100% - 16px);overflow-x:auto}
+  #threeDContainer.clean-layout #threeDHydroPanel.clean-panel-open,
+  #threeDContainer.clean-layout #threeDOperationsPanel.clean-panel-open,
+  #threeDContainer.clean-layout #threeDEnvironmentPanel.clean-panel-open,
+  #threeDContainer.clean-layout #threeDInteractionPanel.clean-panel-open,
+  #threeDContainer.clean-layout #operationalMissionPanel.clean-panel-open,
+  #threeDContainer.clean-layout #threeDBallastLabPanel.clean-panel-open{
+    left:8px!important;right:8px!important;top:8px!important;width:auto!important;max-width:none!important;
+    max-height:54%!important;overflow:auto!important
+  }
+  #threeDInspector{left:8px!important;right:8px!important;top:auto!important;bottom:48px!important;width:auto!important;max-width:none!important;max-height:34%!important}
+}
+
+
+/* Phase 18 · instability monitor + hydrostatic table modal */
+#instabilityMonitorCard{box-shadow:0 10px 28px rgba(0,0,0,.18)}
+.instability-metric{background:rgba(15,23,42,.82);border:1px solid rgba(51,65,85,.78);border-radius:.55rem;padding:.45rem .5rem;min-width:0}
+.instability-metric .k{font-size:7px;color:#64748b;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.instability-metric .v{font-size:10px;font-weight:800;font-family:"Liberation Mono","DejaVu Sans Mono",monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#hydroTableBackdrop{background:rgba(2,6,23,.78);backdrop-filter:blur(7px)}
+#hydroTableModal{width:min(1120px,96vw);height:min(82vh,820px);box-shadow:0 30px 90px rgba(0,0,0,.55)}
+#hydroTableScroll{scrollbar-gutter:stable}
+#hydroTableScroll table{border-collapse:separate;border-spacing:0;width:100%;font-size:10px}
+#hydroTableScroll th{position:sticky;top:0;z-index:2;background:#0f172a;color:#94a3b8;text-transform:uppercase;font-size:8px;letter-spacing:.04em;border-bottom:1px solid #334155;padding:8px 7px;text-align:right;white-space:nowrap}
+#hydroTableScroll td{padding:7px;border-bottom:1px solid rgba(30,41,59,.88);text-align:right;white-space:nowrap;font-family:"Liberation Mono","DejaVu Sans Mono",monospace}
+#hydroTableScroll th:first-child,#hydroTableScroll td:first-child{text-align:left}
+#hydroTableScroll tr:hover td{background:rgba(30,41,59,.45)}
+#hydroTableScroll tr.hydro-nearest td{background:rgba(245,158,11,.08);color:#fde68a}
+body.hydro-table-open{overflow:hidden}
+
+
+/* Physics realism + ballast plan manager */
+.validity-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.validity-chip{border:1px solid rgba(71,85,105,.72);border-radius:8px;padding:5px 6px;background:rgba(15,23,42,.78)}
+#cargoArrangementSchematic svg{display:block;width:100%;height:auto;max-height:360px}#cargoArrangementSchematic .cargo-label{font-family:"Liberation Sans",Arial,sans-serif;font-weight:800}#cargoArrangementSchematic .cargo-sub{font-family:"Liberation Sans",Arial,sans-serif}
+#ballastPlanBackdrop{background:rgba(2,6,23,.72);backdrop-filter:blur(6px)}#ballastPlanModal{width:min(1120px,96vw);max-height:88vh;overflow:hidden;box-shadow:0 28px 90px rgba(0,0,0,.55)}#ballastPlanTableWrap{max-height:52vh;overflow:auto}#ballastPlanTable{border-collapse:collapse;min-width:1080px;width:100%}#ballastPlanTable th,#ballastPlanTable td{padding:5px;border-bottom:1px solid rgba(30,41,59,.9);white-space:nowrap}#ballastPlanTable th{position:sticky;top:0;background:#0f172a;z-index:2;color:#64748b;font-size:8px;text-transform:uppercase}#ballastPlanTable input,#ballastPlanTable select{background:#020617;border:1px solid #334155;border-radius:5px;padding:3px 4px;font-size:9px;color:#e2e8f0}.tank-source-representative{color:#fbbf24}.tank-source-vessel{color:#34d399}
+/* Cargo physics library + unified cargo/ballast customisation */
+#cargoManagerBackdrop{background:rgba(2,6,23,.74);backdrop-filter:blur(6px)}#cargoManagerModal{width:min(1220px,97vw);max-height:90vh;overflow:hidden;box-shadow:0 28px 90px rgba(0,0,0,.55)}#cargoManagerTableWrap{max-height:56vh;overflow:auto}#cargoManagerTable{border-collapse:collapse;min-width:1480px;width:100%}#cargoManagerTable th,#cargoManagerTable td{padding:5px;border-bottom:1px solid rgba(30,41,59,.9);white-space:nowrap}#cargoManagerTable th{position:sticky;top:0;background:#0f172a;z-index:2;color:#64748b;font-size:8px;text-transform:uppercase}#cargoManagerTable input,#cargoManagerTable select{background:#020617;border:1px solid #334155;border-radius:5px;padding:3px 4px;font-size:9px;color:#e2e8f0}.cargo-physics-chip{font-size:8px;padding:2px 5px;border-radius:999px;border:1px solid rgba(71,85,105,.75);white-space:nowrap}.cargo-warning{color:#fbbf24}.cargo-danger{color:#fb7185}.cargo-ok{color:#6ee7b7}#ballastPlanTable{min-width:1420px}
+
+/* =====================================================================
+   Clean Navigation Workspace · Ship / Loading / Environment / Operations
+   / Stability / Data / Mission. Presentation only; physics IDs unchanged.
+   ===================================================================== */
+#appShell{grid-template-columns:312px minmax(0,1fr) 232px!important}
+#controlSidebar{background:linear-gradient(180deg,#0f172a 0%,#0b1220 100%)}
+#liveConditionPanel{min-width:0;background:linear-gradient(180deg,#0b1220,#080d17);border-left:1px solid #1e293b;overflow:hidden;display:flex;flex-direction:column}
+#appShell.sidebar-collapsed{grid-template-columns:0 minmax(0,1fr) 232px!important}
+#appShell.sidebar-collapsed #controlSidebar{opacity:0;transform:translateX(-18px);pointer-events:none;overflow:hidden}
+#appShell.status-collapsed{grid-template-columns:312px minmax(0,1fr) 0!important}
+#appShell.status-collapsed #liveConditionPanel{opacity:0;transform:translateX(18px);pointer-events:none;overflow:hidden}
+#appShell.sidebar-collapsed.status-collapsed{grid-template-columns:0 minmax(0,1fr) 0!important}
+#appShell.controls-maximized{grid-template-columns:minmax(0,1fr) 0 0!important}
+#appShell.controls-maximized #simulatorMain,#appShell.controls-maximized #liveConditionPanel{opacity:0;pointer-events:none;overflow:hidden}
+
+.clean-nav-wrap{padding:8px;border-bottom:1px solid #1e293b;background:rgba(2,6,23,.82)}
+.clean-nav-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.clean-nav-caption{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#64748b}
+.clean-nav-collapse-btn{width:30px;height:28px;border:1px solid #263449;border-radius:8px;background:#0f172a;color:#94a3b8;display:flex;align-items:center;justify-content:center;transition:.16s ease}
+.clean-nav-collapse-btn:hover{color:#e2e8f0;border-color:#475569;background:#172033}
+.clean-mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:3px;border:1px solid #263449;border-radius:10px;background:#080d17;margin-bottom:7px}
+.clean-mode-toggle button{padding:6px 7px;border-radius:7px;font-size:10px!important;font-weight:900;color:#64748b;letter-spacing:.05em}
+.clean-mode-toggle button.active{background:#233047;color:#f8fafc;box-shadow:0 1px 6px rgba(0,0,0,.25)}
+.clean-nav-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.sidebar-tab.clean-nav-item{position:relative;min-width:0!important;width:100%;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;padding:5px 4px!important;border-radius:9px!important;border:1px solid transparent!important;background:transparent!important;color:#94a3b8!important;font-size:10.5px!important;font-weight:700;line-height:1.1;transition:.16s ease}
+.sidebar-tab.clean-nav-item:hover{background:#111c2e!important;color:#e2e8f0!important}
+.sidebar-tab.clean-nav-item.clean-active{background:linear-gradient(180deg,rgba(14,165,233,.16),rgba(14,165,233,.05))!important;border-color:rgba(56,189,248,.32)!important;color:#e0f2fe!important;box-shadow:inset 0 2px 0 #38bdf8}
+.clean-nav-icon{width:27px;height:27px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#111827;color:#64748b;font-size:12px}
+.clean-active .clean-nav-icon{background:rgba(14,165,233,.18);color:#67e8f9}
+.clean-nav-label{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.clean-nav-dot{position:absolute;right:6px;top:6px;width:7px;height:7px;border-radius:999px;background:#334155;box-shadow:0 0 0 2px rgba(51,65,85,.14)}
+.clean-nav-wrap.nav-compact .clean-nav-toolbar{margin-bottom:4px}
+.clean-nav-wrap.nav-compact .clean-nav-caption{display:none}
+.clean-nav-wrap.nav-compact .clean-mode-toggle{margin-bottom:5px}
+.clean-nav-wrap.nav-compact .clean-nav-grid{grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+.clean-nav-wrap.nav-compact .sidebar-tab.clean-nav-item{min-height:36px;padding:3px!important;border-radius:8px!important}
+.clean-nav-wrap.nav-compact .clean-nav-label{display:none}
+.clean-nav-wrap.nav-compact .clean-nav-icon{width:27px;height:27px;background:transparent;font-size:13px}
+.clean-nav-wrap.nav-compact .clean-active .clean-nav-icon{background:rgba(14,165,233,.18)}
+.clean-nav-wrap.nav-compact .clean-nav-dot{width:6px;height:6px;right:3px;top:3px}
+.clean-nav-wrap.nav-compact .clean-nav-collapse-btn i{transform:rotate(180deg)}
+.clean-nav-dot.dot-good{background:#34d399}.clean-nav-dot.dot-warn{background:#fbbf24}.clean-nav-dot.dot-bad{background:#fb7185}.clean-nav-dot.dot-info{background:#38bdf8}.clean-nav-dot.dot-idle{background:#475569}
+.clean-section-intro{border:1px solid #1e293b;background:linear-gradient(135deg,rgba(15,23,42,.92),rgba(2,6,23,.72));border-radius:12px;padding:10px}
+.clean-section-kicker{font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.14em;color:#38bdf8}
+.clean-section-title{font-size:13px;font-weight:900;color:#f8fafc;margin-top:2px}
+.clean-section-copy{font-size:9px;line-height:1.45;color:#64748b;margin-top:2px}
+.clean-quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:8px}
+.clean-quick-btn{padding:7px 8px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#cbd5e1;font-size:8.5px;font-weight:800;text-align:left}
+.clean-quick-btn:hover{background:#172033;border-color:#475569}
+.ui-basic .advanced-only{display:none!important}
+
+#legacyHudStrip{display:none!important}
+#liveConditionPanel .live-scroll{overflow-y:auto;min-height:0;flex:1;padding:10px}
+.live-header{padding:10px;border-bottom:1px solid #1e293b;background:rgba(2,6,23,.76)}
+.live-vessel{font-size:11px;font-weight:900;color:#f8fafc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live-source{font-size:8px;color:#64748b;margin-top:2px;line-height:1.35}
+.live-status{border:1px solid #1e293b;background:#0f172a;border-radius:12px;padding:10px;margin-bottom:8px}
+.live-status-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.live-status-pill{font-size:8px;font-weight:900;padding:4px 7px;border-radius:999px;border:1px solid #334155;color:#94a3b8;background:#111827}
+.live-status-pill.good{color:#6ee7b7;border-color:rgba(52,211,153,.35);background:rgba(6,78,59,.18)}
+.live-status-pill.warn{color:#fde68a;border-color:rgba(251,191,36,.35);background:rgba(120,53,15,.18)}
+.live-status-pill.bad{color:#fda4af;border-color:rgba(251,113,133,.35);background:rgba(127,29,29,.18)}
+.live-metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.live-metric{border:1px solid #1e293b;background:rgba(15,23,42,.74);border-radius:9px;padding:7px;min-width:0}
+.live-metric .k{font-size:7px;text-transform:uppercase;letter-spacing:.07em;color:#64748b}
+.live-metric .v{margin-top:2px;font:800 10px "Liberation Mono","DejaVu Sans Mono",monospace;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live-metric.wide{grid-column:1/-1}
+.live-metric[onclick]{cursor:pointer;transition:.15s ease}.live-metric[onclick]:hover{border-color:#334155;background:rgba(30,41,59,.78);transform:translateY(-1px)}
+.live-note{font-size:8px;line-height:1.45;color:#64748b}
+#statusRestoreBtn{position:fixed;right:7px;top:50%;transform:translateY(-50%);z-index:45;width:27px;height:50px;border-radius:9px 0 0 9px;border:1px solid #334155;border-right:0;background:#0f172a;color:#67e8f9;display:none;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+#appShell.status-collapsed~#statusRestoreBtn{display:flex}
+
+#cleanActionBar{height:54px;flex:none;border-top:1px solid #1e293b;background:rgba(2,6,23,.94);display:flex;align-items:center;justify-content:center;padding:7px 12px;gap:7px}
+.clean-action-main{height:38px;min-width:150px;border-radius:10px;font-size:10px;font-weight:900;letter-spacing:.02em;display:flex;align-items:center;justify-content:center;gap:6px}
+.clean-equilibrium-btn{border:1px solid rgba(251,191,36,.35);background:rgba(245,158,11,.12);color:#fcd34d}
+.clean-equilibrium-btn:hover{background:rgba(245,158,11,.20)}
+.clean-test-btn{border:1px solid #67e8f9;background:#22d3ee;color:#042f3e;box-shadow:0 7px 18px rgba(34,211,238,.12)}
+.clean-test-btn:hover{background:#67e8f9}
+.clean-action-secondary{height:38px;width:38px;border-radius:9px;border:1px solid #334155;background:#0f172a;color:#94a3b8}
+body.clean-ui #globalTestBtn,body.clean-ui .mobile-test-fab{display:none!important}
+body.clean-ui .legacy-top-action{display:none!important}
+
+#cleanChangeFeedback{position:absolute;left:12px;bottom:12px;z-index:42;max-width:min(360px,70%);border:1px solid rgba(56,189,248,.25);background:rgba(2,6,23,.92);backdrop-filter:blur(8px);border-radius:10px;padding:8px 10px;font-size:8.5px;color:#cbd5e1;box-shadow:0 10px 28px rgba(0,0,0,.25);opacity:0;transform:translateY(5px);pointer-events:none;transition:.18s ease}
+#cleanChangeFeedback.show{opacity:1;transform:translateY(0)}
+
+body.clean-ui #controlSidebar>.flex-1{padding:10px!important}
+body.clean-ui #controlSidebar{font-size:13px}
+body.clean-ui #controlSidebar section>div,body.clean-ui #controlSidebar section>details{box-shadow:none!important}
+body.clean-ui #controlSidebar details>summary{min-height:44px;font-size:12.5px!important;line-height:1.35}
+body.clean-ui #controlSidebar .tiny{font-size:11.5px!important;line-height:1.4}
+body.clean-ui #controlSidebar .text-xs{font-size:12.5px!important;line-height:1.4}
+body.clean-ui #controlSidebar label{font-size:12px!important;line-height:1.4}
+body.clean-ui #controlSidebar input:not([type="checkbox"]):not([type="range"]),body.clean-ui #controlSidebar select,body.clean-ui #controlSidebar textarea{font-size:12px!important;min-height:34px;padding:6px 8px!important;line-height:1.35}
+body.clean-ui #controlSidebar button:not(.clean-nav-item):not(.clean-nav-collapse-btn):not(#cleanBasicBtn):not(#cleanAdvancedBtn){font-size:11.5px!important;line-height:1.25;min-height:31px}
+body.clean-ui #controlSidebar h3{font-size:12.5px!important;line-height:1.35}
+.clean-section-kicker{font-size:9px!important}
+.clean-section-title{font-size:15px!important}
+.clean-section-copy{font-size:11px!important;line-height:1.5}
+.clean-quick-btn{font-size:11px!important;line-height:1.25;padding:8px 9px}
+body.clean-ui #tabSimulate>div:first-child{display:none}
+body.clean-ui #unifiedMissionCard{border-color:rgba(34,211,238,.26)!important}
+
+@media(max-width:1180px){
+ #appShell{grid-template-columns:280px minmax(0,1fr)!important}
+ #liveConditionPanel{display:none!important}
+ #statusRestoreBtn{display:none!important}
+ #appShell.sidebar-collapsed{grid-template-columns:0 minmax(0,1fr)!important}
+}
+@media(max-width:900px){
+ #appShell{display:block!important}
+ #controlSidebar{height:44%!important}
+ #simulatorMain{height:56%!important}
+ .clean-nav-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
+ .sidebar-tab.clean-nav-item{min-height:42px;padding:4px!important;font-size:10px!important}
+ .clean-nav-icon{width:24px;height:24px}
+ .clean-nav-wrap.nav-compact .clean-nav-grid{grid-template-columns:repeat(7,minmax(0,1fr))}
+ #cleanActionBar{height:48px;padding:5px 8px}
+ .clean-action-main{height:34px;min-width:120px;font-size:9px}
+ .clean-action-secondary{height:34px;width:34px}
+}
+
+/* v1.9.1 Reliability Patch · classroom readability and derived-field clarity */
+body.presentation-mode #controlSidebar .tiny,body.presentation-mode #controlSidebar .text-\[8px\],body.presentation-mode #controlSidebar .text-\[9px\]{font-size:12px!important;line-height:1.45!important}
+body.presentation-mode #controlSidebar .text-\[10px\],body.presentation-mode #controlSidebar .text-\[11px\]{font-size:13px!important;line-height:1.45!important}
+body.presentation-mode #controlSidebar label,body.presentation-mode #controlSidebar button{font-size:12.5px!important}
+body.presentation-mode #liveConditionPanel .live-note,body.presentation-mode #liveConditionPanel .live-source{font-size:10px!important}
+body.presentation-mode #liveConditionPanel .live-metric .k{font-size:9px!important}
+body.presentation-mode #liveConditionPanel .live-metric .v{font-size:12px!important}
+.derived-physics-output{opacity:.72;cursor:not-allowed!important;background:#111827!important;border-color:#263449!important;color:#94a3b8!important}
+.data-authority-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start;padding:7px 8px;border:1px solid #1e293b;border-radius:9px;background:rgba(2,6,23,.55)}
+.data-authority-row .src{font-size:8px;color:#64748b;margin-top:2px;line-height:1.35}
+.data-authority-badge{font-size:8px;font-weight:900;padding:3px 6px;border-radius:999px;border:1px solid #334155;white-space:nowrap}
+
+
+/* v1.15.4 · wider controls + container-safe Draft Survey layout */
+@media(min-width:1181px){
+  #appShell{grid-template-columns:384px minmax(0,1fr) 232px!important}
+  #appShell.status-collapsed{grid-template-columns:384px minmax(0,1fr) 0!important}
+  #appShell.sidebar-collapsed{grid-template-columns:0 minmax(0,1fr) 232px!important}
+  #appShell.sidebar-collapsed.status-collapsed{grid-template-columns:0 minmax(0,1fr) 0!important}
+}
+@media(min-width:901px) and (max-width:1180px){
+  #appShell{grid-template-columns:326px minmax(0,1fr)!important}
+  #appShell.sidebar-collapsed{grid-template-columns:0 minmax(0,1fr)!important}
+}
+body.clean-ui #controlSidebar>.flex-1{padding:14px!important}
+
+/* Draft Survey lives inside the sidebar, so viewport breakpoints must not force
+   Initial/Final cards into two narrow columns. Two columns are used only when
+   the Controls workspace itself is maximised. */
+#tabDraftSurvey{min-width:0;overflow-x:hidden}
+.draft-survey-pair-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0}
+#appShell.controls-maximized .draft-survey-pair-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.draft-survey-role-card{min-width:0;overflow:hidden}
+.draft-survey-reading-grid{display:grid;grid-template-columns:68px minmax(0,1fr) minmax(0,1fr);gap:5px;align-items:center;min-width:0}
+.draft-survey-role-card input,.draft-survey-role-card select,.draft-survey-role-card textarea{width:100%;min-width:0;box-sizing:border-box}
+.draft-survey-role-card details{min-width:0;overflow:hidden}
+.draft-survey-role-card details>div{min-width:0}
+#dsInitialTankSoundingPanel,#dsFinalTankSoundingPanel{max-width:100%;overflow-x:auto;overflow-y:visible;padding-bottom:2px}
+#dsInitialTankSoundingPanel table,#dsFinalTankSoundingPanel table{min-width:620px}
+#draftSurveyMissionPanel,#draftSurveyTankMeasurementReport{min-width:0;max-width:100%;overflow-x:auto}
+@media(max-width:900px){
+  .draft-survey-pair-grid{grid-template-columns:minmax(0,1fr)!important}
+  .draft-survey-reading-grid{grid-template-columns:58px minmax(0,1fr) minmax(0,1fr)}
+}
+
+.ds-mission-step{display:flex;align-items:center;gap:6px;padding:6px 7px;border:1px solid #1e293b;border-radius:8px;background:#080d17;color:#64748b;font-size:8px;font-weight:800}
+.ds-mission-step.active{border-color:rgba(34,211,238,.38);background:rgba(8,145,178,.10);color:#a5f3fc}
+.ds-mission-step.done{border-color:rgba(52,211,153,.30);background:rgba(6,78,59,.12);color:#6ee7b7}
+.ds-observation-table{width:100%;border-collapse:collapse;font-size:8px}.ds-observation-table th,.ds-observation-table td{padding:4px 5px;border-bottom:1px solid rgba(30,41,59,.8);text-align:right}.ds-observation-table th:first-child,.ds-observation-table td:first-child{text-align:left}.ds-observation-table th{color:#64748b;font-weight:800;background:#020617;position:sticky;top:0}.ds-mission-scorebar{height:7px;border-radius:999px;background:#172033;overflow:hidden}.ds-mission-scorebar>span{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#34d399);border-radius:999px}
