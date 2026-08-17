@@ -1,0 +1,31 @@
+AMCOL Advanced Ship Stability & Hydrostatic Simulator v2.0.0 STABLE
+FINAL AUTOMATED VALIDATION REPORT
+Date: 17 August 2026
+
+AUTOMATED RESULTS
+- Vessel/data regression: 20 / 20 PASS
+- Pure physics/module tests: 52 / 52 PASS
+- Frozen release-integrity files: 22 / 22 PASS
+- Classic JavaScript syntax: PASS
+- Three.js ES-module syntax: PASS
+- Physics Worker syntax: PASS
+- Service-worker syntax: PASS
+- Standalone HTML IDs: 486
+- Duplicate standalone IDs: 0
+- Standalone inline classic-script syntax: PASS
+- Standalone inline ES-module syntax: PASS
+- Modular HTTP resource smoke test: PASS for index, render3d module and physics Worker resources
+- Numerical physics modules/vessel datasets changed from v1.20 baseline during v2 freeze: 0
+
+STANDALONE SHA-256
+9e753b16cb634ce3d77780fdfd956d3c5ea4a133dc70f3eebdd5f9edb50c9bae
+
+SOURCE/PHYSICS FREEZE
+RELEASE_LOCK.json freezes the v2.0 stable physics/orchestration and vessel datasets. build_release.bat / build_release.sh fail if a frozen file changes without an intentional lock update.
+
+RUNTIME ACCEPTANCE STILL REQUIRED ON ACTUAL AMCOL HARDWARE
+The managed build environment cannot certify the classroom GPU, browser driver or sustained WebGL behaviour. On each target classroom-PC type run:
+Data -> Physics, Challenge & Release Diagnostics -> Core Physics / Vessel Data / 25 Challenges / Classroom Acceptance
+Then complete docs/CLASSROOM_ACCEPTANCE_CHECKLIST.md.
+
+This release is advanced educational/training software. It is not class-approved loading-computer software and does not replace statutory vessel documentation.

@@ -383,3 +383,11 @@ body.clean-ui #controlSidebar>.flex-1{padding:14px!important}
 .ds-mission-step.active{border-color:rgba(34,211,238,.38);background:rgba(8,145,178,.10);color:#a5f3fc}
 .ds-mission-step.done{border-color:rgba(52,211,153,.30);background:rgba(6,78,59,.12);color:#6ee7b7}
 .ds-observation-table{width:100%;border-collapse:collapse;font-size:8px}.ds-observation-table th,.ds-observation-table td{padding:4px 5px;border-bottom:1px solid rgba(30,41,59,.8);text-align:right}.ds-observation-table th:first-child,.ds-observation-table td:first-child{text-align:left}.ds-observation-table th{color:#64748b;font-weight:800;background:#020617;position:sticky;top:0}.ds-mission-scorebar{height:7px;border-radius:999px;background:#172033;overflow:hidden}.ds-mission-scorebar>span{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#34d399);border-radius:999px}
+
+
+/* v1.20 accessibility / resilient interaction polish */
+:where(button,input,select,textarea,summary,[tabindex]):focus-visible{outline:2px solid #38bdf8!important;outline-offset:2px!important;box-shadow:0 0 0 3px rgba(56,189,248,.16)!important}
+button:disabled,input:disabled,select:disabled,textarea:disabled{cursor:not-allowed;opacity:.58}
+#controlSidebar section,#controlSidebar details,#controlSidebar .grid>*{min-width:0}
+#controlSidebar input,#controlSidebar select,#controlSidebar textarea{max-width:100%}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}

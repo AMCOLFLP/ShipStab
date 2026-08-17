@@ -1,0 +1,8 @@
+(function(root){
+ 'use strict';
+ const ns=root.AMCOLPhysics=root.AMCOLPhysics||{};
+ function n(v){v=Number(v);return Number.isFinite(v)?v:NaN;}
+ function interp(rows,x,key){const r=(rows||[]).filter(o=>Number.isFinite(n(o.xNorm))&&Number.isFinite(n(o[key]))).slice().sort((a,b)=>a.xNorm-b.xNorm);if(!r.length)return NaN;if(x<=r[0].xNorm)return n(r[0][key]);if(x>=r.at(-1).xNorm)return n(r.at(-1)[key]);for(let i=1;i<r.length;i++)if(r[i].xNorm>=x){const a=r[i-1],b=r[i],t=(x-a.xNorm)/(b.xNorm-a.xNorm||1);return n(a[key])+t*(n(b[key])-n(a[key]));}return NaN;}
+ function evaluate(input={}){const xs=input.xs||[],shear=input.shear||[],moment=input.moment||[],L=Math.max(.001,n(input.length)||1),limits=input.limits||[];if(!xs.length||!limits.length)return {valid:false,reason:'No structural limit envelope loaded.'};const rows=[];let maxUtil=0,governing=null;for(let i=0;i<xs.length;i++){const xn=Math.max(-.5,Math.min(.5,n(xs[i])/L)),sf=n(shear[i]),bm=n(moment[i]),sfAllow=sf>=0?Math.abs(interp(limits,xn,'allowableSFPos')):Math.abs(interp(limits,xn,'allowableSFNeg')),bmAllow=bm>=0?Math.abs(interp(limits,xn,'allowableBMSag')):Math.abs(interp(limits,xn,'allowableBMHog')),sfUtil=sfAllow>1e-9?Math.abs(sf)/sfAllow:0,bmUtil=bmAllow>1e-9?Math.abs(bm)/bmAllow:0,util=Math.max(sfUtil,bmUtil),mode=sfUtil>=bmUtil?'SF':(bm>=0?'SAGGING BM':'HOGGING BM');const row={x:xs[i],xNorm:xn,sf,bm,sfAllow,bmAllow,sfUtil,bmUtil,util,mode};rows.push(row);if(util>maxUtil){maxUtil=util;governing=row;}}return {valid:true,rows,maxUtil,governing,status:maxUtil<=1?'WITHIN ENVELOPE':maxUtil<=1.05?'MARGINAL':'EXCEEDS ENVELOPE'};}
+ ns.longitudinalStrength={interpolateLimit:interp,evaluate};
+})(typeof globalThis!=='undefined'?globalThis:this);

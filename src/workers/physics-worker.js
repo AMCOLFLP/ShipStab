@@ -1,6 +1,6 @@
 /* v1.15.3 worker-ready pure physics endpoint. The main simulator does not yet offload the full
    stateful calculation pipeline here; this endpoint is used by tests and is ready for staged adoption. */
-importScripts('../physics/mass-properties.js','../physics/hydrostatics.js','../physics/trim.js','../physics/kn.js','../physics/gz.js','../physics/tank-sounding.js','../physics/draft-survey.js','../physics/draft-survey-mission.js');
+importScripts('../physics/hull-geometry.js','../physics/mass-properties.js','../physics/hydrostatics.js','../physics/trim.js','../physics/kn.js','../physics/gz.js','../physics/tank-sounding.js','../physics/longitudinal-strength.js','../physics/damage-stability.js','../physics/seakeeping-proxy.js','../physics/draft-survey.js','../physics/draft-survey-mission.js');
 self.onmessage=function(ev){
   const msg=ev.data||{},id=msg.id,op=msg.op,p=msg.payload||{};let result;
   try{
@@ -13,6 +13,12 @@ self.onmessage=function(ev){
     else if(op==='gz.fromKN')result=AMCOLPhysics.gz.fromKN(p.angle,p.kn,p.kg,p.tcg);
     else if(op==='tankSounding.calculate')result=AMCOLPhysics.tankSounding.calculateTank(p);
     else if(op==='tankSounding.calculateMany')result=AMCOLPhysics.tankSounding.calculateMany(p.entries,p.calibrationRows);
+    else if(op==='hull.station')result=AMCOLPhysics.hull.stationEnvelopeAt(p.xNorm,p.type,p.customStations);
+    else if(op==='hull.halfBreadth')result=AMCOLPhysics.hull.halfBreadthAtDraft(p.y,p.xNorm,p.beam,p.depth,p.type,p.customStations);
+    else if(op==='strength.evaluate')result=AMCOLPhysics.longitudinalStrength.evaluate(p);
+    else if(op==='damage.estimate')result=AMCOLPhysics.damageStability.estimate(p);
+    else if(op==='damage.progressive')result=AMCOLPhysics.damageStability.progressiveFlooding(p.compartments,p.initialIds);
+    else if(op==='seakeeping.evaluate')result=AMCOLPhysics.seakeepingProxy.evaluate(p);
     else if(op==='draftSurvey.calculate')result=AMCOLPhysics.draftSurvey.calculateSurvey(p);
     else if(op==='draftSurveyMission.solveDraft')result=AMCOLPhysics.draftSurveyMission.solveSurveyDraft(p);
     else if(op==='draftSurveyMission.grade')result=AMCOLPhysics.draftSurveyMission.gradeMission(p);

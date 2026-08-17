@@ -1,7 +1,7 @@
 const fs=require('fs'),path=require('path'),vm=require('vm');
 const root=path.resolve(__dirname,'..');
 const ctx={console,Math};ctx.globalThis=ctx;vm.createContext(ctx);
-for(const f of ['src/physics/mass-properties.js','src/physics/hydrostatics.js','src/physics/trim.js','src/physics/kn.js','src/physics/gz.js','src/physics/tank-sounding.js','src/physics/draft-survey.js','src/physics/draft-survey-mission.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});
+for(const f of ['src/physics/hull-geometry.js','src/physics/mass-properties.js','src/physics/hydrostatics.js','src/physics/trim.js','src/physics/kn.js','src/physics/gz.js','src/physics/tank-sounding.js','src/physics/longitudinal-strength.js','src/physics/damage-stability.js','src/physics/seakeeping-proxy.js','src/physics/draft-survey.js','src/physics/draft-survey-mission.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});
 const P=ctx.AMCOLPhysics;let pass=0,fail=0;
 function test(name,cond,detail=''){if(cond){console.log('PASS',name,detail);pass++;}else{console.error('FAIL',name,detail);fail++;}}
 function near(a,b,tol){return Number.isFinite(a)&&Math.abs(a-b)<=tol;}
@@ -86,5 +86,18 @@ const perfectGrade=dsm.gradeMission({truth:perfectTruth,entered:{...perfectTruth
 test('draft mission perfect grade',near(perfectGrade.score,100,1e-12)&&perfectGrade.grade==='DISTINCTION',JSON.stringify(perfectGrade));
 const weakGrade=dsm.gradeMission({truth:perfectTruth,entered:{...perfectTruth,calculatedCargo:5500,reportedCargo:4500,initialBallast:1300,finalBallast:700}});
 test('draft mission grading penalises error',weakGrade.score<100&&weakGrade.score>=0,weakGrade.score);
+const strictGrade=dsm.gradeMission({truth:perfectTruth,entered:{...perfectTruth,calculatedCargo:5075,reportedCargo:5075,initialOther:103,finalOther:83},toleranceScale:.7}),guidedGrade=dsm.gradeMission({truth:perfectTruth,entered:{...perfectTruth,calculatedCargo:5075,reportedCargo:5075,initialOther:103,finalOther:83},toleranceScale:2});test('draft mission tolerance scale affects all graded errors',guidedGrade.score>strictGrade.score,`${strictGrade.score} -> ${guidedGrade.score}`);
+
+
+// v1.20 shared geometry / strength / damage / seakeeping tests.
+const hp=P.hull.midshipPolygon('bulk',30,15);test('shared hull bulk midship polygon',Array.isArray(hp)&&hp.length===8&&near(hp[0][0],-9.3,1e-12),JSON.stringify(hp[0]));
+const hs=P.hull.stationEnvelopeAt(.9,'container');test('shared hull station envelope',hs&&hs.beamFactor>0&&hs.beamFactor<1&&hs.source==='family',JSON.stringify(hs));
+const hb=P.hull.halfBreadthAtDraft(8,0,30,15,'bulk');test('shared hull half-breadth finite',Number.isFinite(hb)&&hb>0&&hb<16,hb);
+const ls=P.longitudinalStrength.evaluate({xs:[-50,0,50],shear:[0,150,0],moment:[0,-200,0],length:100,limits:[{xNorm:-.5,allowableSFPos:100,allowableSFNeg:-100,allowableBMHog:100,allowableBMSag:-100},{xNorm:0,allowableSFPos:100,allowableSFNeg:-100,allowableBMHog:100,allowableBMSag:-100},{xNorm:.5,allowableSFPos:100,allowableSFNeg:-100,allowableBMHog:100,allowableBMSag:-100}]});
+test('longitudinal envelope utilization',ls.valid&&near(ls.maxUtil,2,1e-12)&&ls.status==='EXCEEDS ENVELOPE',JSON.stringify(ls.governing));
+const dmg=P.damageStability.estimate({length:100,beam:20,depth:10,density:1.025,damage:{side:1,widthPct:25,heightPct:60,lengthPct:20,lcg:0,permeability:.95},cargoSpaces:[{id:'C1',name:'C1',lcg:0,tcg:6,length:20,breadth:8,height:8,capacityVolume:1000,side:'starboard'}],ballastTanks:[]});
+test('damage exposure estimate',dmg.valid&&dmg.affected.length===1&&dmg.totalMass>0,JSON.stringify(dmg));
+const prog=P.damageStability.progressiveFlooding([{id:'A',connections:['B']},{id:'B',connections:['C']},{id:'C'}],['A']);test('explicit progressive flooding only',prog.hasConnectivity&&prog.flooded.length===3&&prog.progressionOrder.join(',')==='A,B,C',JSON.stringify(prog));
+const sk=P.seakeepingProxy.evaluate({length:180,beam:30,draft:9,gm:1.5,waveHeight:3,wavelength:120,wavePeriod:9,encounterPeriod:8,rollNaturalPeriod:9,heading:'beam'});test('seakeeping proxy finite',Number.isFinite(sk.heaveAmplitudeM)&&Number.isFinite(sk.pitchAmplitudeDeg)&&sk.rollRisk>=0&&sk.rollRisk<=1,JSON.stringify(sk));
 
 console.log(`Physics module tests: ${pass}/${pass+fail} PASS`);process.exit(fail?1:0);

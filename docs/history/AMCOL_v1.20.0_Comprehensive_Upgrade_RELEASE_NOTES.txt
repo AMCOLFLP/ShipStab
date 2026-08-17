@@ -1,0 +1,133 @@
+AMCOL Advanced Ship Stability & Hydrostatic Simulator v1.20.0
+COMPREHENSIVE ARCHITECTURE · ACCURACY · PERFORMANCE · INSTRUCTOR UPGRADE
+17 August 2026
+
+BASE
+- Consolidates the modular v1.15.4 Draught Survey release and all preceding validated hydrostatic/stability work.
+- Existing GREAT FORTUNE source workbook data and the existing APUS/RCL/AMCOL calibrated datasets were preserved.
+
+1. SHARED HULL GEOMETRY KERNEL
+- Added src/physics/hull-geometry.js.
+- Core and Three.js renderer now share vessel-family station-envelope / section / half-breadth queries.
+- This reduces geometry drift between visual, damage and longitudinal calculations.
+- Source hydrostatic and KN tables remain authoritative where present.
+- IMPORTANT: the generic teaching hydro solver has not been misrepresented as a complete shipyard lines/offset solver. Full exact geometry-driven unification still requires actual vessel offset/lines data.
+
+2. LONGITUDINAL-STRENGTH ENVELOPE UTILISATION
+- Added src/physics/longitudinal-strength.js.
+- Active training SF/BM diagrams can now be evaluated against the vessel's station-by-station AMCOL envelope.
+- Simulator identifies the governing station/mode and utilisation percentage.
+- Training/calibrated limits remain educational unless approved allowable limits are supplied.
+
+3. DAMAGE DIAGNOSTICS / EXPLICIT PROGRESSIVE FLOODING
+- Added src/physics/damage-stability.js.
+- Adds compartment-exposure/floodable-mass teaching diagnostics.
+- Progressive flooding propagates ONLY through explicit connections supplied in vessel data.
+- Missing doors, ducts, openings, cross-flooding pipes or subdivision details are never invented.
+- Existing main damage physics remains the authoritative simulator teaching pathway.
+
+4. PERFORMANCE / SMOOTHNESS
+- Interactive controls use a fast equilibrium/hydro update first.
+- Full GZ/IMO curve rebuild occurs after input settles.
+- 3D work is skipped while 3D is hidden.
+- Container stacks use THREE.InstancedMesh to reduce draw calls.
+- Fine windows and railing details use distance-based LOD.
+- Existing static 2D throttling retained.
+
+5. STAGED PHYSICS WORKER
+- Expanded src/workers/physics-worker.js to hull, mass, hydro, trim, KN, GZ, tank sounding, strength, damage, seakeeping proxy and draught-survey operations.
+- Added physics-worker-client.js.
+- The standalone HTML embeds a Blob-ready pure-physics Worker source.
+- Synchronous core physics remains authoritative.
+- Full stateful calculateAll() migration is intentionally deferred until coupled equilibrium/mission/render state can be separated without changing validated behaviour.
+
+6. EDUCATIONAL ADVANCED SEAKEEPING RESPONSE PROXY
+- Added src/physics/seakeeping-proxy.js.
+- Provides heave/pitch response indicators, encounter/roll relationship, acceleration proxy and roll-risk cue.
+- Explicitly labelled educational proxy.
+- NOT a vessel-specific 6-DOF RAO, strip-theory, CFD or approved second-generation intact-stability solver.
+
+7. FIELD-LEVEL DATA AUTHORITY MATRIX
+- Important simulator fields now distinguish SOURCE / CALIBRATED / DERIVED / TRAINING / USER IMPORTED / REPRESENTATIVE / MIXED / NOT AVAILABLE.
+- GREAT FORTUNE source condition data remain source-backed.
+- ONE APUS and RCL NATTHA BHUM public principal particulars remain source anchors while reconstructed hydro/KN/tanks/loading data remain AMCOL calibrated/derived.
+- GREAT FORTUNE tank sounding remains unavailable because no tank calibration/sounding table was supplied.
+
+8. USER / INSTRUCTOR VESSEL DATA PACKAGE IMPORTER
+- Import/export support for JSON vessel packages.
+- Required validation: vessel identity/family, principal dimensions/lightship and monotonic hydrostatic rows.
+- Optional: KN, cargo spaces, ballast tanks, tank calibration, station envelope, structural limits and loading conditions.
+- Imported data are never automatically promoted to SOURCE/approved status.
+
+9. PORTABLE CONDITION FILES
+- Condition export schema upgraded to v3.
+- User-imported vessel packages are embedded in exported conditions.
+- Importing such a condition restores its vessel package first, then restores the condition.
+- Condition-library exports retain the same portable embedded-package behaviour.
+
+10. INSTRUCTOR DRAUGHT SURVEY MISSION BUILDER
+- Instructor can create custom bulk-carrier draught-survey missions.
+- Selectable vessel / Initial condition / Final condition / water densities / P-S observation delta / tolerance / operation brief.
+- Custom missions persist locally and can be imported/exported.
+- Grading tolerance scales all mission grading components consistently.
+
+11. DRAUGHT SURVEY / TANK MEASUREMENT FEATURES RETAINED
+- Six draught observations.
+- Mark-to-perpendicular correction.
+- Hog/Sag and M/M/M draught.
+- First/second trim correction where hydrostatic data support it.
+- Density correction and deductibles.
+- Tank sounding/ullage interpolation where calibration data exist.
+- Formal tank measurement report.
+- Initial/Final cargo calculation and assessment missions.
+- GREAT FORTUNE validation boundary retained: source FWD/AFT/trim/Δ, derived midship observation only.
+
+12. VESSEL-SPECIFIC 3D VISUAL CUES
+- GREAT FORTUNE photo-informed visual remains.
+- ONE APUS receives ONE-like magenta/white visual identity cues.
+- NATTHA BHUM receives RCL-like dark-blue/white visual identity cues.
+- Visual identity never changes physics or source authority.
+
+13. ACCESSIBILITY / UI RESILIENCE
+- Clear keyboard focus-visible treatment.
+- Reduced-motion support.
+- ARIA live status regions.
+- Disabled-state styling.
+- More resilient sidebar min/max-width handling.
+- v1.15.4 widened clean Draught Survey controls retained.
+
+14. OFFLINE RELIABILITY
+- Modular HTTP package includes service-worker caching of successfully loaded local/external GET resources.
+- This supports improved offline-after-first-successful-online-load behaviour.
+- Standalone HTML omits service-worker registration because a reliable sibling worker cannot be assumed.
+- Standalone app code/physics/worker source is inlined, but Tailwind, Chart.js, Font Awesome and Three.js still depend on external CDN assets for first load.
+- Therefore v1.20.0 is NOT claimed as guaranteed first-time fully offline.
+
+15. AUTOMATED VALIDATION
+- Vessel regression suite: 20/20 PASS.
+- Pure physics/module tests: 52/52 PASS.
+- ONE APUS KN↔KMT maximum mismatch remains approximately 0.000023% in vessel regression.
+- NATTHA BHUM KN↔KMT maximum mismatch remains approximately 0.000034% in vessel regression.
+- GREAT FORTUNE source FWD/AFT/trim closure PASS.
+- Standalone HTML: 485 IDs, 0 duplicate IDs.
+- Classic JavaScript syntax PASS.
+- Three.js module syntax PASS.
+- Physics worker and standalone embedded Worker syntax PASS.
+
+LIVE BROWSER TEST LIMITATION
+- A real headless-browser smoke test was attempted in the managed environment, but localhost access was blocked by administrator policy / WebGL-EGL restrictions.
+- No claim of successful live browser/WebGL runtime testing is made from that environment.
+- Static/module/numerical regression validation is complete; final classroom acceptance should still be done in Chrome/Edge on representative AMCOL hardware.
+
+ACCURACY BOUNDARY
+This release materially improves internal consistency and validation but does NOT claim “100% real-vessel accuracy”. Near-operational fidelity for a named vessel requires, as applicable:
+- approved lines plan / offset table
+- approved hydrostatic particulars
+- approved KN/cross-curves or stability booklet
+- actual lightship/CG data
+- actual tank capacity/sounding/FSM tables
+- approved subdivision/opening/cross-flooding data
+- approved allowable SF/BM limits
+- vessel/model-test or hydrodynamic response data for seakeeping
+
+GREAT FORTUNE remains the strongest source-backed stability dataset in the simulator because the supplied workbook directly contains hydrostatics, KN and loading-condition information. ONE APUS, NATTHA BHUM and AMCOL Training Vessels remain clearly bounded calibrated/training models where approved source material is unavailable.

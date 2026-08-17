@@ -133,7 +133,7 @@ Operational use still requires approved ship-specific stability information.
       </div>
       <div class="min-w-0">
         <h1 class="font-bold text-sm md:text-base truncate">AMCOL Advanced Ship Stability &amp; Hydrostatic Simulator</h1>
-        <p class="hidden sm:block text-[9px] md:text-[10px] text-slate-500 truncate">Nonlinear stability · hydrostatics · cargo, ballast, environment and mission training</p>
+        <p class="hidden sm:flex items-center gap-2 text-[9px] md:text-[10px] text-slate-500 truncate"><span>Nonlinear stability · hydrostatics · cargo, ballast, environment and mission training</span><span class="px-1.5 py-0.5 rounded border border-cyan-700/40 text-cyan-300 bg-cyan-950/20 font-bold">v2.0 STABLE</span></p>
       </div>
     </div>
 
@@ -479,6 +479,7 @@ Operational use still requires approved ship-specific stability information.
 <label class="tiny text-slate-400 col-span-2">Damage LCG (m)<input class="mt-1 w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 font-mono" id="inputDamageLCG" step="0.5" type="number" value="0"/><span class="text-[8px] text-slate-600">Longitudinal centre of damaged extent</span></label>
 </div>
 <div class="tiny text-rose-200 bg-rose-950/30 border border-rose-900/50 rounded p-2"><b>Damage-control rule:</b> do not infer an onboard counter-flooding action from this teaching model. Use approved damage-control information.</div>
+<div id="damageDiagnosticReadout" class="tiny rounded border border-slate-800 bg-slate-950/70 p-2 text-slate-400">Enable damage to inspect affected training compartments and the derived floodable-volume estimate.</div>
 </div></div>
 </details>
 <details class="bg-slate-950/70 border border-blue-900/50 rounded-xl overflow-hidden" open>
@@ -666,7 +667,7 @@ Operational use still requires approved ship-specific stability information.
   <div id="physicsValidityNote" class="text-[8px] text-slate-500 leading-relaxed">Model validity updates with the active hydrostatic, KN, tank, opening and damage sources. Source-backed data are never silently extrapolated beyond their declared range.</div>
 </div><div class="bg-slate-950/70 border border-cyan-900/50 rounded-xl p-3 space-y-2">
   <div class="flex items-start justify-between gap-2"><div><h3 class="text-xs font-bold text-cyan-300 uppercase tracking-wider"><i class="fa-solid fa-stethoscope mr-1.5"></i>Physics Integrity Monitor</h3><p class="text-[9px] text-slate-500 mt-0.5">Numerical closure, source-envelope validity and solver convergence. Hard failures invalidate TEST STABILITY.</p></div><span id="physicsIntegrityBadge" class="text-[8px] px-2 py-1 rounded-full border border-slate-700 text-slate-400 font-black">CHECKING</span></div>
-  <div id="physicsIntegrityReadout" class="text-[9px]"><span class="text-slate-500">Integrity checks will appear after calculation.</span></div>
+  <div id="physicsIntegrityReadout" aria-live="polite" class="text-[9px]"><span class="text-slate-500">Integrity checks will appear after calculation.</span></div>
 </div><div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3 space-y-2">
 <div class="flex justify-between items-center"><h3 class="text-xs font-bold text-amber-400 uppercase">Static Heel / Equilibrium</h3><button class="tiny px-2 py-1 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300" onclick="findAndSetEquilibrium()">Find equilibrium</button></div>
 <label class="tiny text-slate-400">Heel angle θ: <span class="text-amber-300 font-mono" id="heelLabel">0.0°</span><input class="w-full accent-amber-500" id="sliderHeel" max="75" min="-75" step="0.2" type="range" value="0"/></label>
@@ -925,7 +926,7 @@ Operational use still requires approved ship-specific stability information.
       </button>
     </div>
     <div id="simulatorViewport" class="relative flex-1 min-h-0 border-b border-slate-800">
-      <div id="cleanChangeFeedback"><div class="font-black text-cyan-300 mb-0.5">CONDITION UPDATED</div><div id="cleanChangeFeedbackText">—</div></div>
+      <div id="cleanChangeFeedback" role="status" aria-live="polite"><div class="font-black text-cyan-300 mb-0.5">CONDITION UPDATED</div><div id="cleanChangeFeedbackText">—</div></div>
       <canvas id="shipCanvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
 
       <!-- Phase 1 true 3D layer. It reads the existing stability state; it does not replace the physics engine. -->
@@ -945,7 +946,7 @@ Operational use still requires approved ship-specific stability information.
             <div class="text-[9px] text-slate-500 mt-1">Loading Three.js scene…</div>
           </div>
         </div>
-        <div id="threeDStatus" class="absolute left-1/2 -translate-x-1/2 bottom-2 z-30 rounded bg-slate-950/70 border border-slate-800 px-2 py-1 text-[8px] font-mono text-slate-400 pointer-events-none">3D standby</div>
+        <div id="threeDStatus" role="status" aria-live="polite" class="absolute left-1/2 -translate-x-1/2 bottom-2 z-30 rounded bg-slate-950/70 border border-slate-800 px-2 py-1 text-[8px] font-mono text-slate-400 pointer-events-none">3D standby</div>
         <div id="threeDCameraStatus" class="absolute left-1/2 -translate-x-1/2 top-2 z-30 rounded bg-slate-950/65 border border-slate-800 px-2 py-1 text-[8px] text-cyan-300 pointer-events-none">Perspective</div>
         <div id="threeDHydroPanel" class="three-d-control absolute left-3 top-3 z-30 rounded-xl p-2.5 w-[230px] max-w-[44vw] text-[9px]">
           <div class="flex items-center justify-between gap-2">
@@ -1224,8 +1225,15 @@ Operational use still requires approved ship-specific stability information.
         </div>
 
         
-        <div class="three-d-control absolute right-3 bottom-3 z-10 rounded-xl p-2 text-[9px] text-slate-400">
-          <div class="font-bold text-slate-200 mb-1">3D Camera</div>
+        <div id="threeDCameraControlsPanel" class="three-d-control absolute right-3 bottom-3 z-10 rounded-xl p-2 text-[9px] text-slate-400" aria-label="3D camera controls">
+          <div class="flex items-center justify-between gap-3 min-w-[132px]">
+            <div class="font-bold text-slate-200">3D Camera</div>
+            <div class="flex items-center gap-1">
+              <button id="threeDCameraMinBtn" onclick="window.AMCOL3D?.toggleCameraControlsPanel()" class="w-6 h-6 rounded border border-slate-700 bg-slate-900/80 text-cyan-300 hover:bg-slate-800" title="Minimise camera controls" aria-label="Minimise camera controls"><i id="threeDCameraMinIcon" class="fa-solid fa-minus"></i></button>
+              <button onclick="window.AMCOL3D?.setCameraControlsPanel('hidden')" class="w-6 h-6 rounded border border-slate-700 bg-slate-900/80 text-slate-300 hover:bg-slate-800" title="Hide camera controls" aria-label="Hide camera controls"><i class="fa-solid fa-eye-slash"></i></button>
+            </div>
+          </div>
+          <div id="threeDCameraControlsBody" class="mt-1">
           <div>Left drag · orbit</div>
           <div>Wheel · zoom</div>
           <div>Right drag · pan</div>
@@ -1271,7 +1279,9 @@ Operational use still requires approved ship-specific stability information.
               <option value="high">High Detail</option>
             </select>
           </div>
+          </div>
         </div>
+        <button id="threeDCameraControlsRestore" onclick="window.AMCOL3D?.setCameraControlsPanel('expanded')" class="hidden three-d-control absolute right-3 bottom-3 z-20 rounded-xl px-3 py-2 text-[9px] font-bold text-cyan-200 border border-cyan-700/50 bg-slate-950/88 hover:bg-slate-900 shadow-lg" title="Show 3D camera controls" aria-label="Show 3D camera controls"><i class="fa-solid fa-camera mr-1.5"></i>Camera</button>
       </div>
 
       <div id="viewOrientationOverlay" class="absolute top-3 left-1/2 -translate-x-1/2 bg-slate-900/88 backdrop-blur border border-cyan-800/50 rounded-full px-3 py-1 text-[9px] font-bold tracking-wider pointer-events-none shadow-lg">
@@ -1597,14 +1607,19 @@ Operational use still requires approved ship-specific stability information.
 
 <script src="src/data/great-fortune.data.js"></script>
 <script src="src/data/training-vessels.data.js"></script>
+<script src="src/physics/hull-geometry.js"></script>
 <script src="src/physics/mass-properties.js"></script>
 <script src="src/physics/hydrostatics.js"></script>
 <script src="src/physics/trim.js"></script>
 <script src="src/physics/kn.js"></script>
 <script src="src/physics/gz.js"></script>
 <script src="src/physics/tank-sounding.js"></script>
+<script src="src/physics/longitudinal-strength.js"></script>
+<script src="src/physics/damage-stability.js"></script>
+<script src="src/physics/seakeeping-proxy.js"></script>
 <script src="src/physics/draft-survey.js"></script>
 <script src="src/physics/draft-survey-mission.js"></script>
+<script src="src/workers/physics-worker-client.js"></script>
 <script src="src/core/core.js"></script>
 <!-- Three.js Phase 1. CDN-connected, matching the simulator's existing CDN-based architecture. -->
 <script type="importmap">
@@ -1616,5 +1631,6 @@ Operational use still requires approved ship-specific stability information.
 }
 </script>
 <script type="module" src="src/render3d/render3d.js"></script>
+<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(e=>console.warn('AMCOL offline cache registration unavailable',e)));}</script>
 </body>
 </html>

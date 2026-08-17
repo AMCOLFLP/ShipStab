@@ -1,63 +1,71 @@
-# AMCOL Simulator v1.15.0 — Modular Physics Architecture
+# AMCOL Simulator v2.0.0 Stable — Architecture
 
 ## Runtime flow
 
 ```text
-Vessel data / condition
-        ↓
-Core orchestration (`src/core/core.js`)
-        ↓
-Pure physics modules (`src/physics/*.js`)
-        ↓
-State result snapshot
-   ┌────┼─────┐
-   ↓    ↓     ↓
-  2D    3D    UI/charts
+Vessel package / condition / user controls
+                ↓
+       Core orchestration
+       src/core/core.js
+                ↓
+ ┌──────────────┼─────────────────┐
+ ↓              ↓                 ↓
+Pure physics   Stateful coupled   Assessment / missions
+modules        simulator flow
+ ↓              ↓
+Worker-ready   Authoritative state snapshot
+ └──────────────┬─────────────────┘
+                ↓
+       ┌────────┼────────┐
+       ↓        ↓        ↓
+      2D       3D       UI / charts / reports
 ```
 
-## Physics modules now extracted
+## Shared geometry kernel
+`src/physics/hull-geometry.js` is the common family geometry source for station envelopes, transverse family polygons and half-breadth queries. The core and 3D renderer delegate to it where applicable.
 
-- Mass and moment aggregation / FSC algebra
-- Hydrostatic row/angle interpolation and density conversion
-- Longitudinal trim and FWD/AFT draught distribution about LCF
-- KN interpolation across heel and displacement
-- GZ construction from KN/KG/TCG
+This does not overwrite source hydrostatic/KN data. A vessel with approved/source hydrostatics still uses those data as the numerical authority. Complete exact geometry-driven hydrostatics require actual lines/offsets.
 
-All extracted modules are stateless and DOM-free.
+## Pure physics modules
+- `hull-geometry.js`
+- `mass-properties.js`
+- `hydrostatics.js`
+- `trim.js`
+- `kn.js`
+- `gz.js`
+- `tank-sounding.js`
+- `longitudinal-strength.js`
+- `damage-stability.js`
+- `seakeeping-proxy.js`
+- `draft-survey.js`
+- `draft-survey-mission.js`
 
-## Compatibility layer
-
-Existing simulator functions remain in `core.js` so scenarios, challenges, UI callbacks and the 3D renderer keep their previous API. Those wrappers now delegate their numerical algebra to the pure modules.
+Pure modules accept plain objects/arrays and do not access the DOM, Three.js, Chart.js or localStorage.
 
 ## Worker boundary
+`src/workers/physics-worker.js` exposes pure numerical operations. `physics-worker-client.js` provides an asynchronous client with synchronous-authority fallback. The standalone release embeds a Worker source as a Blob.
 
-`src/workers/physics-worker.js` already exposes the extracted pure operations through a message API. Full stateful `calculateAll()` is deliberately not moved yet because damage, coupled equilibrium, longitudinal strength and mission/UI state still share synchronous dependencies. This is the next safe migration boundary.
+The complete stateful `calculateAll()` routine is not yet moved wholesale because coupled equilibrium, damage mode, mission state and UI/render lifecycle still share synchronous state. This is deliberate risk control, not an accuracy claim.
 
-## Single-file build
+## Rendering boundary
+The renderer receives solved simulator state. Camera, visual LOD, wave rendering and vessel-specific appearance must not modify hydrostatics, GM, GZ, trim, damage mass or challenge grading.
 
-`build/build_single_html.py` inlines CSS, data, pure physics modules, core and Three.js renderer into a standalone classroom HTML release.
+Container stacks use InstancedMesh. Fine windows/railing elements have distance-based LOD. 3D frame work stops when the 3D workspace is hidden.
 
+## Damage boundary
+The existing main damage calculation remains the teaching lost-buoyancy/added-weight pathway. `damage-stability.js` adds exposure diagnostics and optional progressive flooding only through explicit connectivity. No missing connection is inferred.
 
-## Draught Survey boundary (v1.15.0)
+## Longitudinal-strength boundary
+SF/BM distributions can be compared against active station envelopes. AMCOL/calibrated envelopes are educational unless an approved vessel loading manual is supplied.
 
-`src/physics/draft-survey.js` is a pure numerical module. It accepts six observed draughts, signed draft-mark offsets, active hydrostatic rows, water densities and deductibles. The UI orchestration in `core.js` only collects inputs and renders results. 3D midship draft marks are visual aids and do not calculate survey displacement.
+## Seakeeping boundary
+`seakeeping-proxy.js` is an educational response proxy. The existing nonlinear roll model remains separate. Neither is a substitute for a vessel-specific 6-DOF RAO/strip-theory/CFD solution.
 
-## v1.15.2 Tank Sounding / Ullage Boundary
+## Vessel data packages
+An imported vessel package must include positive LBP/beam/depth/lightship values and a monotonic hydrostatic table. KN and other datasets are optional but validated when present. Imported packages are labelled USER IMPORTED.
 
-`src/physics/tank-sounding.js` is a pure numerical module. It converts sounding, ullage, or sounding-percent readings to calibrated volume, mass, liquid VCG and FSM by interpolation within the active vessel tank calibration dataset.
+## Condition portability
+Condition schema v3 embeds the active user-imported vessel package where applicable. This makes the condition portable without converting the imported data into AMCOL-verified data.
 
-Authority boundary:
-- AMCOL Training Vessels: synthetic/derived training tank calibration.
-- ONE APUS / RCL NATTHA BHUM: AMCOL calibrated training tank geometry/calibration, not approved company/class tank tables.
-- M.V. GREAT FORTUNE: sounding/ullage conversion is disabled because the supplied workbook contains source tank weights/VCG/FSM but no tank calibration/sounding table.
-
-The Draft Survey UI may use calculated tank mass as the ballast deductible, but the tank-sounding module does not alter vessel hydrostatics or the main stability physics engine.
-
-## v1.15.3 Draft Survey Mission Layer
-
-`src/physics/draft-survey-mission.js` is a pure numerical assessment helper. It:
-- solves the survey draught required to reproduce a target displacement at a specified observed water density
-- generates consistent six-reading observation geometry
-- grades draught, density, ballast, deductible and cargo accuracy
-
-The stateful mission UI remains in `src/core/core.js` because it coordinates vessel loading, student forms, tank observation sheets and printable assessment reports. The underlying mission solver/grader contains no DOM or Three.js dependencies and is Worker-ready.
+## Offline architecture
+The modular HTTP version uses `service-worker.js` to cache resources after successful retrieval. The standalone build omits service-worker registration because it has no reliable sibling service-worker file. External CDN libraries remain an initial-load dependency until they are locally vendored.

@@ -1,0 +1,31 @@
+{
+  "product": "AMCOL Advanced Ship Stability & Hydrostatic Simulator",
+  "version": "2.0.0 Stable",
+  "generated": "2026-08-17",
+  "algorithm": "SHA-256",
+  "purpose": "Freeze physics/orchestration and vessel datasets for the v2.0 classroom-stable baseline.",
+  "files": {
+    "src/physics/damage-stability.js": "3538e3a5c5586427ab4ce4affeb0265eb1c16df3f2757fc466ee3040f7d75feb",
+    "src/physics/draft-survey-mission.js": "f494ce3efeee33e0fe6c07f236a8ffee9371b87be71bcdaa4ac5cc041e9df3aa",
+    "src/physics/draft-survey.js": "fda15c7e02c49d788479d08f95357fdd18723f5be7d36671496f429174b7d2ba",
+    "src/physics/gz.js": "69615f5cda69995aeafb442e854cafa8678a41c0faa49668a464b4dc4288b551",
+    "src/physics/hull-geometry.js": "c0405fe180fc7cc0a234e6e2984cedf0f86b8f7ffb5422be76ca18a199ecf225",
+    "src/physics/hydrostatics.js": "f1ef315d314aa1cdcca872c59b41de22186ff334775f0e4052771df8a3b8f312",
+    "src/physics/kn.js": "e50cf0500da94963c8fd2bf3750eb0b813faceef6fe5bad0e6bf927bf272e618",
+    "src/physics/longitudinal-strength.js": "8d5eb8cdc3412c36aafdd98ab7a8b73ae507a7fb0a6c2dd4f0325bd88b899fd9",
+    "src/physics/mass-properties.js": "91ac41520a9a04a8f233f8c99ba03eeab5e9acd6c3e986281610936f3b10f61b",
+    "src/physics/seakeeping-proxy.js": "96fa6b2e1f7167f87ad833c5a9619433809964ad9f64418d160a52fdf274881d",
+    "src/physics/tank-sounding.js": "6e67c9c37f8289f14c96424c4da9c85ddb7fe8a341577c00b5fe8f4a8ba7c992",
+    "src/physics/trim.js": "a6e2d51ed8fc1dcd78f90528ca82cd53efdb3b1203146b91d4a86b60232c9043",
+    "src/core/core.js": "685f71bc177fe70d49c3151cf065670d35913d47d37451cb17718a72b2b83639",
+    "src/workers/physics-worker.js": "9d710023be06c443ee0e41b4b20095afef6361198e37c545d066cfde9d28e609",
+    "src/data/great-fortune.data.js": "dfc1493cb81d2aa32e1392ee6d981f8f3bd9b3319e32dd27ec2209151c7aa994",
+    "src/data/training-vessels.data.js": "fea40ea9cdc482891d591e574e08ac8e5be2bf45531eac1b7428b6567bc4e8e5",
+    "data/reference-vessels/one-apus.json": "1bb4319c48fb9a0159e46a834b4ecaf8632b926fd08b20ac3bf509ffd1fe9d11",
+    "data/reference-vessels/rcl-nattha-bhum.json": "1900da7ab492a060a54cb3331b0cb52b411e60f984b2853825ec85cca6b9991a",
+    "data/great-fortune/hydrostatics.json": "ae7adfdb80593d4c35778a89c2c916145ff608a10edbbedd214caf684504b697",
+    "data/great-fortune/kn-cross-curves.json": "74c84a57381a6f5a0b50fb89652e5a42708f4a5d293a789b8abd90c03dd868ac",
+    "data/great-fortune/workbook-condition.json": "c83cad2acb1b0082393455cb32c926449380e2327bdd9bc9ecde6c3eed72215e",
+    "data/amcol-training/vessels.json": "5a6ac018dfe21ffc76fb28c88bf347bc0fc0c5a50daa53238291fe14539ef516"
+  }
+}

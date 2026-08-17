@@ -4,5 +4,6 @@ cd "$(dirname "$0")"
 python3 tests/regression.py
 node tests/physics_modules.test.js
 node tests/static_syntax.js
+python3 tests/release_lock.py
 python3 build/build_single_html.py
 echo "Build complete."

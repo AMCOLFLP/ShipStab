@@ -1,0 +1,27 @@
+AMCOL Advanced Ship Stability & Hydrostatic Simulator v2.0.0 STABLE
+Release date: 17 August 2026
+
+PURPOSE
+- Freeze the validated v1.20 comprehensive architecture as the classroom stable baseline.
+- Preserve physics and vessel-data results unless a documented defect is found.
+- Add an on-device Classroom Acceptance self-test and formal release-integrity controls.
+
+NEW IN v2.0 STABLE
+1. Classroom Acceptance diagnostic checks browser APIs, Canvas 2D, local storage, Chart.js, WebGL, 3D module loading, Physics Web Worker numerical round-trip and browser frame cadence.
+2. Acceptance report can be exported as a text record for each classroom PC.
+3. Release-lock manifest protects physics modules and vessel datasets from unnoticed changes.
+4. Formal classroom acceptance checklist and v2 stable change-control policy added.
+5. Header/release branding updated to v2.0 STABLE.
+6. Service-worker cache version moved to the v2.0 stable namespace.
+
+NUMERICAL STATUS
+- No intentional hydrostatic, KN, GZ, trim, Draft Survey, tank-sounding, damage, longitudinal-strength or seakeeping numerical changes were introduced by the v2.0 freeze.
+- GREAT FORTUNE source workbook remains the strongest source-backed vessel dataset.
+- ONE APUS and RCL NATTHA BHUM remain AMCOL-calibrated/derived training models anchored to verified public particulars.
+- AMCOL Training Vessels remain educational calibrated/synthetic models.
+
+IMPORTANT
+v2.0 Stable is an advanced maritime education/training simulator. It is not approved loading-computer software and must not replace statutory/class-approved vessel documentation or onboard loading instruments.
+
+HARDWARE ACCEPTANCE
+The managed build environment cannot certify the user's actual classroom GPU/browser. Run the built-in Classroom Acceptance test and the manual checklist on the target AMCOL hardware before declaring that hardware accepted for 3D classroom use.

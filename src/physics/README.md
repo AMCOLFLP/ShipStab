@@ -1,18 +1,22 @@
-# AMCOL Pure Physics Modules — v1.15.0
+# AMCOL Pure Physics Modules — v2.0.0 Stable
 
-These files contain stateless numerical functions used by the compatibility layer in `src/core/core.js`.
+Stateless numerical modules used by the simulator compatibility/orchestration layer:
 
+- `hull-geometry.js` — shared family station/section geometry queries
 - `mass-properties.js` — mass/moment aggregation and free-surface correction algebra
-- `hydrostatics.js` — hydrostatic table and angle interpolation plus density-equivalent displacement
-- `trim.js` — trimming moment, trim, forward/aft draught distribution about LCF and UKC
-- `kn.js` — KN interpolation in angle and displacement and small-angle KM check
-- `gz.js` — GZ construction from KN/CG and signed/restoring conversions
-- `draft-survey.js` — UN/ECE-style six-draught averaging, mark-to-perpendicular corrections, M/M/M draught, trim corrections, density correction and deductibles
+- `hydrostatics.js` — hydrostatic interpolation and density-equivalent displacement
+- `trim.js` — trimming moment and FWD/AFT draught distribution about LCF
+- `kn.js` — KN interpolation and small-angle KM check
+- `gz.js` — GZ construction from KN/KG/TCG
+- `tank-sounding.js` — sounding/ullage calibration interpolation, volume/mass/VCG/FSM
+- `longitudinal-strength.js` — SF/BM envelope interpolation and utilisation
+- `damage-stability.js` — teaching exposure estimate and explicit-connectivity flooding graph
+- `seakeeping-proxy.js` — educational response proxy, not ship-specific RAO
+- `draft-survey.js` — six-draught survey, corrections, M/M/M, trim/density/deductibles
+- `draft-survey-mission.js` — mission observation generation and grading
 
-## Architecture contract
+## Contract
+These modules do not access the DOM, Three.js, Chart.js or localStorage. Inputs and outputs are plain values/objects/arrays. The core remains the stateful compatibility layer.
 
-Physics modules do not access the DOM, Three.js, Chart.js, localStorage or simulator global state. Inputs are plain objects/arrays and outputs are plain objects/numbers.
-
-`core.js` remains the compatibility/orchestration layer and is responsible for collecting cargo/tank inputs and updating simulator state/UI.
-
-This makes the numerical foundation independently testable and suitable for staged migration to `src/workers/physics-worker.js`.
+## Authority
+Pure code does not make reconstructed data approved. Numerical authority still follows the active vessel/source matrix: source-backed data first, calibrated/derived training data where clearly identified, no silent extrapolation or invented statutory data.

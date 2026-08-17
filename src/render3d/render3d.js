@@ -65,6 +65,7 @@ function makeMaterial(color, extra={}){
 }
 
 function vessel3DHullProfile(type){
+  const sharedProfile=window.AMCOLPhysics?.hull?.profile?.(type);if(sharedProfile)return sharedProfile;
   const profiles={
     // Family-specific station envelopes. xNorm: -1 stern, +1 bow.
     // These are fair representative commercial-ship forms, not approved vessel offsets.
@@ -97,6 +98,9 @@ function customHullStationAt(xNorm,D,type){
 }
 function visualHullStationAtZ(z,L,B,D,type){
   const p=vessel3DHullProfile(type),xNorm=Math.max(-1,Math.min(1,-2*z/Math.max(.001,L)));
+  const c=window.AMCOL_CUSTOM_HULL_FORM,customRows=(c?.enabled&&Array.isArray(c.stations)&&c.stations.length>=5&&(!c.vesselName||!latestState?.vesselName||c.vesselName===latestState.vesselName)&&(!c.hullType||!type||c.hullType===type||!c.vesselName))?c.stations:null;
+  const sh=window.AMCOLPhysics?.hull?.stationEnvelopeAt?.(xNorm,type,customRows);
+  if(sh){const first=p.bowCurve?.[0]?.[0]??.40;return {beamFactor:sh.beamFactor,bottomFactor:sh.bottomFactor,sheer:D*(sh.sheerRatio||0),keelRise:D*(sh.keelRiseRatio||0),xNorm,fore:Math.max(0,Math.min(1,(xNorm-first)/Math.max(.001,1-first))),custom:sh.source==='custom'};}
   const custom=customHullStationAt(xNorm,D,type);if(custom)return {...custom,xNorm,fore:Math.max(0,(xNorm-.35)/.65)};
   let beamFactor=1,bottomFactor=.72,sheer=0,keelRise=0;
   if(xNorm<-.70){const u=Math.min(1,Math.max(0,(xNorm+1)/.30));beamFactor=p.sternFull+(1-p.sternFull)*Math.sin(u*Math.PI/2);bottomFactor=.45+.27*u;sheer=D*.010*(1-u);}
@@ -118,6 +122,8 @@ function createHullGeometry(L,B,D,type){
 }
 
 function visualHullHalfBreadthAtDraft(y,z,L,B,D,type){
+  const xNorm=Math.max(-1,Math.min(1,-2*z/Math.max(.001,L))),c=window.AMCOL_CUSTOM_HULL_FORM,customRows=(c?.enabled&&Array.isArray(c.stations)&&c.stations.length>=5&&(!c.vesselName||!latestState?.vesselName||c.vesselName===latestState.vesselName))?c.stations:null;
+  const shared=window.AMCOLPhysics?.hull?.halfBreadthAtDraft?.(y,xNorm,B,D,type,customRows);if(Number.isFinite(shared))return shared;
   const st=visualHullStationAtZ(z,L,B,D,type),p=vessel3DHullProfile(type);
   const hd=B*.5*st.beamFactor,hb=B*.5*st.bottomFactor;
   const localY=Math.max(0,Math.min(D,Number(y)-st.keelRise-st.sheer));
@@ -129,7 +135,6 @@ function visualHullHalfBreadthAtDraft(y,z,L,B,D,type){
   if(u>.70)width*=1+.028*((u-.70)/.30)+p.flare*.16*Math.pow(st.fore,1.08);
   return Math.max(B*.012,width);
 }
-
 function addBox(group,size,pos,color,opts={}){
   const m=new THREE.Mesh(new THREE.BoxGeometry(size[0],size[1],size[2]),makeMaterial(color,opts));
   m.position.set(pos[0],pos[1],pos[2]);m.castShadow=true;m.receiveShadow=true;group.add(m);return m;
@@ -240,7 +245,7 @@ function addWindow(group,pos,size=[.4,.28,.08],emissive=false){
     emissive:emissive?0x1d6688:0x06131f,
     emissiveIntensity:emissive?.55:.12
   });
-  const w=new THREE.Mesh(new THREE.BoxGeometry(...size),mat);w.position.set(...pos);group.add(w);return w;
+  const w=new THREE.Mesh(new THREE.BoxGeometry(...size),mat);w.position.set(...pos);w.userData.distanceLOD=2;group.add(w);return w;
 }
 function addWindowBand(group,B,D,L,z,y,widthFrac=.52,rows=1){
   const q=detailLevel();
@@ -261,14 +266,14 @@ function addRailingLine(group,a,b,height,color=0xcbd5e1){
   if(detailLevel()===0)return;
   const railY=a[1]+height;
   const r=Math.max(.012,(latestState?.beam||16)*.0022);
-  group.add(cylinderBetween(new THREE.Vector3(a[0],railY,a[2]),new THREE.Vector3(b[0],railY,b[2]),r,color,.72));
+  const rail=cylinderBetween(new THREE.Vector3(a[0],railY,a[2]),new THREE.Vector3(b[0],railY,b[2]),r,color,.72);rail.userData.distanceLOD=1;group.add(rail);
   if(detailLevel()>=2){
     const len=new THREE.Vector3(...a).distanceTo(new THREE.Vector3(...b));
     const posts=Math.max(2,Math.min(18,Math.floor(len/Math.max(2,(latestState?.length||80)*.03))));
     for(let i=0;i<=posts;i++){
       const t=i/posts;
       const p=new THREE.Vector3(a[0],a[1],a[2]).lerp(new THREE.Vector3(b[0],b[1],b[2]),t);
-      group.add(cylinderBetween(p,new THREE.Vector3(p.x,p.y+height,p.z),r*.75,color,.58));
+      const post=cylinderBetween(p,new THREE.Vector3(p.x,p.y+height,p.z),r*.75,color,.58);post.userData.distanceLOD=2;group.add(post);
     }
   }
 }
@@ -632,24 +637,20 @@ function addVesselDraftMarks(group,B,D,L,type){
 
 function addContainerBay(group,B,D,L,z,tiers=3,rows=4,colorSeed=0){
   const colors=[0x1d4ed8,0x0f766e,0xb45309,0x7c3aed,0x475569,0xb91c1c];
-  const q=detailLevel();
-  const across=q===0?2:(q===1?4:5);
-  const cW=B*.76/across,cL=L*.036,cH=D*.105;
+  const q=detailLevel(),across=q===0?2:(q===1?4:5),cW=B*.76/across,cL=L*.036,cH=D*.105;
   if(q>=1){
-    for(let j=0;j<=across;j++){
-      const gx=-B*.38+j*cW;
-      addCylinder(group,B*.004,tiers*cH+D*.02,[gx,D*1.07+(tiers*cH+D*.02)/2,z],0x8a98a6);
-    }
+    for(let j=0;j<=across;j++){const gx=-B*.38+j*cW;addCylinder(group,B*.004,tiers*cH+D*.02,[gx,D*1.07+(tiers*cH+D*.02)/2,z],0x8a98a6);}
   }
-  for(let tier=0;tier<tiers;tier++){
-    for(let j=0;j<across;j++){
-      const x=-B*.38+cW*.5+j*cW;
-      const c=addRoundedBox(group,[cW*.91,cH,cL],[x,D*1.07+cH*.5+tier*cH,z],colors[(colorSeed+j+tier)%colors.length],{roughness:.57,metalness:.08,edgeOpacity:.32});
-      if(q>=2){
-        for(const off of [-.28,-.09,.09,.28]) addBox(c,[cW*.012,cH*.82,cL*.018],[off*cW,0,-cL*.51],0xcbd5e1,{roughness:.8,metalness:.12});
-      }
-    }
+  const count=Math.max(1,tiers*across),geo=new THREE.BoxGeometry(cW*.91,cH,cL),mat=makeMaterial(0xffffff,{roughness:.57,metalness:.08,vertexColors:true});
+  const mesh=new THREE.InstancedMesh(geo,mat,count);mesh.name='ContainerBayInstances';mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData.visualRole='containerInstances';
+  const dummy=new THREE.Object3D(),col=new THREE.Color();let idx=0;
+  for(let tier=0;tier<tiers;tier++)for(let j=0;j<across;j++){
+    const x=-B*.38+cW*.5+j*cW;dummy.position.set(x,D*1.07+cH*.5+tier*cH,z);dummy.updateMatrix();mesh.setMatrixAt(idx,dummy.matrix);mesh.setColorAt(idx,col.setHex(colors[(colorSeed+j+tier)%colors.length]));idx++;
   }
+  mesh.instanceMatrix.needsUpdate=true;if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;group.add(mesh);
+  // High-detail door/rib cues are represented once per bay rather than once per container to avoid hundreds of draw calls.
+  if(q>=2){for(let j=0;j<across;j++){const x=-B*.38+cW*.5+j*cW;addBox(group,[cW*.55,D*.010,cL*.020],[x,D*1.07+tiers*cH+D*.014,z-cL*.51],0xcbd5e1,{roughness:.8,metalness:.12});}}
+  return mesh;
 }
 function addVent(group,x,y,z,B,D){
   if(detailLevel()===0)return;
@@ -976,6 +977,12 @@ function operationSprite(text,color='#ffffff',scale=1){
 function updateOperationLabelPresentation(){
   if(!camera||!operationsLabelsGroup)return;
   operationsLabelsGroup.children.forEach(sp=>{if(!sp.isSprite)return;const base=sp.userData.baseOperationScale;if(!base)return;const dist=camera.position.distanceTo(sp.getWorldPosition(new THREE.Vector3())),f=Math.max(.90,Math.min(1.18,dist/Math.max(34,(+latestState?.beam||16)*4.6)));sp.scale.copy(base).multiplyScalar(f);if(sp.material){sp.material.opacity=Math.max(.64,Math.min(1,1.12-dist/1200));}});
+}
+function updateDistanceLOD(){
+  if(!camera||!shipVisual||!latestState)return;
+  const now=performance.now();if(updateDistanceLOD._last&&now-updateDistanceLOD._last<450)return;updateDistanceLOD._last=now;
+  const L=Math.max(20,+latestState.length||80),centre=shipVisual.getWorldPosition(new THREE.Vector3()),dist=camera.position.distanceTo(centre),near=dist<=L*2.35,medium=dist<=L*4.2;
+  shipVisual.traverse(o=>{const level=Number(o.userData?.distanceLOD)||0;if(!level)return;o.visible=level===1?medium:near;});
 }
 function operationMassSize(item,s){
   const B=Math.max(4,+s.beam||16),D=Math.max(3,+s.depth||10),L=Math.max(20,+s.length||80);
@@ -1556,14 +1563,14 @@ function buildVessel(s){
   animatedPropellers=[];
   shipVisual=new THREE.Group();shipVisual.name='HighDetailTeachingVessel';
   const L=Math.max(20,+s.length||80),B=Math.max(4,+s.beam||16),D=Math.max(3,+s.depth||10);
-  const type=s.hullType||'general',q=detailLevel(),greatFortuneVisual=isGreatFortuneVisualState(s);
+  const type=s.hullType||'general',q=detailLevel(),greatFortuneVisual=isGreatFortuneVisualState(s),oneApusVisual=/ONE\s+APUS/i.test(String(s.vesselName||'')),natthaVisual=/NATTHA\s+BHUM/i.test(String(s.vesselName||''));
   shipVisual.userData.hullForm=vessel3DHullProfile(type).label;
 
   // Main hull with stronger PBR response and vessel-family colour cues.
   const hullColorMap={container:0x214b24,bulk:0x6f7c8c,general:0x6e7b8b,roro:0x204a7b,ferry:0x204a7b,tanker:0xd9d9d6,chemical:0xc8d0d9,lng:0x2f3136,osv:0xd96f32,box:0x8b939d};
   const deckColorMap={container:0x9c3e33,bulk:0xc98474,general:0xad6d5e,roro:0x69855e,ferry:0x69855e,tanker:0xf2f2ee,chemical:0xf3f5f7,lng:0x8db64a,osv:0xb98b3d,box:0xa2adb8};
-  const hullColor=greatFortuneVisual?0x1f2e44:(hullColorMap[type]??0x182b3a);
-  const deckColor=greatFortuneVisual?0xa77057:(deckColorMap[type]??0x9ca9b5);
+  const hullColor=greatFortuneVisual?0x1f2e44:oneApusVisual?0xa9005d:natthaVisual?0x174a73:(hullColorMap[type]??0x182b3a);
+  const deckColor=greatFortuneVisual?0xa77057:oneApusVisual?0x8f354f:natthaVisual?0x9f6b55:(deckColorMap[type]??0x9ca9b5);
   const hull=new THREE.Mesh(
     createHullGeometry(L,B,D,type),
     makeMaterial(hullColor,{roughness:greatFortuneVisual?.47:.39,metalness:greatFortuneVisual?.14:.18})
@@ -1583,7 +1590,7 @@ function buildVessel(s){
 
   if(type==='container'){
     addAccommodation(shipVisual,B,D,L,L*.355,.78,.68,.075,q===2?5:3);
-    addFunnel(shipVisual,B*.12,D*1.72,L*.395,B,D,0x0f172a,0x111827);
+    addFunnel(shipVisual,B*.12,D*1.72,L*.395,B,D,oneApusVisual?0xf4f4f5:natthaVisual?0xf8fafc:0x0f172a,oneApusVisual?0xa9005d:natthaVisual?0x174a73:0x111827);
     addRadarMast(shipVisual,0,D*1.83,L*.305,B,D);
     addNavLights(shipVisual,B,D,L,L*.31);
     if(q>=1){
@@ -1592,7 +1599,7 @@ function buildVessel(s){
       addRadarMast(shipVisual,0,D*1.42,-L*.39,B,D);
     }
 
-    const bays=q===0?5:(q===1?8:10);
+    const bays=oneApusVisual?(q===0?6:q===1?9:11):natthaVisual?(q===0?5:q===1?7:8):(q===0?5:(q===1?8:10));
     const tiers=q===0?2:(q===1?3:4);
     for(let i=0;i<bays;i++){
       const z=-L*.30+i*(L*.055);
@@ -1611,6 +1618,7 @@ function buildVessel(s){
     }
     addLifeboat(shipVisual,-B*.39,D*1.49,L*.345,L,B);
     addLifeboat(shipVisual, B*.39,D*1.49,L*.345,L,B);
+    if(oneApusVisual||natthaVisual){const name=oneApusVisual?'ONE APUS':'NATTHA BHUM';addHullNameSprite(shipVisual,name,B*.34,D*.70,-L*.405,B*.14,D*.055);addHullNameSprite(shipVisual,name,-B*.34,D*.70,-L*.405,B*.14,D*.055);}
 
   }else if(type==='bulk'){
     if(greatFortuneVisual){
@@ -2184,6 +2192,7 @@ function init3D(){
     const chEl=document.getElementById('threeDChallengeCamera');if(chEl)chEl.checked=inspectionOptions.challengeCamera;
     const cutEl=document.getElementById('threeDCutawayMode');if(cutEl)cutEl.value=cutawayMode;
     const snapEl=document.getElementById('interactionSnap');if(snapEl)snapEl.value=String(interactionSnap);
+    restoreCameraControlsPanelPreference();
     scene=new THREE.Scene();
     scene.background=new THREE.Color(0x06111f);
     scene.fog=new THREE.FogExp2(0x06111f,.0024);
@@ -3209,6 +3218,36 @@ function updateCameraStatus(){
   const cutNames={none:'Off',starboard_open:'Starboard Open',port_open:'Port Open',bow_open:'Bow Open',stern_open:'Stern Open'};
   el.textContent=`Camera: ${names[currentPreset]||currentPreset} · Cutaway: ${cutNames[cutawayMode]||cutawayMode} · ${interactionMode.toUpperCase()}${inspectionOptions.challengeCamera?' · Challenge Cam ON':''}`;
 }
+let cameraControlsPanelMode='expanded';
+function setCameraControlsPanel(mode='expanded',persist=true){
+  const valid=new Set(['expanded','minimized','hidden']);
+  if(!valid.has(mode))mode='expanded';
+  cameraControlsPanelMode=mode;
+  const panel=document.getElementById('threeDCameraControlsPanel');
+  const body=document.getElementById('threeDCameraControlsBody');
+  const restore=document.getElementById('threeDCameraControlsRestore');
+  const minBtn=document.getElementById('threeDCameraMinBtn');
+  const minIcon=document.getElementById('threeDCameraMinIcon');
+  if(panel)panel.classList.toggle('hidden',mode==='hidden');
+  if(body)body.classList.toggle('hidden',mode!=='expanded');
+  if(restore)restore.classList.toggle('hidden',mode!=='hidden');
+  if(minBtn){
+    const minimized=mode==='minimized';
+    minBtn.title=minimized?'Expand camera controls':'Minimise camera controls';
+    minBtn.setAttribute('aria-label',minBtn.title);
+  }
+  if(minIcon)minIcon.className=mode==='minimized'?'fa-solid fa-chevron-up':'fa-solid fa-minus';
+  if(persist){try{localStorage.setItem('amcol_3d_camera_controls_panel',mode);}catch(e){}}
+}
+function toggleCameraControlsPanel(){
+  setCameraControlsPanel(cameraControlsPanelMode==='expanded'?'minimized':'expanded');
+}
+function restoreCameraControlsPanelPreference(){
+  let mode='expanded';
+  try{mode=localStorage.getItem('amcol_3d_camera_controls_panel')||'expanded';}catch(e){}
+  setCameraControlsPanel(mode,false);
+}
+
 function focusObject3D(obj,duration=720){
   if(!obj||!camera||!controls)return;
   const box=new THREE.Box3().setFromObject(obj);
@@ -3475,7 +3514,7 @@ function animate3D(){
     if(latestState){updateDynamicPose(latestState);updateRain(latestState,dt);updateWaterInteraction3D(latestState,t);}
     stepBallastTransfer(dt);updateBallastFreeSurfaces();animateBallastFlow(t);pollOperationalMission();updateCameraTween();controls?.update();
     if(latestState&&hydroOptions.master)updateHydroMarkerPresentation();
-    updateOperationLabelPresentation();
+    updateOperationLabelPresentation();updateDistanceLOD();
     renderer.render(scene,camera);
     animate3D._errorCount=0;
   }catch(err){
@@ -3524,6 +3563,8 @@ window.AMCOL3D={
   invalidateHull,
   setViewActive,
   setCameraPreset,
+  setCameraControlsPanel,
+  toggleCameraControlsPanel,
   setHydroOption,
   setOperationOption,
   applyVisualLayerPreset,

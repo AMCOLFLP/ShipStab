@@ -35,20 +35,20 @@
   }
   function relativeError(actual,target,floor=1){const a=n(actual),t=n(target);return [a,t].every(Number.isFinite)?Math.abs(a-t)/Math.max(Math.abs(t),floor):NaN;}
   function gradeMission(input={}){
-    const truth=input.truth||{},entered=input.entered||{},breakdown=[];
+    const truth=input.truth||{},entered=input.entered||{},breakdown=[],tolScale=Math.max(.25,Math.min(4,Number(input.toleranceScale)||1));
     const readingKeys=['forwardPort','forwardStarboard','midshipPort','midshipStarboard','aftPort','aftStarboard'];
     const draftErrI=meanAbsErrors(entered.initialReadings||{},truth.initialReadings||{},readingKeys),draftErrF=meanAbsErrors(entered.finalReadings||{},truth.finalReadings||{},readingKeys),draftErr=Number.isFinite(draftErrI)&&Number.isFinite(draftErrF)?(draftErrI+draftErrF)/2:NaN;
-    breakdown.push({key:'draughts',label:'Draught observations',points:linearScore(draftErr,.003,.020,20),max:20,metric:draftErr,unit:'m mean abs error'});
+    breakdown.push({key:'draughts',label:'Draught observations',points:linearScore(draftErr,.003*tolScale,.020*tolScale,20),max:20,metric:draftErr,unit:'m mean abs error'});
     const denI=Math.abs(n(entered.initialDensity)-n(truth.initialDensity)),denF=Math.abs(n(entered.finalDensity)-n(truth.finalDensity)),denErr=Number.isFinite(denI)&&Number.isFinite(denF)?(denI+denF)/2:NaN;
-    breakdown.push({key:'density',label:'Water density',points:linearScore(denErr,.0005,.006,10),max:10,metric:denErr,unit:'t/m³ mean abs error'});
+    breakdown.push({key:'density',label:'Water density',points:linearScore(denErr,.0005*tolScale,.006*tolScale,10),max:10,metric:denErr,unit:'t/m³ mean abs error'});
     const bI=relativeError(entered.initialBallast,truth.initialBallast,5),bF=relativeError(entered.finalBallast,truth.finalBallast,5),bErr=Number.isFinite(bI)&&Number.isFinite(bF)?(bI+bF)/2:NaN;
-    breakdown.push({key:'ballast',label:'Ballast from sounding/ullage',points:linearScore(bErr,.005,.05,20),max:20,metric:bErr,unit:'relative error'});
+    breakdown.push({key:'ballast',label:'Ballast from sounding/ullage',points:linearScore(bErr,.005*tolScale,.05*tolScale,20),max:20,metric:bErr,unit:'relative error'});
     const oI=relativeError(entered.initialOther,truth.initialOther,2),oF=relativeError(entered.finalOther,truth.finalOther,2),oErr=Number.isFinite(oI)&&Number.isFinite(oF)?(oI+oF)/2:NaN;
-    breakdown.push({key:'deductibles',label:'Other changing deductibles',points:linearScore(oErr,.005,.05,10),max:10,metric:oErr,unit:'relative error'});
+    breakdown.push({key:'deductibles',label:'Other changing deductibles',points:linearScore(oErr,.005*tolScale,.05*tolScale,10),max:10,metric:oErr,unit:'relative error'});
     const calcErr=relativeError(entered.calculatedCargo,truth.cargo,20);
-    breakdown.push({key:'calculatedCargo',label:'Survey calculated cargo',points:linearScore(calcErr,.0025,.025,25),max:25,metric:calcErr,unit:'relative error'});
+    breakdown.push({key:'calculatedCargo',label:'Survey calculated cargo',points:linearScore(calcErr,.0025*tolScale,.025*tolScale,25),max:25,metric:calcErr,unit:'relative error'});
     const reportErr=relativeError(entered.reportedCargo,truth.cargo,20);
-    breakdown.push({key:'reportedCargo',label:'Student reported cargo',points:linearScore(reportErr,.0025,.03,15),max:15,metric:reportErr,unit:'relative error'});
+    breakdown.push({key:'reportedCargo',label:'Student reported cargo',points:linearScore(reportErr,.0025*tolScale,.03*tolScale,15),max:15,metric:reportErr,unit:'relative error'});
     const total=breakdown.reduce((s,x)=>s+x.points,0),score=Math.round(total*10)/10;
     const grade=score>=90?'DISTINCTION':score>=80?'VERY GOOD':score>=70?'GOOD':score>=60?'SATISFACTORY':'REQUIRES REVIEW';
     return {score,grade,pass:score>=60,breakdown,draftMeanAbsError:draftErr,densityMeanAbsError:denErr,ballastRelativeError:bErr,calculatedCargoRelativeError:calcErr,reportedCargoRelativeError:reportErr};

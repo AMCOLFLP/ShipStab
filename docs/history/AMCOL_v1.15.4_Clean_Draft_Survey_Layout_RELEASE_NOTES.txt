@@ -1,0 +1,18 @@
+AMCOL Ship Stability Simulator v1.15.4 — Clean Draft Survey Layout
+
+UI-only reliability patch based on v1.15.3.
+
+Changes:
+- Desktop control sidebar widened from 344 px to 384 px.
+- Medium-width control sidebar widened from 300 px to 326 px.
+- Internal controls padding increased slightly.
+- Initial and Final Survey cards no longer use viewport-based XL two-column layout inside the sidebar.
+- Normal sidebar mode always stacks Initial then Final Survey vertically.
+- Controls Focus/maximised mode may show Initial and Final side-by-side because real content width is then available.
+- Draft reading inputs now use minmax(0,1fr) columns and cannot overflow their cards.
+- Tank sounding/ullage tables are horizontally scrollable inside each survey card.
+- Draft Survey mission/report blocks are width constrained to prevent sidebar overflow.
+
+Physics/data:
+- No hydrostatics, KN, GZ, trim, tank sounding, Draft Survey or mission grading calculations changed.
+- This release is a layout/readability patch only.

@@ -1,0 +1,56 @@
+AMCOL Advanced Ship Stability Simulator v1.15.3
+Draft Survey Training Missions + Cleaner Control Panel
+
+MAIN FEATURES
+1. Added a complete Draft Survey Training Mission system in the Draft Survey workspace.
+2. Added four built-in AMCOL FORTUNE missions:
+   - Mission A · Full Bulk Loading (Foundation)
+   - Mission B · Top-Off Loading (Intermediate)
+   - Mission C · Full Discharge (Intermediate)
+   - Mission D · Dock-Water Top-Off (Advanced density-correction case)
+3. Missions issue separate Initial and Final raw observation sheets containing:
+   - FWD Port / Starboard draughts
+   - MID Port / Starboard draughts
+   - AFT Port / Starboard draughts
+   - observed water density
+   - changing other/consumables deductible
+   - ballast tank Sounding / Ullage readings with liquid density
+4. The true cargo quantity is hidden until the student submits the mission.
+5. The student must transfer the observations into the existing Draft Survey calculator, calculate tank ballast, complete the Initial and Final survey and report cargo loaded/discharged.
+6. Assessment scoring is 100 points:
+   - Draught observations: 20
+   - Water density: 10
+   - Ballast sounding/ullage: 20
+   - Other changing deductibles: 10
+   - Survey calculated cargo: 25
+   - Student reported cargo: 15
+7. Grades: Distinction / Very Good / Good / Satisfactory / Requires Review.
+8. Added printable mission assessment with student name/ID, component scores and hidden ground-truth cargo after submission.
+9. Tank-sheet copy helper is explicitly marked as ASSISTED PRACTICE in the assessment; independent manual entry remains available.
+10. Mission ground truth is generated from the exact rounded observation/tank sheet issued to the student so grading is fair and reproducible.
+
+CONTROL PANEL CLEANUP
+- Desktop left control panel widened from 312 px to 344 px.
+- Mid-size desktop/tablet landscape control panel widened to 300 px.
+- Sidebar content padding increased slightly to improve spacing/readability.
+- No change to the centre simulator physics viewport behaviour or right-side live-condition panel logic.
+
+PHYSICS / DATA AUTHORITY
+- Existing hydrostatics, KN, GZ, trim, tank calibration and stability physics were not replaced.
+- Training missions use AMCOL FORTUNE's calibrated AMCOL training hydrostatic/tank dataset.
+- GREAT FORTUNE remains the source-workbook validation case and is not assigned fabricated tank sounding tables.
+- Mission results are educational training assessments, not commercial draught survey certificates.
+
+ARCHITECTURE
+- Added src/physics/draft-survey-mission.js
+- Physics Worker now supports:
+  draftSurveyMission.solveDraft
+  draftSurveyMission.grade
+- Modular build still produces one standalone classroom HTML release.
+
+VALIDATION
+- Pure physics/module tests: 44 / 44 PASS
+- Vessel regression suite: 20 / 20 PASS
+- No duplicate HTML IDs in standalone build
+- Classic JavaScript syntax: PASS
+- Three.js ES module syntax: PASS
